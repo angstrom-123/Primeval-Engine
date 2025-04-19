@@ -1,16 +1,85 @@
 # Primeval
 A doom-style game engine. (WIP)
 
-## Features
-- 2.5D rendering
-- Custom level format
-- Many more to come...
-
 ## The Engine
 This engine is intended as a base framework for creating games with the same 
 style as classic Doom. It will include features for editing levels, textures,
 game mechanics, and for making custom changes to the underlying framework. This 
 engine will be a loooooong project and is currently in very early development.
+
+## Documentation
+As this engine is still in early development, detailed documentation about using
+the engine is not available yet. 
+
+## Features
+- 2.5D rendering
+- Custom level format
+- Many more to come...
+
+## Build and Run
+### Prerequisites
+- JDK 21 (Oracle JDK or Open JDK)
+- Apache Maven 3.8.7
+  
+Dependencies must be correctly installed and placed in
+the PATH environment variable. 
+
+Listed versions are guaranteed to work
+as these are what I am developing on. Newer and older versions of both
+could still work. If you are using different versions to mine and the
+project does not run, switching to my versions should be your first
+troubleshooting step.
+
+### Clone the Repository
+First copy the URL that you would like to use to clone with:
+- Clone with HTTP: https://github.com/angstrom-123/Primeval-Engine.git
+- Clone with SSH: git@github.com:angstrom-123/Primeval-Engine.git
+  
+In the terminal, cd to your chosen target directory and run (to clone 
+with HTTP)
+```
+git clone https://github.com/angstrom-123/Primeval-Engine.git
+```
+or (to clone with SSH)
+```
+git clone git@github.com:angstrom-123/Primeval-Engine.git
+```
+### Build the project
+In the terminal, cd to the cloned repository's root directory and run
+```
+mvn clean install
+```
+This will build the project's modules and their remaining dependencies
+### Running
+The engine is split into 3 modules:
+- peCore - the main game and its associated logic
+- peEditor - the map editor for the game
+- peLib - a library of utilities required for the other modules
+
+When the project is built, each module's executable is placed into its 
+individual /target/ directory as a .jar file. You may notice that peLib
+has an executable .jar file in its /target/ directory, however this does 
+file does not execute.
+
+#### To run the game
+From the project's root directory, run:
+```
+java -jar peCore/target/peCore-1.0.0-alpha.jar
+```
+To run the game in debug mode append the --test parameter:
+```
+java -jar peCore/target/peCore-1.0.0-alpha.jar --test
+```
+
+### To run the editor
+From the project's root directory, run:
+```
+java -jar peEditor/target/peEditor-1.0.0-alpha.jar
+```
+To run the editor in debug mode append the --test parameter:
+```
+java -jar peEditor/target/peEditor-1.0.0-alpha.jar --test
+```
 
 ## Dev Log
 ### Humble beginnings: 
