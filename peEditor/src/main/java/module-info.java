@@ -1,4 +1,4 @@
 module com.ang.peEditor {
-	requires java.desktop;
-	requires com.ang.peLib;
+	requires transitive java.desktop;
+	requires transitive com.ang.peLib;
 }

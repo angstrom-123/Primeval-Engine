@@ -9,7 +9,7 @@ import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.inputs.PMouseInputInterface;
 import com.ang.peLib.inputs.PMouseInputListener;
 import com.ang.peLib.maths.PVec2;
-import com.ang.peLib.utils.PConversionUtils;
+import com.ang.peLib.utils.PConversions;
 
 public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private int 				selectedSectorIndex;
@@ -42,8 +42,13 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		gui.init();
 	}
 
-	public void test() {
-		open("testMap.pmap");
+	public void start(boolean test) {
+		if (test) {
+			open("testMap.pmap");
+		} else {
+			// TODO: regular entry point
+			System.out.println("regular editor entry point goes here");
+		}
 	}
 
 	@Override
@@ -88,7 +93,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	public void mouseReleased(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
 		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
-			double[] coords = PConversionUtils.ss2v(x, y, params.height, 
+			double[] coords = PConversions.ss2v(x, y, params.height, 
 					params.width, params.scale, viewPos);;
 			PVec2 newPos = new PVec2(coords);
 			PSector selectedSec = editableData.world.getSectors()[selectedSectorIndex];
@@ -183,7 +188,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		for (int i = 0; i < sectors.length; i++) {
 			PVec2[] corners = sectors[i].getCorners();
 			for (int j = 0; j < corners.length; j++) {
-				int[] coords = PConversionUtils.v2ss(corners[j], params.width, 
+				int[] coords = PConversions.v2ss(corners[j], params.width, 
 						params.height, params.scale, viewPos);
 				int minX = coords[0] - leeway;
 				int maxX = coords[0] + leeway;

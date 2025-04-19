@@ -1,16 +1,23 @@
 package com.ang.peLib.files.pmap;
 
+import com.ang.peLib.utils.PCopyable;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.maths.PVec2;
 
-public class PPMapData {
+/**
+ * Holds data about a map and provides utilities for managing the map data.
+ */
+public class PPMapData extends PCopyable {
 	public PSectorWorld world;
 	public PVec2 position;
 	public PVec2 facing;
 
-	public PPMapData() {}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
 	public PPMapData copy() {
 		PPMapData temp = new PPMapData();
 		temp.world = world.copy();
@@ -20,15 +27,47 @@ public class PPMapData {
 
 	}
 
+	/**
+	 * Checks if all fields are populated.
+	 * A field is populated if its value is not {@code null}.
+	 * @return {@code true} if all fields are populated, else {@code false}
+	 */
 	public boolean isPopulated() {
-		if ((world != null) && (position != null) && (facing != null)) {
-			return true;
-
-		}
-		return false;
+		return ((world != null) && (position != null) && (facing != null));
 
 	}
 
+	/**
+	 * Converts the map data in this instance to an array of Strings in the .pmap
+	 * format for writing to files.
+	 * The .pmap format specifies: 
+	 * <ul>
+	 * <li>The coordinates of each corner, ordered clockwise and grouped by sector
+	 * <li>The indices of the corners that start a new sector
+	 * <li>The floor and ceiling heights for each sector
+	 * <li>Pairs of indices that have a portal (intangible wall segment) between them
+	 * <li>The coordinates of the player's starting position
+	 * <li>The camera's starting orientation vector
+	 * <li>The colours that are in the level (field is not currently used)
+	 * </ul>
+	 * <p>
+	 * The data is sorted under headings preceded by an exclamation mark. The 
+	 * headings are as follows: 
+	 * <ul>
+	 * <li>Version: 		  "!PMAPv1.0.0"
+	 * <li>Corner positions:  "!CORNER"
+	 * <li>Sector delimiters: "!SECTOR"
+	 * <li>Sector heights:	  "!HEIGHT"
+	 * <li>Portal indives:	  "!PORTAL"
+	 * <li>Player position:   "!POSITION"
+	 * <li>Camera direction:  "!FACING"
+	 * <li>Colours:			  "!COLOUR"
+	 * </ul>
+	 * These headings do not have to be defined in order 
+	 * <strong>except for the version which must be at the top</strong>
+	 * @return an array of strings storing each line for a .pmap file representing
+	 * 		   the data stored in this instance
+	 */
 	public String[] toPMap() {
 		String[] lines = new String[calculateFileLength()];
 		int head = 0;
@@ -65,12 +104,17 @@ public class PPMapData {
 		lines[head++] = "!FACING";
 		lines[head++] = String.valueOf(facing.x())
 				+ " " + String.valueOf(facing.y());
+		// TODO: implement for real
 		lines[head++] = "!COLOUR";
-		lines[head++] = "1.0 1.0 1.0"; // TODO: implement for real
+		lines[head++] = "1.0 1.0 1.0";
 		return lines;
 
 	}
 
+	/**
+	 * Calculates the amount of lines that the generated .pmap file will have
+	 * @return the amount of lines in the .pmap file for the data in this instance
+	 */
 	private int calculateFileLength() {
 		int count = 8;
 		count += 2;
@@ -79,7 +123,8 @@ public class PPMapData {
 			count += sec.getPortalIndices().length / 2;
 			count += sec.getCorners().length;
 		}
-		count += 1; // TODO: temporarily adding 1 colour, implement this later
+		// TODO: temporarily adding 1 colour, implement
+		count += 1;
 		return count;
 
 	}

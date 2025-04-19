@@ -8,6 +8,12 @@ import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 
+/**
+ * Provides methods for displaying pixels to the screen.
+ * All functions that write pixels to the screen treat coordinates as originating 
+ * from (0, 0) at the bottom left. (except for {@link #writePixel(PColour, int, int)} 
+ * which treats (0, 0) as the top left)
+ */
 public class PRenderer {
 	protected JFrame frame = new JFrame();
 	protected BufferedImage img;
@@ -15,7 +21,17 @@ public class PRenderer {
 	protected int height;
 	private PImagePanel imgPanel;
 
-	public PRenderer(int width, int height, Object listener) {
+	/**
+	 * Constructs the renderer with a listener for keyboard inputs.
+	 * This renderer should be used to renderer the game as it allows for 
+	 * movement inputs. The supplied width and height are not definitive, this is 
+	 * the target dimension of the window. The window is still resizable.
+	 * @param width    the width of the window to create and render to
+	 * @param height   the height of the window to create and render to
+	 * @param listener the movement listener to use
+	 * @see   		   com.ang.peLib.inputs.PMovementInputListener
+	 */
+	public PRenderer(int width, int height, PMovementInputListener listener) {
 		this.width = width;
 		this.height = height;
 		this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -23,29 +39,68 @@ public class PRenderer {
 		init(listener);
 	}
 
-	public JFrame frame() {
-		return frame;
-
+	/**
+	 * Constructs the renderer with a listener for mouse inputs.
+	 * This renderer should be used to render the editor window as it allows for 
+	 * mouse inputs that are not used while playing the game. The supplied width 
+	 * and height are not definitive, this is the target dimension of the window.
+	 * The window is still resizable.
+	 * @param width    the width of the window to create and render to
+	 * @param height   the height of the window to create and render to
+	 * @param listener the mouse listener to use
+	 * @see   		   com.ang.peLib.inputs.PMouseInputListener
+	 */
+	public PRenderer(int width, int height, PMouseInputListener listener) {
+		this.width = width;
+		this.height = height;
+		this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		this.imgPanel = new PImagePanel(img);
+		init(listener);
 	}
 
+	/**
+	 * Returns the width of the {@link javax.swing.JFrame} used to render the screen.
+	 * @return the width of the JFrame
+	 * @see    javax.swing.JFrame
+	 */
 	public int getWindowWidth() {
 		return frame.getWidth();
 
 	}
 
+	/**
+	 * Returns the height of the {@link javax.swing.JFrame} used to render the screen.
+	 * @return the height of the JFrame
+	 * @see    javax.swing.JFrame
+	 */
 	public int getWindowHeight() {
 		return frame.getHeight();
 
 	}
 
+	/**
+	 * Closes the window.
+	 */
 	public void close() {
 		frame.dispose();
 	}
 
+	/**
+	 * Refreshes the window.
+	 */
 	public void repaint() {
 		frame.repaint();
 	}
 
+	/**
+	 * Initializes the renderer with an input listener.
+	 * @param listener the {@link com.ang.peLib.inputs.PMouseInputListener} or 
+	 * 				   the {@link com.ang.peLib.inputs.PMovementInputListener}
+	 * 				   to attach to the window. Can be {@code null} if no 
+	 * 				   listener should be attached 
+	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
+	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
+	 */
 	private void init(Object listener) {
 		imgPanel.setPreferredSize(new Dimension(width, height));
 		frame.getContentPane().add(imgPanel);
@@ -62,11 +117,6 @@ public class PRenderer {
 			imgPanel.addMouseMotionListener(mil);
 			imgPanel.addMouseListener(mil);
 			imgPanel.addMouseWheelListener(mil);
-		} else {
-			System.err.println("Invalid listener supplied to renderer init");
-			frame.dispose();
-			return;
-
 		}
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -76,6 +126,17 @@ public class PRenderer {
 		});
 	}
 
+	/**
+	 * Writes a pixel to specified screenspace coordinates.
+	 * The colour is treated as if it is in linear colour space. It is 
+	 * automatically gamma-corrected upon caling this function to map it to 
+	 * gamme space. This function does not refresh the window. Automatic bounds 
+	 * checks are performed on the pixel coordinates supplied.
+	 * @param colour colour of the pixel to write
+	 * @param x      the x coordinate (in pixels) to write the pixel at
+	 * @param y      the y coordinate (in pixels) to write the pixel at
+	 * @see   		 PColour
+	 */
 	public void writePixel(PColour colour, int x, int y) {
 		int col = processToInt(colour);
 		if (!inBounds(x, y)) {
@@ -85,9 +146,23 @@ public class PRenderer {
 		img.setRGB(x, y, col);
 	}
 
+	/**
+	 * Writes a vertical column of pixels at a specified position.
+	 * The colour is treated as if it is in linear colour space. It is 
+	 * automatically gamma-corrected upon caling this function to map it to 
+	 * gamme space. This function does not refresh the window. Automatic bounds 
+	 * checks are performed on the pixel coordinates supplied.
+	 * @param colour colour of the pixel column to write
+	 * @param x		 the x coordinate (in pixels) to write the column at
+	 * @param bottom the height above the bottom of the screen (in pixels) to 
+	 * 				 start the column
+	 * @param top    the height above the bottom of the screen (in pixels) to 
+	 * 				 end the column
+	 * @see   		 PColour
+	 */
 	public void writeColumn(PColour colour, int x, int bottom, int top) {
 		int columnColour = processToInt(colour);
-		// fill in pixels from the top, so higher pixels have a smaller y value
+		// image panel pixel indexing starts in the top left so it is filled backwards
 		for (int y = 0; y < height; y++) {
 			if ((y >= top) && (y <= bottom)) {
 				if (!inBounds(x, y)) {
@@ -99,6 +174,19 @@ public class PRenderer {
 		}
 	}
 
+	/**
+	 * Writes a rectangle of pixels at a specified position.
+	 * The colour is treated as if it is in linear colour space. It is 
+	 * automatically gamma-corrected upon caling this function to map it to 
+	 * gamme space. This function does not refresh the window. Automatic bounds 
+	 * checks are performed on the pixel coordinates supplied.
+	 * @param colour colour of the pixel column to write
+	 * @param width  the width (in pixels) of the tile to write 
+	 * @param height the height (in pixels) of the tile to write
+	 * @param x		 the x coordinate (in pixels) of the top left of the tile
+	 * @param y		 the y coordinate (in pixels) of the top left of the tile
+	 * @see   		 PColour
+	 */
 	public void writeTile(PColour colour, int width, int height, int x, int y) {
 		int tileColour = processToInt(colour);
 		for (int j = y; j < y + height; j++) {
@@ -112,6 +200,11 @@ public class PRenderer {
 		}
 	}
 
+	/**
+	 * Converts a colour from linear colour space to gamme space.
+	 * @param c the colour to convert
+	 * @see   PColour
+	 */
 	protected int processToInt(PColour c) {
 		// convert from linear to gamma space
 		double r = c.r() > 0 ? Math.sqrt(c.r()) : 0.0;

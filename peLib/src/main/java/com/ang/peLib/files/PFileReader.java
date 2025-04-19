@@ -15,36 +15,52 @@ import java.util.zip.*;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
+/**
+ * Provides functions for reading files and directories.
+ */
 public class PFileReader {
 	private int maxLines = 2000;
 
+	/**
+	 * Default constructor.
+	 */
 	public PFileReader() {}
 
+	/**
+	 * Constructor with custom maximum file length.
+	 * @param maxLines maximum amount of lines allowed in a file
+	 */
 	public PFileReader(int maxLines) {
 		this.maxLines = maxLines;
 	}
 
-	public String[] readSubdirectories(String parentDir, boolean onlyChildren) 
+	/**
+	 * Finds the files that are children of a given directory.
+	 * All returned paths are given relative to the resources directory under 
+	 * "peLib/src/main/resources". This method reads the .jar (zip) file that is 
+	 * created at compile time for its directory structure. This structure can be 
+	 * considered immutable and therefore readonly. The specified directory is 
+	 * matched using regex.
+	 * @param  parentDir	 	  the name of the directory to find children of
+	 * @param  onlyLeaves		  specifies if the path to the file should be 
+	 * 							  included in the return, or only the filename 
+	 * @return 				      an array of paths that are subdirectories of 
+	 * 							  the specified parent dir
+	 * @throws PResourceException if there is a problem with reading directories
+	 */
+	public String[] readDirChildren(String parentDir, boolean onlyLeaves) 
 			throws PResourceException {
-		// cleaning pattern for regex
-		if (parentDir.startsWith(System.getProperty("file.separator"))) {
+		String separator = System.getProperty("file.separator");
+		if (parentDir.startsWith(separator)) {
 			parentDir = parentDir.substring(1, parentDir.length());
 		}
-		if (parentDir.endsWith(System.getProperty("file.separator"))) {
+		if (parentDir.endsWith(separator)) {
 			parentDir = parentDir.substring(0, parentDir.length() - 1);
 		}
-		/*
-		 * regex matches for parent dir followed by a file separator and at least
-		 * one characer (to avoid match of parent directory with no children)
-		 */
-		Pattern pattern = Pattern.compile(parentDir + File.separator + ".+");
+		Pattern pattern = Pattern.compile(parentDir + separator + ".+");
 		String classPath = System.getProperty("java.class.path", ".");
-		/*
-		 * ZipFile used to read contents of .jar classPath where resources
-		 * are stored.
-		 */
 		ArrayList<String> outList = new ArrayList<String>();
-		ZipFile zf = null;
+		ZipFile zf;
 		try {
 			zf = new ZipFile(new File(classPath));
 			Enumeration<?> e = zf.entries();
@@ -67,12 +83,9 @@ public class PFileReader {
 		}
 		String[] out = new String[outList.size()];
 		for (int i = 0; i < outList.size(); i++) {
-			/*
-			 * Stripping directories from result if onlyChildren specified
-			 */
-			if (onlyChildren) {
-				String[] files = outList.get(i).split(
-						System.getProperty("file.separator"));
+			if (onlyLeaves) {
+				// only output the deepest child (no path)
+				String[] files = outList.get(i).split(separator);
 				out[i] = files[files.length - 1];
 			} else {
 				out[i] = outList.get(i);
@@ -82,6 +95,22 @@ public class PFileReader {
 
 	}
 
+	/**
+	 * Returns a resource file with a specified name as an array of strings.
+	 * Resources are stored under multiple subdirectories. The specified resource 
+	 * is searched for under the subdirectory listed by the resource manager for 
+	 * the specified resource type. Multiple resources can have the same name as 
+	 * long as they are different resource types. The maximum length of a file that 
+	 * can be read is specified in the class constructor.
+	 * @param  resourceType		  the type of resource that is stored in the file
+	 * @param  name				  the name of the file to read
+	 * @return 					  array of strings where each element is a line 
+	 * 							  from the specified file.
+	 * @throws PResourceException if there is a problem with reading the file
+	 * @see 					  #PFileReader(int)
+	 * @see 				      com.ang.peLib.resources.PResourceType
+	 * @see 				      com.ang.peLib.resources.PResourceManager
+	 */
 	public String[] readFile(PResourceType resourceType, String name) 
 			throws PResourceException {
 		PResource res = PResourceManager.fetchResource(resourceType, name);
@@ -114,6 +143,21 @@ public class PFileReader {
 		}
 	}
 
+	/**
+	 * Returns a binary encoded resource file with a specified name as an array 
+	 * of bytes.
+	 * Resources are stored under multiple subdirectories. The specified resource 
+	 * is searched for under the subdirectory listed by the resource manager for 
+	 * the specified resource type. Multiple resources can have the same name as 
+	 * long as they are different resource types.
+	 * @param  resourceType		  the type of resource that is stored in the file
+	 * @param  name				  the name of the file to read
+	 * @return 					  array of bytes where each element is a byte from 
+	 * 							  the specified file
+	 * @throws PResourceException if there is a problem with reading the file
+	 * @see 				      com.ang.peLib.resources.PResourceType
+	 * @see 				      com.ang.peLib.resources.PResourceManager
+	 */
 	public byte[] readFileAsBytes(PResourceType resourceType, String name) 
 			throws PResourceException {
 		PResource res = PResourceManager.fetchResource(resourceType, name);

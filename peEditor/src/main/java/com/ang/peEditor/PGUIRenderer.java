@@ -1,14 +1,26 @@
 package com.ang.peEditor;
 
+import javax.swing.JFrame;
 import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.hittables.PSector;
-import com.ang.peLib.utils.PConversionUtils;
+import com.ang.peLib.inputs.PMouseInputListener;
+import com.ang.peLib.inputs.PMovementInputListener;
+import com.ang.peLib.utils.PConversions;
 import com.ang.peLib.graphics.*;
 
 public class PGUIRenderer extends PRenderer {
-	public PGUIRenderer(int width, int height, Object listener) {
-		super(width, height, listener);
+	public PGUIRenderer(int width, int height, PMouseInputListener mouseListener) {
+		super(width, height, mouseListener);
+	}
+
+	public PGUIRenderer(int width, int height, PMovementInputListener movementListener) {
+		super(width, height, movementListener);
+	}
+
+	public JFrame getFrame() {
+		return frame;
+
 	}
 
 	public void writeTileAround(PColour colour, int width, int height, int x, int y) {
@@ -40,12 +52,12 @@ public class PGUIRenderer extends PRenderer {
 				} else {
 					next = 0;
 				}
-				int[] coords = PConversionUtils.v2ss(corners[i], corners[next], 
+				int[] coords = PConversions.v2ss(corners[i], corners[next], 
 						width, height, scale, origin);
 				writeLine(lineColour, coords[0], coords[1], coords[2], coords[3]);
 			}
 			for (int i = 0; i < corners.length; i++) {
-				int[] coords = PConversionUtils.v2ss(corners[i], 
+				int[] coords = PConversions.v2ss(corners[i], 
 						width, height, scale, origin);
 				writeTileAround(cornerColour, cornerSize, cornerSize, 
 						coords[0], coords[1]);

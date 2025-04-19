@@ -1,4 +1,4 @@
-module com.ang.peLib {
+open module com.ang.peLib {
 	requires transitive java.desktop; 
 
 	exports com.ang.peLib.exceptions;

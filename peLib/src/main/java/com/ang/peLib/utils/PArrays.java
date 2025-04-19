@@ -2,7 +2,18 @@ package com.ang.peLib.utils;
 
 import java.lang.reflect.Array;
 
+/**
+ * Provides utility functions for manipulating arrays.
+ */
 public class PArrays {
+	/**
+	 * Returns a deep copy of the input array.
+	 * No bounds checks are performed on the array or the length, out of bounds
+	 * errors should be handled before calling this function.
+	 * @param  array an object array to be copied
+	 * @param  type  the datatype of the array elements
+	 * @return 		 a deep copy of the specified array
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends PCopyable> T[] copy(T[] array, Class<T> type) {
 		T[] out = (T[]) Array.newInstance(type, array.length);
@@ -13,6 +24,15 @@ public class PArrays {
 
 	}
 
+	/**
+	 * Returns a copy of the input array with empty elements stripped from the end.
+	 * No bounds checks are performed on the array or the length, out of bounds
+	 * errors should be handled before calling this function.
+	 * @param  array  an int array to be reduced
+	 * @param  length the length of the array to return
+	 * @param  type   the datatype of the array elements
+	 * @return 		  the new array of the specified length
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] reduceArray(T[] array, int length, Class<T> type) {
 		T[] out = (T[]) Array.newInstance(type, length);
@@ -23,7 +43,17 @@ public class PArrays {
 
 	}
 
-	// separate as primitives cannot be generic
+	/**
+	 * Returns a copy of the input array with empty elements stripped from the end.
+	 * No bounds checks are performed on the array or the length, out of bounds
+	 * errors should be handled before calling this function.
+	 * <p>
+	 * This function is separate from the generic one as primitives cannot be
+	 * generic (instances such as int and double are not objects).
+	 * @param  array  an int array to be reduced
+	 * @param  length the length of the array to return
+	 * @return 		  the new array of the specified length
+	 */
 	public static int[] reduceArray(int[] array, int length) {
 		int[] out = new int[length];
 		for (int i = 0; i < length; i++) {

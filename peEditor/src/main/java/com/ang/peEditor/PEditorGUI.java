@@ -11,7 +11,7 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	private PEditorInterface ei;
 
 	public PEditorGUI(PGUIRenderer renderer, PEditorInterface ei) {
-		this.frame = renderer.frame();	
+		this.frame = renderer.getFrame();	
 		this.ei = ei;
 	}
 

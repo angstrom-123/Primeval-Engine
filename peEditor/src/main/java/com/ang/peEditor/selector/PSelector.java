@@ -148,7 +148,7 @@ public class PSelector {
 	private String[] findFiles() {
 		PFileReader dirReader = new PFileReader();
 		try {
-			return dirReader.readSubdirectories(path, true);
+			return dirReader.readDirChildren(path, true);
 
 		} catch (PResourceException e) {
 			e.printStackTrace();

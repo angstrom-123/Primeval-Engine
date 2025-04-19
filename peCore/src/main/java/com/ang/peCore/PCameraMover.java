@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 public class PCameraMover {
 	private final double	MOVEMENT_STEP 	= 0.08;
 	private final double	TURN_STEP 		= Math.PI / 40.0;
-	private PCamera 			camera;
+	private PCamera 		camera;
 
 	public PCameraMover(PCamera camera) {
 		this.camera = camera;	

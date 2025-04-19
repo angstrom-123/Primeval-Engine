@@ -1,5 +1,10 @@
 package com.ang.peLib.exceptions;
 
+/**
+ * Holds different types of resource exception and their corresponding messages.
+ * @see PResourceException
+ * @see com.ang.peLib.resources.PResource
+ */
 public enum PResourceExceptionType {
 	NOT_FOUND("Resource not found"),
 	INVALID("File is not a valid resource"),
@@ -11,10 +16,18 @@ public enum PResourceExceptionType {
 
 	private String message;
 
+	/**
+	 * Private constructor for setting the error message.
+	 * @param message error message for this exception type
+	 */
 	private PResourceExceptionType(String message) {
 		this.message = message;
 	}
 
+	/**
+	 * Returns the message for this exception.
+	 * @return error message for this exception
+	 */
 	public String getMessage() {
 		return message;
 

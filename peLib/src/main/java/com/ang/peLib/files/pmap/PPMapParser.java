@@ -6,17 +6,38 @@ import com.ang.peLib.utils.PArrays;
 import com.ang.peLib.hittables.*;
 import com.ang.peLib.maths.*;
 
+/**
+ * Converts data from a .pmap file to a {@link PPMapData} object.
+ * @see PPMapData
+ */
 public class PPMapParser {
 	private String path;
 
+	/**
+	 * Constructor with a path to the map files.
+	 * @param path the path (starting from the resources directory) to map file 
+	 * 			   that will be parsed by this instance. This is only used for 
+	 * 			   reporting errors.
+	 */
 	public PPMapParser(String path) {
 		this.path = path;
 	}
 
+	/**
+	 * Returns the data from a .pmap file as {@link PPMapData}.
+	 * Parsing will fail if any of the required fields are missing from the data 
+	 * passed in. Fields that must be in a .pmap file are found in the spec for 
+	 * {@link PPMapData#copy()}
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @return 				   {@link PPMapData} storing the specified .pmap data
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see 				   PPMapData
+	 */
 	public PPMapData parseMapData(String[] lines) throws PParseException {
 		PPMapData mapData = new PPMapData();
-		mapData.position = parseSingleVector(lines, "!POSITION");
-		mapData.facing = parseSingleVector(lines, "!FACING");
+		mapData.position = extractOneVec2(lines, "!POSITION");
+		mapData.facing = extractOneVec2(lines, "!FACING");
 		if (lines[0].equals("!PMAPv1.0.0")) {
 			mapData.world = parseWorld(lines);
 		} else {
@@ -27,27 +48,20 @@ public class PPMapParser {
 
 	}
 
-	private PVec2 parseSingleVector(String[] lines, String match) 
-			throws PParseException {
-		PVec2[] extracted = new PVec2[0];
-		int lineNum = 0;
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			if (line.equals(match)) {
-				extracted = extractVec2s(i + 1, lines);	
-				lineNum = i + 1;
-				break;
-
-			}
-		}
-		if (extracted.length != 1) {
-			throw new PParseException(path, lineNum);
-
-		}
-		return extracted[0];
-
-	}
-
+	/**
+	 * Parses a {@link com.ang.peLib.hittabes.PSectorWorld} from .pmap data.
+	 * Data is extracted under predefined headings. A list of all headings is 
+	 * found in the spec for {@link PPMapData#copy()}. The headings required 
+	 * to construct a {@link com.ang.peLib.maths.PSectorWorld}
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @return 				   {@link com.ang.peLib.maths.PSectorWorld} containing 
+	 * 						   the data found in the file
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see 				   com.ang.peLib.maths.PSectorWorld
+	 * @see 				   com.ang.peLib.maths.PVec2
+	 * @see 				   PPMapData
+	 */
 	private PSectorWorld parseWorld(String[] lines) throws PParseException {
 		PVec2[] corners = new PVec2[0];
 		int[] sectors = new int[0];
@@ -72,13 +86,32 @@ public class PPMapParser {
 			throw new PParseException(path, 0);
 
 		}
-		return consructWorld(corners, sectors, heights, portals, colours);
+		return constructWorld(corners, sectors, heights, portals, colours);
 
 	}
 
-	private PSectorWorld consructWorld(PVec2[] corners, int[] sectors, PVec2[] heights, 
+	/**
+	 * Constructs a new {@link com.ang.peLib.hittables.PSectorWorld} using data 
+	 * extracted from a .pmap file.
+	 * @param  corners 		   coordinates of each corner
+	 * @param  sectors		   indices into specified corners that are the first 
+	 * 						   corner in a new sector (sector delimiters)
+	 * @param  heights 		   vectors representing the floor height in the x value 
+	 * 						   and the ceiling height in the y value for each sector
+	 * @param  portals 		   indices into the specified corners that are the 
+	 * 						   bounds of a portal
+	 * @param  colours 		   the colours to be used in the world (not currently used)
+	 * @return 				   a new {@link com.ang.peLib.hittables.PSectorWorld}
+	 * 						   constructed from the specified data
+	 * @throws PParseException if there is a problem with constructing the 
+	 * 						   {@link com.ang.peLib.hittables.PSectorWorld}
+	 * @see 				   com.ang.peLib.hittables.PSectorWorld
+	 * @see 				   com.ang.peLib.hittables.PSector
+	 * @see 				   com.ang.peLib.maths.PVec2
+	 */
+	private PSectorWorld constructWorld(PVec2[] corners, int[] sectors, PVec2[] heights, 
 			PVec2[] portals, PColour[] colours) throws PParseException {
-		PSectorWorld world = new PSectorWorld(1000);
+		PSectorWorld world = new PSectorWorld(1000); // arbitrary size limit
 		for (int i = 0; i < sectors.length; i++) {
 			// get sector limits
 			int limit = (i == sectors.length - 1)
@@ -99,7 +132,7 @@ public class PPMapParser {
 				}
 			}
 			sectorPortals = PArrays.reduceArray(sectorPortals, head);
-			// create sector
+			// create and add sector
 			PSector sec = new PSector(sectorCorners, sectorPortals);	
 			sec.setHeight(heights[i].x(), heights[i].y());
 			world.addSector(sec);
@@ -108,8 +141,18 @@ public class PPMapParser {
 
 	}
 
-	private int[] extractInts(int startLine, String[] lines) 
-			throws PParseException {
+	/**
+	 * Parses integers starting from a specific line.
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @param  startLine 	   the line number that contains the heading under 
+	 * 						   which the integers should be parsed
+	 * @return 				   integer array containing the data found under the 
+	 * 						   heading
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see 				   PPMapData
+	 */
+	private int[] extractInts(int startLine, String[] lines) throws PParseException {
 		int[] array = new int[lines.length - startLine];
 		int head = 0;
 		for (int i = startLine; i < lines.length; i++) {
@@ -134,6 +177,51 @@ public class PPMapParser {
 
 	}
 
+	/**
+	 * Parses a single {@link com.ang.peLib.maths.PVec2} from under a heading.
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @param  match 		   heading that the data should be found under. 
+	 * 						   The headings in a .pmap file are found in the 
+	 * 						   spec for {@link PPMapData#copy()}.
+	 * @return 				   {@link com.ang.peLib.maths.PVec2} containing the 
+	 * 						   data found under the heading
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see 				   com.ang.peLib.maths.PVec2
+	 * @see 				   PPMapData
+	 */
+	private PVec2 extractOneVec2(String[] lines, String match) throws PParseException {
+		PVec2[] extracted = new PVec2[0];
+		int lineNum = 0;
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.equals(match)) {
+				extracted = extractVec2s(i + 1, lines);	
+				lineNum = i + 1;
+				break;
+
+			}
+		}
+		if (extracted.length != 1) {
+			throw new PParseException(path, lineNum);
+
+		}
+		return extracted[0];
+
+	}
+
+	/**
+	 * Parses {@link com.ang.peLib.maths.PVec2}s starting from a specific line.
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @param  startLine 	   the line number that contains the heading under 
+	 * 						   which the vectors should be parsed
+	 * @return 				   vector array containing the data found under the 
+	 * 						   heading
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see 				   com.ang.peLib.maths.PVec2
+	 * @see 				   PPMapData
+	 */
 	private PVec2[] extractVec2s(int startLine, String[] lines) 
 			throws PParseException {
 		PVec2[] array = new PVec2[lines.length - startLine];
@@ -161,6 +249,18 @@ public class PPMapParser {
 
 	}
 
+	/**
+	 * Parses {@link com.ang.peLib.graphics.PColour}s starting from a specific line.
+	 * @param  lines		   array of strings representing each line from a 
+	 * 						   .pmap file
+	 * @param  startLine 	   the line number that contains the heading under 
+	 * 						   which the colours should be parsed
+	 * @return 				   colour array containing the data found under the 
+	 * 						   heading
+	 * @throws PParseException if there is a problem with parsing the data
+	 * @see					   com.ang.peLib.graphics.PColour
+	 * @see 				   PPMapData
+	 */
 	private PColour[] extractColours(int startLine, String[] lines) 
 			throws PParseException {
 		PColour[] array = new PColour[lines.length - startLine];
