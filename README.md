@@ -30,11 +30,7 @@ could still work. If you are using different versions to mine and the
 project does not run, switching to my versions should be your first
 troubleshooting step.
 
-### Clone the Repository
-First copy the URL that you would like to use to clone with:
-- Clone with HTTP: https://github.com/angstrom-123/Primeval-Engine.git
-- Clone with SSH: git@github.com:angstrom-123/Primeval-Engine.git
-  
+### Clone the Repository  
 In the terminal, cd to your chosen target directory and run (to clone 
 with HTTP)
 ```
