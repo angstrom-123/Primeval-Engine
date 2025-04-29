@@ -31,6 +31,10 @@ public class PResourceException extends Exception {
 	 * @see    com.ang.peLib.resources.PResource
 	 */
 	private static String pathOutput(PResource res) {
+		if (res == null) {
+			return "unknown";
+
+		}
 		String path = res.getPath();
 		return (path == null) ? "unknown" : path;
 

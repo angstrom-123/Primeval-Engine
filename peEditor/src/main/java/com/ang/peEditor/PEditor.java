@@ -9,6 +9,7 @@ import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.inputs.PMouseInputInterface;
 import com.ang.peLib.inputs.PMouseInputListener;
 import com.ang.peLib.maths.PVec2;
+import com.ang.peLib.resources.PModuleName;
 import com.ang.peLib.utils.PConversions;
 
 public class PEditor implements PMouseInputInterface, PEditorInterface {
@@ -42,13 +43,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		gui.init();
 	}
 
-	public void start(boolean test) {
-		if (test) {
-			open("testMap.pmap");
-		} else {
-			// TODO: regular entry point
-			System.out.println("regular editor entry point goes here");
-		}
+	public void start() {
+		System.out.println("Editor running");
 	}
 
 	@Override
@@ -120,7 +116,6 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		temp.position = new PVec2(0.0, 0.0);
 		mapHandler.setEditableMapData(temp);
 		mapHandler.setSavedMapData(temp.copy());
-		mapHandler.getSaveData().fileName = null;
 		renderer.writeMapData(temp, params, viewPos);
 		renderer.repaint();
 	}
@@ -129,7 +124,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	public void open(String name) {
 		reset();
 		try {
-			mapHandler.loadMapData(name);
+			mapHandler.loadMapData(name, PModuleName.EDITOR);
 		} catch (PResourceException e) {
 			e.printStackTrace();
 		}
@@ -141,7 +136,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override 
 	public void save(String name) {
 		try {
-			mapHandler.saveMap(name);
+			mapHandler.saveMap(name, PModuleName.EDITOR);
+			mapHandler.saveMap(name, PModuleName.CORE);
 		} catch (PResourceException e) {
 			e.printStackTrace();
 		}

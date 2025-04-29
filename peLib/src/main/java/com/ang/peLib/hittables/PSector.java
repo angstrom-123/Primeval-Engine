@@ -51,7 +51,7 @@ public class PSector extends PCopyable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public PSector copy() {
-		return new PSector(PArrays.copy(corners, PVec2.class), portalIndices);
+		return new PSector(PArrays.copy(corners, PVec2.class), portalIndices.clone());
 
 	}
 

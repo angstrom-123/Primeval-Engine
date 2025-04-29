@@ -2,6 +2,7 @@ package com.ang.peLib.files.pmap;
 
 import com.ang.peLib.files.PFileReader;
 import com.ang.peLib.files.PFileWriter;
+import com.ang.peLib.files.PResourceFileReader;
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.resources.*;
 
@@ -51,28 +52,32 @@ public class PPMapHandler {
 	 * @throws PResourceException if there is a problem with saving the file
 	 * @see						  PPMapSaveData 
 	 */
-	public void saveMap(String name) throws PResourceException {
-		String saveName = name;
-		if (name == null) {
-			System.out.println(saveData.fileName);
-			saveName = saveData.fileName;
-		}
-		PResource res = PResourceManager.fetchResource(PResourceType.PMAP, saveName);
+	public void saveMap(String name, PModuleName module) throws PResourceException {
+		PResource res = PResourceManager.fetch(PResourceType.PMAP, module, name);
 		if (!res.valid()) {
 			throw new PResourceException(res, PResourceExceptionType.INVALID);
 
 		}
-		if (res.exists() && (name != null)) {
-			throw new PResourceException(res, PResourceExceptionType.ALREADY_EXISTS);
-			
+		// if (res.exists()) {
+		// 	throw new PResourceException(res, PResourceExceptionType.ALREADY_EXISTS);
+		//
+		// }
+		boolean exists = false;
+		PFileReader reader = new PFileReader();
+		for (String fileName : reader.readDirChildren(PResourceType.PMAP, module, true)) {
+			if (fileName.equals(name)) {
+				exists = true;
+				break;
+
+			}
 		}
-		if (name != null) {
-			PFileWriter.newFile(PResourceType.PMAP, saveName);
+		if (!exists) {
+			PFileWriter.newFile(PResourceType.PMAP, module, name);
 		}
 		String[] PMapData = saveData.editableMapData.toPMap();
-		PFileWriter.writeToFile(PResourceType.PMAP, saveName, PMapData);
+		PFileWriter.writeToFile(PResourceType.PMAP, module, name, PMapData);
 		saveData.savedMapData = saveData.editableMapData.copy();
-		saveData.fileName = name;
+		saveData.name = name;
 	}
 
 	/**
@@ -83,17 +88,9 @@ public class PPMapHandler {
 	 * @throws PResourceException if there is a problem with loading the file
 	 */
 	public void loadMapData(String name) throws PResourceException {
-		PResource res = PResourceManager.fetchResource(PResourceType.PMAP, name);
-		if (!res.valid()) {
-			throw new PResourceException(res, PResourceExceptionType.INVALID);
-
-		}
-		if (!res.exists()) {
-			throw new PResourceException(res, PResourceExceptionType.NOT_FOUND);
-			
-		}
+		PResource res = PResourceManager.fetch(PResourceType.PMAP, name);
 		String[] lines;
-		PFileReader reader = new PFileReader();
+		PResourceFileReader reader = new PResourceFileReader();
 		lines = reader.readFile(PResourceType.PMAP, name);
 		PPMapData mapData;
 		PPMapParser parser = new PPMapParser(PResourceManager.MAP_DIR + name);
@@ -105,6 +102,34 @@ public class PPMapHandler {
 		}
 		saveData.editableMapData = mapData;
 		saveData.savedMapData = mapData.copy();
-		saveData.fileName = name;
+		saveData.name = name;
+	}
+
+	public void loadMapData(String name, PModuleName module) 
+			throws PResourceException {
+		PResource res = PResourceManager.fetch(PResourceType.PMAP, module, name);
+		if (!res.valid()) {
+			throw new PResourceException(res, PResourceExceptionType.INVALID);
+
+		}
+		if (!res.exists()) {
+			throw new PResourceException(res, PResourceExceptionType.NOT_FOUND);
+			
+		}
+		String[] lines;
+		PFileReader reader = new PFileReader();
+		lines = reader.readFile(PResourceType.PMAP, module, name);
+		PPMapData mapData;
+		PPMapParser parser = new PPMapParser(PResourceManager.getDirOf(
+				PResourceType.PMAP, module) + name);
+		try {
+			mapData = parser.parseMapData(lines);
+		} catch (PParseException e) {
+			throw new PResourceException(res, PResourceExceptionType.READ_FAIL);
+
+		}
+		saveData.editableMapData = mapData;
+		saveData.savedMapData = mapData.copy();
+		saveData.name = name;
 	}
 }

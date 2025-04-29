@@ -10,6 +10,7 @@ public class PResource {
 	private PResourceType resourceType;
 	private String path;
 	private File file;
+	private boolean localResource;
 
 	/**
 	 * Constructs a new resource with a type and a filename.
@@ -17,10 +18,11 @@ public class PResource {
 	 * @param path 		   the path from the resources directory to the resource
 	 * @see       		   PResourceType
 	 */
-	public PResource(PResourceType resourceType, String path) {
+	public PResource(PResourceType resourceType, String path, boolean localResource) {
 		this.resourceType = resourceType;
 		this.path = path;
 		this.file = (path == null) ? null : Path.of(path).toFile();
+		this.localResource = localResource;
 	}
 
 	/**
@@ -65,8 +67,12 @@ public class PResource {
 	 * @return {@code true} if the file exists, else {@code false}
 	 */
 	public boolean exists() {
-		return (this.getClass().getResource(path) != null);
+		if (localResource) {
+			return (this.getClass().getResource(path) != null);
+		} else {
+			return file.exists();
 
+		}
 	}
 
 	/**
@@ -107,7 +113,7 @@ public class PResource {
 	 * @return the invalid resource
 	 */
 	public static PResource invalid() {
-		return new PResource(PResourceType.INVALID, null);
+		return new PResource(PResourceType.INVALID, null, true);
 	}
 
 	/**

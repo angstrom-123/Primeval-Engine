@@ -2,6 +2,8 @@ package com.ang.peEditor.selector;
 
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.files.PFileReader;
+import com.ang.peLib.resources.PModuleName;
+import com.ang.peLib.resources.PResourceType;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -31,14 +33,11 @@ public class PSelector {
 	private String				selection;
 	private PSelectorType 		type;
 	private JFrame 				parent;
-	private String 				path;
 	private PSelectorListener 	listener;
 
-	public PSelector(PSelectorType type, JFrame parent, 
-			String path, PSelectorListener listener) {
+	public PSelector(PSelectorType type, JFrame parent, PSelectorListener listener) {
 		this.type = type;
 		this.parent = parent;
-		this.path = path;
 		this.listener = listener;
 		init();
 		initComponents();
@@ -148,7 +147,8 @@ public class PSelector {
 	private String[] findFiles() {
 		PFileReader dirReader = new PFileReader();
 		try {
-			return dirReader.readDirChildren(path, true);
+			return dirReader.readDirChildren(PResourceType.PMAP, 
+					PModuleName.EDITOR, true);
 
 		} catch (PResourceException e) {
 			e.printStackTrace();

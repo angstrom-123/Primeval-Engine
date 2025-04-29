@@ -3,12 +3,12 @@ package com.ang.peEditor;
 import java.awt.event.*;
 import javax.swing.*;
 
-import com.ang.peLib.resources.*;
 import com.ang.peEditor.selector.*;
 
 public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener {
 	private JFrame frame;
 	private PEditorInterface ei;
+	private String savedFileName = null;
 
 	public PEditorGUI(PGUIRenderer renderer, PEditorInterface ei) {
 		this.frame = renderer.getFrame();	
@@ -30,12 +30,16 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "New": {
-			int selection = JOptionPane.showConfirmDialog(frame, 
-					"Save before exiting?", "New", JOptionPane.YES_NO_OPTION);
-			if (selection == JOptionPane.YES_OPTION) {
-				ei.save(null);
-				ei.newFile();
-			} else if (selection == JOptionPane.NO_OPTION) {
+			if (savedFileName != null) {
+				int selection = JOptionPane.showConfirmDialog(frame, 
+						"Save before exiting?", "New", JOptionPane.YES_NO_OPTION);
+				if (selection == JOptionPane.YES_OPTION) {
+					ei.save(savedFileName);
+					ei.newFile();
+				} else if (selection == JOptionPane.NO_OPTION) {
+					ei.newFile();
+				}
+			} else {
 				ei.newFile();
 			}
 			break;
@@ -43,29 +47,37 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		}
 		case "Open": {
 			PSelector selector = new PSelector(PSelectorType.OPEN, 
-					frame, PResourceManager.MAP_DIR, this);
+					frame, this);
 			selector.show();
 			break;
 
 		}
 		case "Save":
-			ei.save(null);
+			if (savedFileName != null) {
+				ei.save(savedFileName);
+			} else {
+				System.out.println("nothing to save");
+			}
 			break;
 
 		case "Save As": {
 			PSelector selector = new PSelector(PSelectorType.SAVE, 
-					frame, PResourceManager.MAP_DIR, this);
+					frame, this);
 			selector.show();
 			break;
 
 		}
 		case "Exit": {
-			int selection = JOptionPane.showConfirmDialog(frame, 
-					"Save before exiting?", "Exit", JOptionPane.YES_NO_OPTION);
-			if (selection == JOptionPane.YES_OPTION) {
-				ei.save(null);
-				ei.exit();
-			} else if (selection == JOptionPane.NO_OPTION) {
+			if (savedFileName != null) {
+				int selection = JOptionPane.showConfirmDialog(frame, 
+						"Save before exiting?", "Exit", JOptionPane.YES_NO_OPTION);
+				if (selection == JOptionPane.YES_OPTION) {
+					ei.save(savedFileName);
+					ei.exit();
+				} else if (selection == JOptionPane.NO_OPTION) {
+					ei.exit();
+				}
+			} else {
 				ei.exit();
 			}
 			break;
@@ -99,13 +111,16 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	@Override
 	public void selectionMade(PSelector selector) {
 		PSelectorType type = selector.getType();
+		String selection = selector.getSelection();
 		switch (type) {
 		case OPEN:
-			ei.open(selector.getSelection());
+			ei.open(selection);
+			savedFileName = selection;
 			break;
 
 		case SAVE:
-			ei.save(selector.getSelection());
+			ei.save(selection);
+			savedFileName = selection;
 			break;
 
 		}

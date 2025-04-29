@@ -7,11 +7,11 @@ import com.ang.peLib.inputs.*;
 import com.ang.peLib.files.pmap.*;
 
 public class PGame implements PThreadInterface, PMovementInputInterface {
-	private final int IMAGE_WIDTH = 600;
-	private final int FRAME_MS = 1000 / 60;
+	private final int horizontalResolution = PGameParams.horizontalResolution;
+	private final int frameMs = 1000 / PGameParams.frameRate;
 	private boolean[] keyInputs = new boolean[256];
 	private PMovementInputListener listener = new PMovementInputListener(this);
-	private PCamera cam = new PCamera(IMAGE_WIDTH);
+	private PCamera cam = new PCamera(horizontalResolution);
 	private PCameraMover controller = new PCameraMover(cam);
 	private PSectorWorld world;
 
@@ -35,7 +35,7 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 
 		}
 		cam.init(listener);
-		PGlobal.uw = new PUpdateWorker(FRAME_MS);
+		PGlobal.uw = new PUpdateWorker(frameMs);
 		PGlobal.uw.setInterface(this);
 		PGlobal.uw.run();
 	}
@@ -43,7 +43,7 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 	private boolean loadMapFile(String fileName) {
 		PPMapHandler handler = new PPMapHandler();
 		try {
-			handler.loadMapData(fileName);
+			handler.loadMapData(fileName); // TODO: make it work
 		} catch (PResourceException e) {
 			e.printStackTrace();
 			return false;

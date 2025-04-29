@@ -13,6 +13,23 @@
   <name>peLib</name>
   <groupId>com.ang.peLib</groupId>
   <artifactId>peLib</artifactId>
-  <!-- <version>1.0.0-alpha</version> -->
   <packaging>jar</packaging>
+
+  <build>
+	<plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>  
+          <archive>
+            <manifest>
+			  <mainClass>
+				com.ang.peLib.Main
+			  </mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+	  </plugin>
+    </plugins>
+  </build>
 </project>
