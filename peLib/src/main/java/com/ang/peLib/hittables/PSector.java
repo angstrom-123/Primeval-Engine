@@ -47,6 +47,11 @@ public class PSector extends PCopyable {
 		}
 	}
 
+	/**
+	 * Removes any invalid portal indices (less than 0) from provided indices. 
+	 * @param  portalIndices array of indices to clean
+	 * @return 				 a copy of provided indices with negative indices removed
+	 */
 	private int[] cleanPortalIndices(int[] portalIndices) {
 		int[] out = new int[portalIndices.length];
 		int length = 0;

@@ -52,23 +52,23 @@ public class PPMapHandler {
 	 * @throws PResourceException if there is a problem with saving the file
 	 * @see						  PPMapSaveData 
 	 */
+	@SuppressWarnings("unused")
 	public void saveMap(String name, PModuleName module) throws PResourceException {
-		PResource res = PResourceManager.fetch(PResourceType.PMAP, module, name);
-		if (!res.valid()) {
-			throw new PResourceException(res, PResourceExceptionType.INVALID);
+		try {
+			PResource res = PResourceManager.fetch(PResourceType.PMAP, module, name);
+		} catch (PResourceException e) {
+			boolean exists = false;
+			PFileReader reader = new PFileReader();
+			for (String fileName : reader.readDirChildren(PResourceType.PMAP, module, true)) {
+				if (fileName.equals(name)) {
+					exists = true;
+					break;
 
-		}
-		boolean exists = false;
-		PFileReader reader = new PFileReader();
-		for (String fileName : reader.readDirChildren(PResourceType.PMAP, module, true)) {
-			if (fileName.equals(name)) {
-				exists = true;
-				break;
-
+				}
 			}
-		}
-		if (!exists) {
-			PFileWriter.newFile(PResourceType.PMAP, module, name);
+			if (!exists) {
+				PFileWriter.newFile(PResourceType.PMAP, module, name);
+			}
 		}
 		String[] mapData = saveData.editableMapData.toPMap();
 		PFileWriter.writeToFile(PResourceType.PMAP, module, name, mapData);
