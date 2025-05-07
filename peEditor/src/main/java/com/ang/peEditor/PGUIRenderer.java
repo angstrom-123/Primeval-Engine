@@ -38,11 +38,15 @@ public class PGUIRenderer extends PRenderer {
 
 	public void writeMapData(PPMapData mapData, PEditorParams params, PVec2 origin) {
 		PColour backgroundColour = params.backgroundColour;
+		PColour gridColour = params.gridColour;
 		PColour lineColour = params.lineColour;
 		PColour cornerColour = params.cornerColour;
 		int cornerSize = params.CORNER_SIZE;
 		double scale = params.scale;
 		writeTile(backgroundColour, width, height, 0, 0);	
+		if (scale > 6.0) {
+			writeBackgroundGrid(gridColour, params, origin);
+		}
 		for (PSector sec : mapData.world.getSectors()) {
 			PVec2[] corners = sec.getCorners();
 			for (int i = 0; i < corners.length; i++) {
@@ -66,6 +70,29 @@ public class PGUIRenderer extends PRenderer {
 				writeTileAround(cornerColour, cornerSize, cornerSize, 
 						coords[0], coords[1]);
 			}
+		}
+	}
+
+	public void writeBackgroundGrid(PColour colour, PEditorParams params, PVec2 origin) {
+		double[] a = PConversions.ss2v(-width / 4, 0, width, height, params.scale, origin);
+		PVec2 startingPoint = new PVec2(Math.floor(a[0]), Math.floor(a[1]));
+		for (int i=0; ; i++) {
+			int[] coords = PConversions.v2ss(startingPoint.add(new PVec2(0.0, 1.0 * i)), width, 
+					height, params.scale, origin);
+			if (coords[1] > height) {
+				break;
+
+			}
+			writeLine(colour, 0, coords[1], width, coords[1], Integer.MAX_VALUE);
+		}
+		for (int i=0; ; i++) {
+			int[] coords = PConversions.v2ss(startingPoint.add(new PVec2(1.0 * i, 0.0)), width, 
+					height, params.scale, origin);
+			if (coords[0] > width) {
+				break;
+
+			}
+			writeLine(colour, coords[0], 0, coords[0], height, Integer.MAX_VALUE);
 		}
 	}
 
