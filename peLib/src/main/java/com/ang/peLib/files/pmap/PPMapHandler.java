@@ -58,10 +58,6 @@ public class PPMapHandler {
 			throw new PResourceException(res, PResourceExceptionType.INVALID);
 
 		}
-		// if (res.exists()) {
-		// 	throw new PResourceException(res, PResourceExceptionType.ALREADY_EXISTS);
-		//
-		// }
 		boolean exists = false;
 		PFileReader reader = new PFileReader();
 		for (String fileName : reader.readDirChildren(PResourceType.PMAP, module, true)) {
@@ -74,8 +70,8 @@ public class PPMapHandler {
 		if (!exists) {
 			PFileWriter.newFile(PResourceType.PMAP, module, name);
 		}
-		String[] PMapData = saveData.editableMapData.toPMap();
-		PFileWriter.writeToFile(PResourceType.PMAP, module, name, PMapData);
+		String[] mapData = saveData.editableMapData.toPMap();
+		PFileWriter.writeToFile(PResourceType.PMAP, module, name, mapData);
 		saveData.savedMapData = saveData.editableMapData.copy();
 		saveData.name = name;
 	}

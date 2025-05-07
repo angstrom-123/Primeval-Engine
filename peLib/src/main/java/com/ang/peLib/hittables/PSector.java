@@ -1,6 +1,7 @@
 package com.ang.peLib.hittables;
 
 import com.ang.peLib.utils.*;
+
 import com.ang.peLib.graphics.PColour;
 import com.ang.peLib.maths.*;
 
@@ -31,7 +32,8 @@ public class PSector extends PCopyable {
 	 */
 	public PSector(PVec2[] corners, int[] portalIndices) {
 		this.corners = corners;
-		this.portalIndices = portalIndices;
+		// this.portalIndices = portalIndices;
+		this.portalIndices = cleanPortalIndices(portalIndices);
 		walls = new PEdge[corners.length];
 		int head = 0;
 		for (int i = 0; i < corners.length; i++) {
@@ -43,6 +45,19 @@ public class PSector extends PCopyable {
 			}
 			walls[head++] = wall;
 		}
+	}
+
+	private int[] cleanPortalIndices(int[] portalIndices) {
+		int[] out = new int[portalIndices.length];
+		int length = 0;
+		for (int i = 0; i < portalIndices.length; i++) {
+			if (portalIndices[i] >= 0) {
+				out[i] = portalIndices[i];
+				length = i + 1;
+			}
+		}
+		return PArrays.reduceArray(out, length);
+
 	}
 
 	/**
@@ -136,24 +151,25 @@ public class PSector extends PCopyable {
 	 * portal edge.
 	 * @param  indexOne the first index
 	 * @param  indexOne the second index
-	 * @return		    {@code true} if the corners at the specified indices make a portal 
-	 *				    else {@code false}
+	 * @return		    {@code true} if the corners at the specified indices make 
+	 * 					a portal else {@code false}
 	 * @see 			PEdge
 	 */
 	private boolean isPortal(int indexOne, int indexTwo) {
 		boolean foundOne = false;
 		boolean foundTwo = false;
 		for (int i : portalIndices) {
-			if (!foundOne || !foundTwo) {
-				if (i == indexOne) {
-					foundOne = true;
-				}
-				if (i == indexTwo) {
-					foundTwo = true;
-				}
+			if (foundOne && foundTwo) {
+				return true;
+
+			}
+			if (i == indexOne) {
+				foundOne = true;
+			} else if (i == indexTwo) {
+				foundTwo = true;
 			}
 		}
-		return foundOne && foundTwo;
+		return false;
 
 	}
 
@@ -223,9 +239,12 @@ public class PSector extends PCopyable {
 	 */
 	@Override
 	public String toString() {
-		return ("Floor: " + floorHeight + "\n"
-				+ "Ceiling: " + ceilingHeight + "\n"
-				+ super.toString());
+		String out = "Floor: " + floorHeight + "\n"
+				+ "Ceiling: " + ceilingHeight + "\n";
+		for (PVec2 v : corners) {
+			out += v.toString() + "\n";
+		}
+		return out;
 
 	}
 }

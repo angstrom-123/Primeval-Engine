@@ -29,7 +29,7 @@ public class PSectorWorld extends PCopyable {
 	public PSectorWorld copy() {
 		PSectorWorld temp = new PSectorWorld(maxSectors);
 		for (int i = 0; i < head; i++) {
-			temp.addSector(sectors[i]);
+			temp.addSector(sectors[i].copy());
 		}
 		return temp;
 

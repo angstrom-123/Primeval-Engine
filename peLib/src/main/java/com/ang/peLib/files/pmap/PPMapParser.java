@@ -86,6 +86,10 @@ public class PPMapParser {
 			throw new PParseException(path, 0);
 
 		}
+		for (PVec2 p : portals) {
+			System.out.println("Portal");
+			System.out.println(p.toString());
+		}
 		return constructWorld(corners, sectors, heights, portals, colours);
 
 	}
@@ -112,6 +116,23 @@ public class PPMapParser {
 	private PSectorWorld constructWorld(PVec2[] corners, int[] sectors, PVec2[] heights, 
 			PVec2[] portals, PColour[] colours) throws PParseException {
 		PSectorWorld world = new PSectorWorld(1000); // arbitrary size limit
+		System.out.println("CONSTRUCTING SECTOR WORLD");
+		System.out.println("CORNERS");
+		for (PVec2 a : corners) {
+			System.out.println(a.toString() + "\n");
+		}
+		System.out.println("SECTORS");
+		for (int a : sectors) {
+			System.out.println(a + "\n");
+		}
+		System.out.println("HEIGHTS");
+		for (PVec2 a : heights) {
+			System.out.println(a.toString() + "\n");
+		}
+		System.out.println("PORTALS");
+		for (PVec2 a : portals) {
+			System.out.println(a.toString() + "\n");
+		}
 		for (int i = 0; i < sectors.length; i++) {
 			// get sector limits
 			int limit = (i == sectors.length - 1)
@@ -130,6 +151,7 @@ public class PPMapParser {
 					sectorPortals[head++] = (int) portals[j].x() - sectors[i];
 					sectorPortals[head++] = (int) portals[j].y() - sectors[i];
 				}
+				// TODO: debug here
 			}
 			sectorPortals = PArrays.reduceArray(sectorPortals, head);
 			// create and add sector
