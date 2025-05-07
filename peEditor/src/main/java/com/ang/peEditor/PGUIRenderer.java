@@ -54,7 +54,11 @@ public class PGUIRenderer extends PRenderer {
 				}
 				int[] coords = PConversions.v2ss(corners[i], corners[next], 
 						width, height, scale, origin);
-				writeLine(lineColour, coords[0], coords[1], coords[2], coords[3]);
+				int dotRate = Integer.MAX_VALUE;
+				if (sec.isPortal(i, next)) {
+					dotRate = 10;
+				}
+				writeLine(lineColour, coords[0], coords[1], coords[2], coords[3], dotRate);
 			}
 			for (int i = 0; i < corners.length; i++) {
 				int[] coords = PConversions.v2ss(corners[i], 
@@ -65,24 +69,24 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
-	public void writeLine(PColour colour, int x0, int y0, int x1, int y1) {
+	public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotRate) {
 		int lineColour = processToInt(colour);
 		if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
 			if (x0 > x1) {
-				writeLineLow(lineColour, x1, y1, x0, y0);
+				writeLineLow(lineColour, x1, y1, x0, y0, dotRate);
 			} else {
-				writeLineLow(lineColour, x0, y0, x1, y1);
+				writeLineLow(lineColour, x0, y0, x1, y1, dotRate);
 			}
 		} else {
 			if (y0 > y1) {
-				writeLineHigh(lineColour, x1, y1, x0, y0);
+				writeLineHigh(lineColour, x1, y1, x0, y0, dotRate);
 			} else {
-				writeLineHigh(lineColour, x0, y0, x1, y1);
+				writeLineHigh(lineColour, x0, y0, x1, y1, dotRate);
 			}
 		}
 	}
 
-	private void writeLineLow(int colour, int x0, int y0, int x1, int y1) {
+	private void writeLineLow(int colour, int x0, int y0, int x1, int y1, int dotRate) {
 		int dx = x1 - x0;
 		int dy = y1 - y0;
 		int yIncrement = 1;
@@ -92,8 +96,10 @@ public class PGUIRenderer extends PRenderer {
 		}
 		int error = (2 * dy) - dx;
 		int y = y0;
+		boolean drawing = true;
+		int counter = 0;
 		for (int x = x0; x < x1; x++) {
-			if (inBounds(x, y)) {
+			if (drawing && inBounds(x, y)) {
 				img.setRGB(x, y, colour);
 			}
 			if (error > 0) {
@@ -102,10 +108,15 @@ public class PGUIRenderer extends PRenderer {
 			} else {
 				error += 2 * dy;
 			}
+			if (counter >= dotRate) {
+				drawing = !drawing;
+				counter = 0;
+			}
+			counter++;
 		}
 	}
 
-	private void writeLineHigh(int colour, int x0, int y0, int x1, int y1) {
+	private void writeLineHigh(int colour, int x0, int y0, int x1, int y1, int dotRate) {
 		int dx = x1 - x0;
 		int dy = y1 - y0;
 		int xIncrement = 1;
@@ -115,8 +126,10 @@ public class PGUIRenderer extends PRenderer {
 		}
 		int error = (2 * dx) - dy;
 		int x = x0;
+		boolean drawing = true;
+		int counter = 0;
 		for (int y = y0; y < y1; y++) {
-			if (inBounds(x, y)) {
+			if (drawing && inBounds(x, y)) {
 				img.setRGB(x, y, colour);
 			}
 			if (error > 0) {
@@ -125,6 +138,11 @@ public class PGUIRenderer extends PRenderer {
 			} else {
 				error += 2 * dx;
 			}
+			if (counter >= dotRate) {
+				drawing = !drawing;
+				counter = 0;
+			}
+			counter++;
 		}
 	}
 }

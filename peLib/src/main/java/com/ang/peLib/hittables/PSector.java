@@ -160,7 +160,7 @@ public class PSector extends PCopyable {
 	 * 					a portal else {@code false}
 	 * @see 			PEdge
 	 */
-	private boolean isPortal(int indexOne, int indexTwo) {
+	public boolean isPortal(int indexOne, int indexTwo) {
 		boolean foundOne = false;
 		boolean foundTwo = false;
 		for (int i : portalIndices) {
@@ -174,7 +174,7 @@ public class PSector extends PCopyable {
 				foundTwo = true;
 			}
 		}
-		return false;
+		return foundOne && foundTwo;
 
 	}
 
