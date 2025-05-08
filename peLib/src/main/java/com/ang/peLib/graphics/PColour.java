@@ -8,6 +8,12 @@ public class PColour {
 	private double g;
 	private double b;
 
+	public final static PColour WHITE = new PColour(1.0, 1.0, 1.0);
+	public final static PColour BLACK = new PColour(0.0, 0.0, 0.0);
+	public final static PColour RED = new PColour(1.0, 0.0, 0.0);
+	public final static PColour GREEN = new PColour(0.0, 1.0, 0.0);
+	public final static PColour BLUE = new PColour(0.0, 0.0, 1.0);
+
 	/**
 	 * Default constructor.
 	 */

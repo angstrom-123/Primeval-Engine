@@ -59,7 +59,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override
 	public void mouseMoved(int x, int y) {
-
+		renderer.writeMouseCoords(x, y);
+		renderer.repaint();
 	}
 
 	@Override
@@ -75,6 +76,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			int dy = (int) dragStartPos.y() - y;
 			viewPos = viewPosAtDragStart.sub(new PVec2(dx, dy));
 		}
+		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
 	}
 

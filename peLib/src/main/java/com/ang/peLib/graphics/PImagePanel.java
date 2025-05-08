@@ -10,6 +10,7 @@ import javax.swing.JPanel;
  */
 public class PImagePanel extends JPanel {
 	private BufferedImage image;
+	private Graphics g;
 
 	/**
 	 * {@inheritDoc}
@@ -28,5 +29,11 @@ public class PImagePanel extends JPanel {
 		if (image != null) {
 			g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
 		}
+		this.g = g;
+	}
+
+	public Graphics getGraphics() {
+		return g;
+
 	}
 }
