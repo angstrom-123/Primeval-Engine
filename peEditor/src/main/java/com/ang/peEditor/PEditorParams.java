@@ -5,6 +5,7 @@ import com.ang.peLib.graphics.PColour;
 public class PEditorParams {
 	public final double ASPECT_RATIO 		= 16.0 / 9.0;
 	public final int 	CORNER_SIZE 		= 8;
+	public boolean 		snapToGrid;
 	public double 		scale;
 	public int 			width;
 	public int 			height;
@@ -20,6 +21,7 @@ public class PEditorParams {
 	}
 
 	public void init() {
+		snapToGrid 			= true;
 		scale 				= 15.0;
 		width 				= 1000;
 		height 				= (int) Math.round((double) width / ASPECT_RATIO);

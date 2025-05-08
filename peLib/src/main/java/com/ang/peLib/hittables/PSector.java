@@ -32,7 +32,6 @@ public class PSector extends PCopyable {
 	 */
 	public PSector(PVec2[] corners, int[] portalIndices) {
 		this.corners = corners;
-		// this.portalIndices = portalIndices;
 		this.portalIndices = cleanPortalIndices(portalIndices);
 		walls = new PEdge[corners.length];
 		int head = 0;
@@ -71,7 +70,9 @@ public class PSector extends PCopyable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public PSector copy() {
-		return new PSector(PArrays.copy(corners, PVec2.class), portalIndices.clone());
+		PSector sec = new PSector(PArrays.copy(corners, PVec2.class), portalIndices.clone());
+		sec.setHeight(floorHeight, ceilingHeight);
+		return sec;
 
 	}
 

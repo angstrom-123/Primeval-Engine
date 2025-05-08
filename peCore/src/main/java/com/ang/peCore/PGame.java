@@ -29,7 +29,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 	}
 
 	private void testGame() {
-		if (!loadMapFile("testMap.pmap")) {
+		// if (!loadMapFile("testMap.pmap")) {
+		if (!loadMapFile("george.pmap")) {
 			System.err.println("Failed to load test level");
 			return;
 

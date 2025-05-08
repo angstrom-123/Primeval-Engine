@@ -2,8 +2,6 @@ package com.ang.peEditor;
 
 import javax.swing.JFrame;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.hittables.PSector;
@@ -90,6 +88,23 @@ public class PGUIRenderer extends PRenderer {
 
 			writeLine(colour, coords[0], 0, coords[0], height, Integer.MAX_VALUE);
 		}
+	}
+
+	public void writeLinesToCorner(PColour colour, PVec2 point, int sectorIndex, int cornerIndex,
+			PPMapData mapData, PEditorParams params, PVec2 origin) {
+		PVec2[] corners = mapData.world.getSectors()[sectorIndex].getCorners();
+		int prevIndex = (cornerIndex == 0) ? corners.length - 1 : cornerIndex - 1;
+		int nextIndex = (cornerIndex == corners.length - 1) ? 0 : cornerIndex + 1;
+		int[] prevCornerCoords = PConversions.v2ss(corners[prevIndex], params.width, 
+				params.height, params.scale, origin);
+		int[] nextCornerCoords = PConversions.v2ss(corners[nextIndex], params.width, 
+				params.height, params.scale, origin);
+		int[] currentCornerCoords = PConversions.v2ss(point, params.width, 
+				params.height, params.scale, origin);
+		writeLine(colour, currentCornerCoords[0], currentCornerCoords[1], 
+				prevCornerCoords[0], prevCornerCoords[1], Integer.MAX_VALUE);
+		writeLine(colour, currentCornerCoords[0], currentCornerCoords[1], 
+				nextCornerCoords[0], nextCornerCoords[1], Integer.MAX_VALUE);
 	}
 
 	public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotRate) {

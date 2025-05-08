@@ -68,8 +68,23 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
 		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
 			renderer.writeMapData(editableData, params, viewPos);
-			renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
-					params.CORNER_SIZE, x, y);
+			double[] coords = PConversions.ss2v(x, y, params.height, 
+					params.width, params.scale, viewPos);;
+			PVec2 newPos = new PVec2(coords);
+			if (params.snapToGrid) {
+				newPos = newPos.round();
+				int[] snappedCoords = PConversions.v2ss(newPos, params.width, 
+						params.height, params.scale, viewPos);
+				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
+						selectedCornerIndex, editableData, params, viewPos);
+				renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
+						params.CORNER_SIZE, snappedCoords[0], snappedCoords[1]);
+			} else {
+				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
+						selectedCornerIndex, editableData, params, viewPos);
+				renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
+						params.CORNER_SIZE, x, y);
+			}
 		} else {
 			renderer.writeMapData(editableData,	params, viewPos);
 			int dx = (int) dragStartPos.x() - x;
@@ -94,6 +109,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			double[] coords = PConversions.ss2v(x, y, params.height, 
 					params.width, params.scale, viewPos);;
 			PVec2 newPos = new PVec2(coords);
+			if (params.snapToGrid) {
+				newPos = newPos.round();
+			}
 			PSector selectedSec = editableData.world.getSectors()[selectedSectorIndex];
 			selectedSec.getCorners()[selectedCornerIndex] = newPos;
 		}
@@ -101,6 +119,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		dragStartPos = new PVec2(0.0, 0.0);
 		selectedSectorIndex = -1;
 		selectedCornerIndex = -1;
+		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
 	}
 

@@ -157,6 +157,15 @@ public class PVec2 extends PCopyable {
 	}
 
 	/**
+	 * Returns a rounded copy of the vector.
+	 * @return   the rounded copy
+	 */
+	public PVec2 round() {
+		return new PVec2(Math.round(x), Math.round(y));
+
+	}
+
+	/**
 	 * Returns a negated copy of the vector.
 	 * @return the negated copy
 	 */
