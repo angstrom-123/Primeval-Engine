@@ -3,8 +3,8 @@ package com.ang.peEditor;
 import com.ang.peLib.graphics.PColour;
 
 public class PEditorParams {
-	public final double ASPECT_RATIO 		= 16.0 / 9.0;
-	public final int 	CORNER_SIZE 		= 8;
+	public final double ASPECT_RATIO;
+	public final int 	CORNER_SIZE;
 	public boolean 		snapToGrid;
 	public double 		scale;
 	public int 			width;
@@ -12,11 +12,15 @@ public class PEditorParams {
 	public int			historyLength;
 	public PColour 		backgroundColour;
 	public PColour 		gridColour;
+	public PColour 		axisColour;
 	public PColour 		lineColour;
 	public PColour 		cornerColour;
 	public PColour 		selectedColour;
+	public PColour 		lastSelectedColour;
 
 	public PEditorParams() {
+		ASPECT_RATIO = 16.0 / 9.0;
+		CORNER_SIZE = 8;
 		init();
 	}
 
@@ -27,8 +31,10 @@ public class PEditorParams {
 		height 				= (int) Math.round((double) width / ASPECT_RATIO);
 		backgroundColour 	= new PColour(0.1, 0.1, 0.15);
 		gridColour 			= new PColour(0.15, 0.15, 0.2);
+		axisColour 			= new PColour(0.6, 0.3, 0.3);
 		lineColour 			= new PColour(0.6, 0.6, 0.6);
 		cornerColour 		= new PColour(0.8, 0.8, 0.8);
 		selectedColour		= new PColour(0.3, 0.4, 0.7);
+		lastSelectedColour	= new PColour(0.7, 0.4, 0.3);
 	}
 }

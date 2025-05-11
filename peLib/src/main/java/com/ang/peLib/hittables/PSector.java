@@ -153,12 +153,30 @@ public class PSector extends PCopyable {
 	}
 
 	/**
+	 * Determines if a given index into the sector's corners is part of a
+	 * portal edge.
+	 * @param  index 	the index
+	 * @return		    {@code true} if the corner at the specified index is part 
+	 * 					of a portal, else {@code false}
+	 */
+	public boolean isPortal(int index) {
+		for (int i : portalIndices) {
+			if (i == index) {
+				return true;
+
+			}
+		}
+		return false;
+
+	}
+
+	/**
 	 * Determines if a given pair of indices into the sector's corners make up a 
 	 * portal edge.
 	 * @param  indexOne the first index
 	 * @param  indexOne the second index
 	 * @return		    {@code true} if the corners at the specified indices make 
-	 * 					a portal else {@code false}
+	 * 					a portal else, {@code false}
 	 * @see 			PEdge
 	 */
 	public boolean isPortal(int indexOne, int indexTwo) {

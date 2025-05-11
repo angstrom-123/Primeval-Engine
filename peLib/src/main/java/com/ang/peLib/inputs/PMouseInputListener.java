@@ -11,8 +11,8 @@ import java.awt.event.MouseWheelListener;
  * All events are passed to the interface {@link PMouseInputInterface}
  * @see PMouseInputInterface
  */
-public class PMouseInputListener implements MouseMotionListener, MouseListener, 
-	   MouseWheelListener {
+public class PMouseInputListener extends PListener implements MouseMotionListener, 
+	   MouseListener, MouseWheelListener {
 	private PMouseInputInterface mouseInterface;
 
 	/**

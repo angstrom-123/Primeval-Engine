@@ -8,7 +8,7 @@ import java.awt.event.KeyListener;
  * All events are passed to the interface {@link PMovementInputInterface}
  * @see PMovementInputInterface
  */
-public class PMovementInputListener implements KeyListener {
+public class PMovementInputListener extends PListener implements KeyListener {
 	private PMovementInputInterface movementInterface;
 
 	/**

@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  * Provides methods for displaying pixels to the screen.
@@ -19,7 +20,8 @@ public class PRenderer {
 	protected BufferedImage img;
 	protected int width;
 	protected int height;
-	private PImagePanel imgPanel;
+	protected JPanel imgPanel;
+	protected PListener listener;
 
 	/**
 	 * Constructs the renderer with a listener for keyboard inputs.
@@ -36,7 +38,7 @@ public class PRenderer {
 		this.height = height;
 		this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		this.imgPanel = new PImagePanel(img);
-		init(listener);
+		this.listener = listener;
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class PRenderer {
 		this.height = height;
 		this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		this.imgPanel = new PImagePanel(img);
-		init(listener);
+		this.listener = listener;
 	}
 
 	/**
@@ -101,7 +103,7 @@ public class PRenderer {
 	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
 	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
 	 */
-	private void init(Object listener) {
+	public void init() {
 		imgPanel.setPreferredSize(new Dimension(width, height));
 		frame.getContentPane().add(imgPanel);
 		frame.pack();

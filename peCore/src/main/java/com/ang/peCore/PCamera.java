@@ -47,6 +47,7 @@ public class PCamera {
 		imageHeight = (int) Math.round((double) imageWidth / aspectRatio);
 		imageWidth = Math.max(imageWidth, 1);
 		renderer = new PRenderer(imageWidth, imageHeight, listener);
+		renderer.init();
 		viewportHeight = 2.0 * Math.tan(fov / 2.0);
 		viewportWidth = viewportHeight * ((double) imageWidth / (double) imageHeight);
 		update();

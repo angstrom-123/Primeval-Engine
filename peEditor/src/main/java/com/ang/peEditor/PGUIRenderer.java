@@ -1,27 +1,81 @@
 package com.ang.peEditor;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.inputs.PMouseInputListener;
-import com.ang.peLib.inputs.PMovementInputListener;
 import com.ang.peLib.utils.PConversions;
 import com.ang.peLib.graphics.*;
 
 public class PGUIRenderer extends PRenderer {
+	private JPanel subPanel;
+	private JLayeredPane layerPane = new JLayeredPane();	
+
 	public PGUIRenderer(int width, int height, PMouseInputListener mouseListener) {
 		super(width, height, mouseListener);
+		this.initGui();
 	}
 
-	public PGUIRenderer(int width, int height, PMovementInputListener movementListener) {
-		super(width, height, movementListener);
+	private void initGui() {
+		frame.setPreferredSize(new Dimension(width, height));
+		layerPane.setBounds(0, 0, width, height);
+		layerPane.setPreferredSize(new Dimension(width, height));
+		layerPane.setLayout(null);
+		imgPanel.setBounds(0, 0, width, height);
+		imgPanel.setPreferredSize(new Dimension(width, height));
+		imgPanel.setFocusable(true);
+		imgPanel.requestFocusInWindow();
+		imgPanel.setOpaque(true);
+		PMouseInputListener mil = (PMouseInputListener) listener;
+		imgPanel.addMouseMotionListener(mil);
+		imgPanel.addMouseListener(mil);
+		imgPanel.addMouseWheelListener(mil);
+		frame.getContentPane().add(layerPane);
+		layerPane.add(imgPanel, Integer.valueOf(1));
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				frame.dispose();
+			}
+		});
 	}
 
 	public JFrame getFrame() {
 		return frame;
 
+	}
+
+	public void addSubPanel(JPanel panel) {
+		if (subPanel != null) {
+			removeSubPanel();
+		}
+		panel.setOpaque(true);
+		panel.setBounds(width - panel.getWidth(), 0, panel.getWidth(), panel.getHeight());
+		subPanel = panel;
+		layerPane.add(panel, Integer.valueOf(2));
+	}
+
+	public void removeSubPanel() {
+		if (subPanel != null) {
+			layerPane.remove(subPanel);
+			subPanel = null;
+		}
 	}
 
 	public void writeTileAround(PColour colour, int width, int height, int x, int y) {
@@ -49,6 +103,7 @@ public class PGUIRenderer extends PRenderer {
 		if (params.scale > 6.0) {
 			writeBackgroundGrid(params.gridColour, params, origin);
 		}
+		writeXYAxisLines(params.axisColour, params, origin);
 		for (PSector sec : mapData.world.getSectors()) {
 			PVec2[] corners = sec.getCorners();
 			for (int i = 0; i < corners.length; i++) {
@@ -69,25 +124,30 @@ public class PGUIRenderer extends PRenderer {
 	}
 
 	public void writeBackgroundGrid(PColour colour, PEditorParams params, PVec2 origin) {
-		int startPixelX = -width / 4;
-		int startPixelY = 0;
-		double[] startCoords = PConversions.ss2v(startPixelX, startPixelY, width, 
+		double[] startCoords = PConversions.ss2v(-width / 4, 0, width, 
 				height, params.scale, origin);
 		PVec2 startingPoint = new PVec2(Math.floor(startCoords[0]), Math.floor(startCoords[1]));
-		for (int i=0; ; i++) {
-			int[] coords = PConversions.v2ss(startingPoint.add(new PVec2(0.0, 1.0 * i)), 
-					width, height, params.scale, origin);
+		for (int i = 0; ; i++) {
+			PVec2 linePoint = startingPoint.add(new PVec2(0.0, 1.0 * i));
+			int[] coords = PConversions.v2ss(linePoint, width, height, params.scale, origin);
 			if (coords[1] > height) break;
 
 			writeLine(colour, 0, coords[1], width, coords[1], Integer.MAX_VALUE);
 		}
-		for (int i=0; ; i++) {
-			int[] coords = PConversions.v2ss(startingPoint.add(new PVec2(1.0 * i, 0.0)), 
-					width, height, params.scale, origin);
+		for (int i = 0; ; i++) {
+			PVec2 linePoint = startingPoint.add(new PVec2(1.0 * i, 0.0));
+			int[] coords = PConversions.v2ss(linePoint, width, height, params.scale, origin);
 			if (coords[0] > width) break;
 
 			writeLine(colour, coords[0], 0, coords[0], height, Integer.MAX_VALUE);
 		}
+	}
+
+	public void writeXYAxisLines(PColour colour, PEditorParams params, PVec2 origin) {
+		PVec2 zeroZero = new PVec2(0.0, 0.0);
+		int[] coords = PConversions.v2ss(zeroZero, width, height, params.scale, origin);
+		writeLine(colour, coords[0], 0, coords[0], height, Integer.MAX_VALUE);
+		writeLine(colour, 0, coords[1], width, coords[1], Integer.MAX_VALUE);
 	}
 
 	public void writeLinesToCorner(PColour colour, PVec2 point, int sectorIndex, int cornerIndex,

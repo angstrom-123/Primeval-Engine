@@ -1,16 +1,21 @@
 package com.ang.peEditor;
 
+import java.util.List;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.ang.peEditor.dataPanel.PDataPanel;
+import com.ang.peEditor.dataPanel.PDataPanelEntry;
 import com.ang.peEditor.selector.*;
 
 public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener {
+	private PGUIRenderer renderer;
 	private JFrame frame;
 	private PEditorInterface ei;
 	private String savedFileName = null;
 
 	public PEditorGUI(PGUIRenderer renderer, PEditorInterface ei) {
+		this.renderer = renderer;
 		this.frame = renderer.getFrame();	
 		this.ei = ei;
 	}
@@ -24,6 +29,14 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		frame.pack();
 		frame.validate();
 		frame.repaint();
+	}
+
+	public void closeDataPanel() {
+		renderer.removeSubPanel();
+	}
+
+	public void openDataPanel(List<PDataPanelEntry> entries) {
+		renderer.addSubPanel(new PDataPanel(entries));
 	}
 
 	@Override
