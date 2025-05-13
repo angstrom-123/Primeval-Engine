@@ -7,7 +7,6 @@ import javax.swing.*;
 import com.ang.peEditor.dataPanel.PDataChangeListener;
 import com.ang.peEditor.dataPanel.PDataPanel;
 import com.ang.peEditor.dataPanel.PDataPanelEntry;
-import com.ang.peEditor.dataPanel.PDataPanelEntryType;
 import com.ang.peEditor.selector.*;
 
 public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener,

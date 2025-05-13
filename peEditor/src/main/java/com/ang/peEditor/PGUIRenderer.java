@@ -78,6 +78,25 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	public void writeCircleAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
+			PColour colour, int sectorIndex, int cornerIndex, int radius) {
+		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
+		int[] coords = PConversions.v2ss(corner, params.width, params.height, 
+				params.scale, origin);
+		writeCircleAround(colour, radius, coords[0], coords[1]);
+	}
+
+	public void writeCircleAround(PColour colour, int radius, int x, int y) {
+		int circleColour = processToInt(colour);
+		for (int y0 = -radius; y0 <= radius; y0++) {
+			for (int x0 = -radius; x0 <= radius; x0++) {
+				if (x0 * x0 + y0 * y0 <= radius * radius) {
+					img.setRGB(x0 + x, y0 + y, circleColour);
+				}
+			}
+		}
+	}
+
 	public void writeTileAround(PColour colour, int width, int height, int x, int y) {
 		int tileColour = processToInt(colour);
 		for (int j = y - (height / 2); j < y + (height / 2); j++) {

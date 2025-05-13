@@ -88,16 +88,16 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 						params.height, params.scale, viewPos);
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
 						selectedCornerIndex, editableData, params, viewPos);
-				renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
-						params.CORNER_SIZE, snappedCoords[0], snappedCoords[1]);
+				renderer.writeCircleAround(params.selectedColour, params.CORNER_RADIUS, 
+						snappedCoords[0], snappedCoords[1]);
 				gui.openDataPanel(getDataForDragged(newPos.x(), newPos.y()));
-				renderer.writeTileAroundCorner(editableData, params, viewPos, 
-						params.selectedColour2, lastSectorIndex, lastCornerIndex);
+				renderer.writeCircleAroundCorner(editableData, params, viewPos, 
+						params.selectedColour, lastSectorIndex, lastCornerIndex, 
+						params.CORNER_RADIUS);
 			} else {
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
 						selectedCornerIndex, editableData, params, viewPos);
-				renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
-						params.CORNER_SIZE, x, y);
+				renderer.writeCircleAround(params.selectedColour, params.CORNER_RADIUS, x, y);
 			}
 		} else {
 			renderer.writeMapData(editableData,	params, viewPos);
@@ -138,8 +138,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 		renderer.writeMapData(editableData, params, viewPos);
 		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
-			renderer.writeTileAroundCorner(editableData, params, viewPos, 
-					params.selectedColour2, lastSectorIndex, lastCornerIndex);
+			renderer.writeCircleAroundCorner(editableData, params, viewPos, 
+					params.selectedColour, lastSectorIndex, lastCornerIndex,
+					params.CORNER_RADIUS);
 		}
 		dragStartPos = new PVec2(0.0, 0.0);
 		selectedSectorIndex = -1;

@@ -5,6 +5,7 @@ import com.ang.peLib.graphics.PColour;
 public class PEditorParams {
 	public final double ASPECT_RATIO;
 	public final int 	CORNER_SIZE;
+	public final int 	CORNER_RADIUS;
 	public boolean 		snapToGrid;
 	public double 		scale;
 	public int 			width;
@@ -21,6 +22,7 @@ public class PEditorParams {
 	public PEditorParams() {
 		ASPECT_RATIO = 16.0 / 9.0;
 		CORNER_SIZE = 8;
+		CORNER_RADIUS = 6;
 		init();
 	}
 
