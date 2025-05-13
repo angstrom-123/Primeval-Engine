@@ -229,10 +229,6 @@ public class PPMapParser {
 		for (int i = startLine; i < lines.length; i++) {
 			String line = lines[i];
 			if (line.charAt(0) == '!') {
-				if (head == 0) {
-					throw new PParseException(path, i);
-
-				}
 				break;
 
 			}

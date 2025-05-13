@@ -10,6 +10,5 @@ public interface PEditorInterface {
 	void exit();
 	void undo();
 	void redo();
-	void newSector();
-	void newCorner();
+	void newSector(int cornerCount);
 }

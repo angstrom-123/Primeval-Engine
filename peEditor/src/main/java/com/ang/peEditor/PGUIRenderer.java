@@ -90,6 +90,10 @@ public class PGUIRenderer extends PRenderer {
 		int circleColour = processToInt(colour);
 		for (int y0 = -radius; y0 <= radius; y0++) {
 			for (int x0 = -radius; x0 <= radius; x0++) {
+				if (!inBounds(x0 + x, y0 + y)) {
+					continue;
+
+				}
 				if (x0 * x0 + y0 * y0 <= radius * radius) {
 					img.setRGB(x0 + x, y0 + y, circleColour);
 				}

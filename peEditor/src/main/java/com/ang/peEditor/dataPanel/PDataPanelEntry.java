@@ -14,29 +14,29 @@ public class PDataPanelEntry {
 	public boolean booleanOnly = false;
 
 	public PDataPanelEntry(PDataPanelEntryType entryType, int panelIndex, 
-			String data, int sectorIndex, int cornerIndex, boolean readOnly) {
+			String data, int sectorIndex, int cornerIndex) {
 		this.entryType = entryType;
 		this.panelIndex = panelIndex;
 		this.heading = entryType.getHeading();
 		this.data = data;
 		this.sectorIndex = sectorIndex;
 		this.cornerIndex = cornerIndex;
-		this.readOnly = readOnly;
+		this.readOnly = entryType.editable();
 	}
 
 	public PDataPanelEntry(PDataPanelEntryType entryType, int panelIndex, 
-			int data, int sectorIndex, int cornerIndex, boolean readOnly) {
-		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex, readOnly);
+			int data, int sectorIndex, int cornerIndex) {
+		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex);
 	}
 
 	public PDataPanelEntry(PDataPanelEntryType entryType, int panelIndex, 
-			double data, int sectorIndex, int cornerIndex, boolean readOnly) {
-		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex, readOnly);
+			double data, int sectorIndex, int cornerIndex) {
+		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex);
 	}
 
 	public PDataPanelEntry(PDataPanelEntryType entryType, int panelIndex, 
-			boolean data, int sectorIndex, int cornerIndex, boolean readOnly) {
-		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex, readOnly);
+			boolean data, int sectorIndex, int cornerIndex) {
+		this(entryType, panelIndex, String.valueOf(data), sectorIndex, cornerIndex);
 		booleanOnly = true;
 	}
 }

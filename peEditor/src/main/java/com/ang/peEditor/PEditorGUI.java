@@ -26,6 +26,7 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(createFileMenu());
 		menuBar.add(createEditMenu());
+		menuBar.add(createNewMenu());
 		frame.setResizable(false);
 		frame.setJMenuBar(menuBar);
 		frame.pack();
@@ -44,7 +45,8 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case "New": {
+		case "New": 
+			{
 			if (savedFileName != null) {
 				int selection = JOptionPane.showConfirmDialog(frame, 
 						"Save before exiting?", "New", JOptionPane.YES_NO_OPTION);
@@ -57,16 +59,17 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			} else {
 				ei.newFile();
 			}
+			}
 			break;
 			
-		}
-		case "Open": {
+		case "Open": 
+			{
 			PSelector selector = new PSelector(PSelectorType.OPEN, 
 					frame, this);
 			selector.show();
+			}
 			break;
 
-		}
 		case "Save":
 			if (savedFileName != null) {
 				ei.save(savedFileName);
@@ -75,14 +78,16 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			}
 			break;
 
-		case "Save As": {
+		case "Save As": 
+			{
 			PSelector selector = new PSelector(PSelectorType.SAVE, 
 					frame, this);
 			selector.show();
+			}
 			break;
 
-		}
-		case "Exit": {
+		case "Exit": 
+			{
 			if (savedFileName != null) {
 				int selection = JOptionPane.showConfirmDialog(frame, 
 						"Save before exiting?", "Exit", JOptionPane.YES_NO_OPTION);
@@ -95,9 +100,9 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			} else {
 				ei.exit();
 			}
+			}
 			break;
 
-		}
 		case "Undo":
 			ei.undo();
 			break;
@@ -107,11 +112,12 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			break;
 
 		case "Sector":
-			ei.newSector();
-			break;
-
-		case "Corner":
-			ei.newCorner();
+			{
+			String selection = (String) JOptionPane.showInputDialog(frame, "New Sector "
+					+ "Corner Count", "New Sector", JOptionPane.PLAIN_MESSAGE, null, null, "4");
+			int cornerCount = Integer.valueOf(selection);
+			ei.newSector(cornerCount);
+			}
 			break;
 
 		default:
@@ -169,24 +175,24 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 
 	private JMenu createEditMenu() {
 		JMenu editMenu = new JMenu("Edit");
-		JMenu submenuNew = new JMenu("New");
 		JMenu submenuPreferences = new JMenu("Preferences");
 		JMenuItem itemUndo = new JMenuItem("Undo");
 		JMenuItem itemRedo = new JMenuItem("Redo");
-		JMenuItem itemSector = new JMenuItem("Sector");
-		JMenuItem itemCorner = new JMenuItem("Corner");
 		// TODO: preferences submenu
 		itemUndo.addActionListener(this);
 		itemRedo.addActionListener(this);
-		itemSector.addActionListener(this);
-		itemCorner.addActionListener(this);
 		editMenu.add(itemUndo);
 		editMenu.add(itemRedo);
-		editMenu.add(submenuNew);
 		editMenu.add(submenuPreferences);
-		submenuNew.add(itemSector);
-		submenuNew.add(itemCorner);
 		return editMenu;
 
+	}
+
+	private JMenu createNewMenu() {
+		JMenu newMenu = new JMenu("New");
+		JMenuItem itemSector = new JMenuItem("Sector");
+		itemSector.addActionListener(this);
+		newMenu.add(itemSector);
+		return newMenu;
 	}
 }

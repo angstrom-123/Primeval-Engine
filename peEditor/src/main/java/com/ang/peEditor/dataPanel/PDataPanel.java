@@ -135,7 +135,7 @@ public class PDataPanel extends JPanel {
 
 	}
 
-	private JTextField createEditableLabel(PDataPanelEntry entry) {
+	private JTextField createEditableLabel(PDataPanelEntry entry) { // TODO: make this a spinner
 		JTextField out = new JTextField(entry.data, 5);
 		out.setBackground(inputBackgroundColour);
 		out.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
