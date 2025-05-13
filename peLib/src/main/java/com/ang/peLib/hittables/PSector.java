@@ -64,6 +64,20 @@ public class PSector extends PCopyable {
 
 	}
 
+	private void updatePortals(int[] newPortalIndices) {
+		portalIndices = newPortalIndices;
+		int head = 0;
+		for (int i = 0; i < corners.length; i++) {
+			PEdge wall;
+			int nextI = (i < corners.length - 1) ? i + 1 : 0;
+			wall = new PEdge(corners[i], corners[nextI], new PColour(1.0, 1.0, 1.0));
+			if (isPortal(i, nextI)) {
+				wall.setAsPortal();
+			}
+			walls[head++] = wall;
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -93,6 +107,28 @@ public class PSector extends PCopyable {
 	 */
 	public void setLightLevel(double lightLevel) {
 		this.lightLevel = lightLevel;
+	}
+
+	public void setAsPortal(int cornerIndex, boolean isPortal) {
+		int[] newPortals;
+		if (isPortal && !isPortal(cornerIndex)) {
+			newPortals = new int[portalIndices.length + 1];
+			for (int i = 0; i < portalIndices.length; i++) {
+				newPortals[i] = portalIndices[i];
+			}
+			newPortals[newPortals.length - 1] = cornerIndex;
+			updatePortals(newPortals);
+		} else if (isPortal(cornerIndex)) {
+			newPortals = new int[portalIndices.length - 1];
+			int j = 0;
+			for (int i = 0; i < portalIndices.length; i++) {
+				if (portalIndices[i] == cornerIndex) continue;
+
+				newPortals[j] = portalIndices[i];
+				j++;
+			}
+			updatePortals(newPortals);
+		}
 	}
 
 	/**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,6 +13,10 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 public class PDataPanel extends JPanel {
 	private final Color headingColour = new Color(0x353542);
@@ -84,18 +89,16 @@ public class PDataPanel extends JPanel {
 			Color labelBackgroundColour = (i % 2 == 0) 
 			? backgroundColourDark
 			: backgroundColour;
-			// JLabel entryLabel = new JLabel(" " + entry.heading + ": " + entry.data);		
 			JLabel entryLabel = new JLabel(" " + entry.heading + " :");		
 			entryLabel.setForeground(Color.WHITE);
 			entryLabel.setPreferredSize(new Dimension(WIDTH / 2, CONTAINER_HEIGHT));
 			JComponent entryData;
 			if (entry.readOnly) {
-				entryData = new JLabel(" " + entry.data);
-				entryData.setBackground(labelBackgroundColour);
+				entryData = createReadOnlyLabel(entry);
+			} else if (entry.booleanOnly) {
+				entryData = createBooleanOnlyLabel(entry);
 			} else {
-				entryData = new JTextField(entry.data, 5);
-				entryData.setBackground(inputBackgroundColour);
-				entryData.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+				entryData = createEditableLabel(entry);
 			}
 			entryData.setForeground(Color.WHITE);
 			JPanel entryContainer = new JPanel();
@@ -107,6 +110,53 @@ public class PDataPanel extends JPanel {
 			panel.add(entryContainer);
 		}
 		return panel;
+
+	}
+
+	private JLabel createReadOnlyLabel(PDataPanelEntry entry) {
+		JLabel out = new JLabel(" " + entry.data);
+		out.setBackground(null);
+		return out;
+
+	}
+
+	private JComboBox<String> createBooleanOnlyLabel(PDataPanelEntry entry) {
+		JComboBox<String> out = new JComboBox<String>(new String[]{"true", "false"});
+		out.setBackground(inputBackgroundColour);
+		out.setSelectedIndex((entry.data.equals("true") ? 0 : 1));
+		out.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String text = (String) out.getSelectedItem();
+				listener.dataChange(entry, text);
+			}
+		});
+		return out;
+
+	}
+
+	private JTextField createEditableLabel(PDataPanelEntry entry) {
+		JTextField out = new JTextField(entry.data, 5);
+		out.setBackground(inputBackgroundColour);
+		out.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		out.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String text = out.getText();
+				listener.dataChange(entry, text);
+			}
+		});
+		out.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				String text = out.getText();
+				listener.dataChange(entry, text);
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {}
+		});
+		return out;
 
 	}
 

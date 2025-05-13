@@ -56,6 +56,11 @@ public class PGUIRenderer extends PRenderer {
 
 	}
 
+	public JPanel getSubPanel() {
+		return subPanel;
+
+	}
+
 	public void addSubPanel(JPanel panel) {
 		if (subPanel != null) {
 			removeSubPanel();
