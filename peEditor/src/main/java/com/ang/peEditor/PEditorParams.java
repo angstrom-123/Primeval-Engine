@@ -16,7 +16,7 @@ public class PEditorParams {
 	public PColour 		lineColour;
 	public PColour 		cornerColour;
 	public PColour 		selectedColour;
-	public PColour 		lastSelectedColour;
+	public PColour 		selectedColour2;
 
 	public PEditorParams() {
 		ASPECT_RATIO = 16.0 / 9.0;
@@ -35,6 +35,6 @@ public class PEditorParams {
 		lineColour 			= new PColour(0.6, 0.6, 0.6);
 		cornerColour 		= new PColour(0.8, 0.8, 0.8);
 		selectedColour		= new PColour(0.3, 0.4, 0.7);
-		lastSelectedColour	= new PColour(0.7, 0.4, 0.3);
+		selectedColour2		= new PColour(0.2, 0.3, 0.9);
 	}
 }

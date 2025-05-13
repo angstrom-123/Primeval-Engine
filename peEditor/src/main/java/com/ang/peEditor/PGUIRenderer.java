@@ -1,14 +1,9 @@
 package com.ang.peEditor;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -91,6 +86,14 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	public void writeTileAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
+			PColour colour, int sectorIndex, int cornerIndex) {
+		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
+		int[] coords = PConversions.v2ss(corner, params.width, params.height, 
+				params.scale, origin);
+		writeTileAround(colour, params.CORNER_SIZE, params.CORNER_SIZE, coords[0], coords[1]);
+	}
+
 	public void writeMouseCoords(int x, int y) {
 		String xString = String.valueOf(x);
 		String yString = String.valueOf(y);
@@ -152,7 +155,7 @@ public class PGUIRenderer extends PRenderer {
 
 	public void writeLinesToCorner(PColour colour, PVec2 point, int sectorIndex, int cornerIndex,
 			PPMapData mapData, PEditorParams params, PVec2 origin) {
-		PVec2[] corners = mapData.world.getSectors()[sectorIndex].getCorners();
+		PVec2[] corners = mapData.world.getSector(sectorIndex).getCorners();
 		int prevIndex = (cornerIndex == 0) ? corners.length - 1 : cornerIndex - 1;
 		int nextIndex = (cornerIndex == corners.length - 1) ? 0 : cornerIndex + 1;
 		int[] prevCornerCoords = PConversions.v2ss(corners[prevIndex], params.width, 

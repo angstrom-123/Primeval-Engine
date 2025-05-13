@@ -29,7 +29,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private PGUIRenderer 		renderer;
 	private PPMapHandler 		mapHandler;
 	private PEditorGUI			gui;
-	private PHistory			history;
+	private PHistory			history; // TODO: implement undo / redo
 
 	public PEditor() {
 		init();
@@ -54,6 +54,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	public void start() {
 		System.out.println("Editor running");
+		newFile();
 	}
 
 	@Override
@@ -88,6 +89,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 						selectedCornerIndex, editableData, params, viewPos);
 				renderer.writeTileAround(params.selectedColour, params.CORNER_SIZE, 
 						params.CORNER_SIZE, snappedCoords[0], snappedCoords[1]);
+				gui.openDataPanel(getDataForDragged(newPos.x(), newPos.y()));
+				renderer.writeTileAroundCorner(editableData, params, viewPos, 
+						params.selectedColour2, lastSectorIndex, lastCornerIndex);
 			} else {
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
 						selectedCornerIndex, editableData, params, viewPos);
@@ -99,6 +103,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			int dx = (int) dragStartPos.x() - x;
 			int dy = (int) dragStartPos.y() - y;
 			viewPos = viewPosAtDragStart.sub(new PVec2(dx, dy));
+
 		}
 		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
@@ -126,11 +131,15 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			if (params.snapToGrid) {
 				newPos = newPos.round();
 			}
-			PSector selectedSec = editableData.world.getSectors()[selectedSectorIndex];
+			PSector selectedSec = editableData.world.getSector(selectedSectorIndex);
 			selectedSec.getCorners()[selectedCornerIndex] = newPos;
 			gui.openDataPanel(getDataForSelected());
 		}
 		renderer.writeMapData(editableData, params, viewPos);
+		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
+			renderer.writeTileAroundCorner(editableData, params, viewPos, 
+					params.selectedColour2, lastSectorIndex, lastCornerIndex);
+		}
 		dragStartPos = new PVec2(0.0, 0.0);
 		selectedSectorIndex = -1;
 		selectedCornerIndex = -1;
@@ -213,19 +222,39 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		dragStartPos 		= new PVec2(0.0, 0.0);
 	}
 
+	private List<PDataPanelEntry> getDataForDragged(double x, double y) {
+		List<PDataPanelEntry> out = new ArrayList<PDataPanelEntry>();
+		PSector sec = mapHandler.getSaveData().editableMapData
+				.world.getSector(lastSectorIndex);
+		int topPanel = PDataPanelEntry.TOP;
+		int botPanel = PDataPanelEntry.BOT;
+		out.add(new PDataPanelEntry(1, topPanel, "Index", lastCornerIndex, true));
+		out.add(new PDataPanelEntry(2, topPanel, "x", x, false));
+		out.add(new PDataPanelEntry(3, topPanel, "y", y, false));
+		out.add(new PDataPanelEntry(4, topPanel, "Portal", sec.isPortal(lastCornerIndex), false));
+		out.add(new PDataPanelEntry(5, botPanel, "Index", lastSectorIndex, true));
+		out.add(new PDataPanelEntry(6, botPanel, "Floor y", sec.getFloorHeight(), false));
+		out.add(new PDataPanelEntry(7, botPanel, "Ceiling y", sec.getCeilingHeight(), false));
+		out.add(new PDataPanelEntry(8, botPanel, "Light Level", sec.getLightLevel(), false));
+		return out;
+
+	}
+
 	private List<PDataPanelEntry> getDataForSelected() {
 		List<PDataPanelEntry> out = new ArrayList<PDataPanelEntry>();
 		PSector sec = mapHandler.getSaveData().editableMapData
-				.world.getSectors()[lastSectorIndex];
-		PVec2 corner = sec.getCorners()[lastCornerIndex];
-		out.add(new PDataPanelEntry(PDataPanelEntry.TOP, "Index", lastCornerIndex));
-		out.add(new PDataPanelEntry(PDataPanelEntry.TOP, "x", corner.x()));
-		out.add(new PDataPanelEntry(PDataPanelEntry.TOP, "y", corner.y()));
-		out.add(new PDataPanelEntry(PDataPanelEntry.TOP, "Portal", sec.isPortal(lastCornerIndex)));
-		out.add(new PDataPanelEntry(PDataPanelEntry.BOT, "Index", lastSectorIndex));
-		out.add(new PDataPanelEntry(PDataPanelEntry.BOT, "Floor y", sec.getFloorHeight()));
-		out.add(new PDataPanelEntry(PDataPanelEntry.BOT, "Ceiling y", sec.getCeilingHeight()));
-		out.add(new PDataPanelEntry(PDataPanelEntry.BOT, "Light Level", sec.getLightLevel()));
+				.world.getSector(lastSectorIndex);
+		PVec2 corner = sec.getCorner(lastCornerIndex);
+		int topPanel = PDataPanelEntry.TOP;
+		int botPanel = PDataPanelEntry.BOT;
+		out.add(new PDataPanelEntry(1, topPanel, "Index", lastCornerIndex, true));
+		out.add(new PDataPanelEntry(2, topPanel, "x", corner.x(), false));
+		out.add(new PDataPanelEntry(3, topPanel, "y", corner.y(), false));
+		out.add(new PDataPanelEntry(4, topPanel, "Portal", sec.isPortal(lastCornerIndex), false));
+		out.add(new PDataPanelEntry(5, botPanel, "Index", lastSectorIndex, true));
+		out.add(new PDataPanelEntry(6, botPanel, "Floor y", sec.getFloorHeight(), false));
+		out.add(new PDataPanelEntry(7, botPanel, "Ceiling y", sec.getCeilingHeight(), false));
+		out.add(new PDataPanelEntry(8, botPanel, "Light Level", sec.getLightLevel(), false));
 		return out;
 
 	}

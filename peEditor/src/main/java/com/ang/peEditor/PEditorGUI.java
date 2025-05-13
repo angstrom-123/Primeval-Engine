@@ -4,11 +4,13 @@ import java.util.List;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.ang.peEditor.dataPanel.PDataChangeListener;
 import com.ang.peEditor.dataPanel.PDataPanel;
 import com.ang.peEditor.dataPanel.PDataPanelEntry;
 import com.ang.peEditor.selector.*;
 
-public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener {
+public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener,
+		PDataChangeListener {
 	private PGUIRenderer renderer;
 	private JFrame frame;
 	private PEditorInterface ei;
@@ -36,7 +38,7 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	}
 
 	public void openDataPanel(List<PDataPanelEntry> entries) {
-		renderer.addSubPanel(new PDataPanel(entries));
+		renderer.addSubPanel(new PDataPanel(entries, this));
 	}
 
 	@Override
@@ -137,6 +139,21 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			break;
 
 		}
+	}
+
+	@Override
+	public void dataChange(int panelIndex, int entryIndex, int value) {
+
+	}
+
+	@Override
+	public void dataChange(int panelIndex, int entryIndex, double value) {
+
+	}
+
+	@Override
+	public void dataChange(int panelIndex, int entryIndex, boolean value) {
+
 	}
 
 	private JMenu createFileMenu() {

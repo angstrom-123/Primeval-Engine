@@ -142,6 +142,13 @@ public class PSector extends PCopyable {
 
 	}
 
+	public PVec2 getCorner(int i) {
+		if ((i >= corners.length) || (i < 0)) return null;
+
+		return corners[i];
+
+	}
+
 	/**
 	 * Returns all of the indices of corners making up portal edges.
 	 * @return the indices of the corners that bounds the portal edges

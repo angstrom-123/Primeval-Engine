@@ -3,8 +3,12 @@ package com.ang.peEditor.dataPanel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,14 +17,17 @@ public class PDataPanel extends JPanel {
 	private final Color headingColour = new Color(0x353542);
 	private final Color backgroundColour = new Color(0x454555);
 	private final Color backgroundColourDark = new Color(0x404050);
+	private final Color inputBackgroundColour = new Color(0x4e4e5e);
 	private final int CONTAINER_HEIGHT = 25;
 	private final int WIDTH = 200;
 	private int height;
 	private List<PDataPanelEntry> topPanelEntries = new ArrayList<PDataPanelEntry>();
 	private List<PDataPanelEntry> botPanelEntries = new ArrayList<PDataPanelEntry>();
+	private PDataChangeListener listener;
 
-	public PDataPanel(List<PDataPanelEntry> entries) {
+	public PDataPanel(List<PDataPanelEntry> entries, PDataChangeListener listener) {
 		super();
+		this.listener = listener;
 		for (PDataPanelEntry entry : entries) {
 			if (entry.panelIndex == PDataPanelEntry.TOP) {
 				topPanelEntries.add(entry);
@@ -77,13 +84,26 @@ public class PDataPanel extends JPanel {
 			Color labelBackgroundColour = (i % 2 == 0) 
 			? backgroundColourDark
 			: backgroundColour;
-			JLabel entryLabel = new JLabel(" " + entry.heading + ": " + entry.data);		
+			// JLabel entryLabel = new JLabel(" " + entry.heading + ": " + entry.data);		
+			JLabel entryLabel = new JLabel(" " + entry.heading + " :");		
 			entryLabel.setForeground(Color.WHITE);
+			entryLabel.setPreferredSize(new Dimension(WIDTH / 2, CONTAINER_HEIGHT));
+			JComponent entryData;
+			if (entry.readOnly) {
+				entryData = new JLabel(" " + entry.data);
+				entryData.setBackground(labelBackgroundColour);
+			} else {
+				entryData = new JTextField(entry.data, 5);
+				entryData.setBackground(inputBackgroundColour);
+				entryData.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			}
+			entryData.setForeground(Color.WHITE);
 			JPanel entryContainer = new JPanel();
 			entryContainer.setLayout(new BorderLayout(0, 0));
 			entryContainer.setBackground(labelBackgroundColour);
 			entryContainer.setBounds(0, i * CONTAINER_HEIGHT, WIDTH, CONTAINER_HEIGHT);
 			entryContainer.add(entryLabel, BorderLayout.WEST);
+			entryContainer.add(entryData, BorderLayout.CENTER);
 			panel.add(entryContainer);
 		}
 		return panel;

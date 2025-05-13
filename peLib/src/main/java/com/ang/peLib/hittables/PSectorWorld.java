@@ -68,6 +68,13 @@ public class PSectorWorld extends PCopyable {
 
 	}
 
+	public PSector getSector(int i) {
+		if ((i >= head) || (i < 0)) return null;
+
+		return sectors[i];
+
+	}
+
 	/**
 	 * Determines if a ray intersects with a sector in the world within an interval of distance.
 	 * @param  r			the {@link com.ang.peLib.maths.PRay} to look for hits with
