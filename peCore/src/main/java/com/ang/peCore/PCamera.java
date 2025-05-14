@@ -1,5 +1,6 @@
 package com.ang.peCore;
 
+import com.ang.peLib.threads.PUpdateWorker;
 import com.ang.peLib.graphics.*;
 import com.ang.peLib.maths.*;
 import com.ang.peLib.hittables.*;
@@ -22,6 +23,11 @@ public class PCamera {
 	
 	public PCamera(int imageWidth) {
 		this.imageWidth = imageWidth;
+	}
+
+	public PRenderer getRenderer() {
+		return renderer;
+
 	}
 
 	public void setTransform(PVec2 position, PVec2 facing) {

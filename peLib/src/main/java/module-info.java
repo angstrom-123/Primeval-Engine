@@ -9,6 +9,7 @@ open module com.ang.peLib {
 	exports com.ang.peLib.hittables;
 	exports com.ang.peLib.inputs;
 	exports com.ang.peLib.maths;
+	exports com.ang.peLib.threads;
 	exports com.ang.peLib.resources;
 	exports com.ang.peLib.utils;
 }

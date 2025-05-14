@@ -1,7 +1,10 @@
 package com.ang.peLib.graphics;
 
 import com.ang.peLib.inputs.*;
+import com.ang.peLib.threads.PUpdateWorker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -16,6 +19,7 @@ import javax.swing.JPanel;
  * which treats (0, 0) as the top left)
  */
 public class PRenderer {
+	private PUpdateWorker[] workersToKill = new PUpdateWorker[0];
 	protected JFrame frame = new JFrame();
 	protected BufferedImage img;
 	protected int width;
@@ -60,6 +64,15 @@ public class PRenderer {
 		this.listener = listener;
 	}
 
+	public void terminateOnClose(PUpdateWorker worker) {
+		PUpdateWorker[] temp = new PUpdateWorker[workersToKill.length + 1];
+		for (int i = 0; i < workersToKill.length; i++) {
+			temp[i] = workersToKill[i];
+		}
+		temp[temp.length - 1] = worker;
+		workersToKill = temp;
+	}
+
 	/**
 	 * Returns the width of the {@link javax.swing.JFrame} used to render the screen.
 	 * @return the width of the JFrame
@@ -84,6 +97,9 @@ public class PRenderer {
 	 * Closes the window.
 	 */
 	public void close() {
+		for (int i = 0; i < workersToKill.length; i++) {
+			workersToKill[i].doStop();
+		}
 		frame.dispose();
 	}
 
@@ -123,7 +139,7 @@ public class PRenderer {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				frame.dispose();
+				close();
 			}
 		});
 	}

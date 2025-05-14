@@ -1,6 +1,6 @@
 package com.ang.peCore;
 
-import com.ang.peCore.threads.*;
+import com.ang.peLib.threads.*;
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.hittables.*;
 import com.ang.peLib.inputs.*;
@@ -36,15 +36,16 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 
 		}
 		cam.init(listener);
-		PGlobal.uw = new PUpdateWorker(frameMs);
-		PGlobal.uw.setInterface(this);
-		PGlobal.uw.run();
+		PUpdateWorker uw = new PUpdateWorker(frameMs);
+		uw.setInterface(this);
+		cam.getRenderer().terminateOnClose(uw);
+		uw.run();
 	}
 
 	private boolean loadMapFile(String fileName) {
 		PPMapHandler handler = new PPMapHandler();
 		try {
-			handler.loadMapData(fileName); // TODO: make it work
+			handler.loadMapData(fileName);
 		} catch (PResourceException e) {
 			e.printStackTrace();
 			return false;

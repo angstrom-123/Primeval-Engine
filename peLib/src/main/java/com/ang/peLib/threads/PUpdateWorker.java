@@ -1,12 +1,12 @@
-package com.ang.peCore.threads;
+package com.ang.peLib.threads;
 
 public class PUpdateWorker implements Runnable {
-	private int frameMs;
-	private boolean stop = false;
+	private int updateMs;
+	private volatile boolean stop = false;
 	private PThreadInterface ti;
 
-	public PUpdateWorker(int frameMs) {
-		this.frameMs = frameMs;
+	public PUpdateWorker(int updateMs) {
+		this.updateMs = updateMs;
 	}
 
 	public void setInterface(PThreadInterface ti) {
@@ -22,7 +22,7 @@ public class PUpdateWorker implements Runnable {
 		while (!stop) {
 			try {
 				ti.update();
-				Thread.sleep(frameMs);
+				Thread.sleep(updateMs);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
