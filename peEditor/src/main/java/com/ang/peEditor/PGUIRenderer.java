@@ -78,15 +78,15 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
-	public void writeCircleAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
+	public void fillCircleAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
 			PColour colour, int sectorIndex, int cornerIndex, int radius) {
 		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
 		int[] coords = PConversions.v2ss(corner, params.width, params.height, 
 				params.scale, origin);
-		writeCircleAround(colour, radius, coords[0], coords[1]);
+		fillCircleAround(colour, radius, coords[0], coords[1]);
 	}
 
-	public void writeCircleAround(PColour colour, int radius, int x, int y) {
+	public void fillCircleAround(PColour colour, int radius, int x, int y) {
 		int circleColour = processToInt(colour);
 		for (int y0 = -radius; y0 <= radius; y0++) {
 			for (int x0 = -radius; x0 <= radius; x0++) {
@@ -101,7 +101,44 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	public void writeCircleAround(PColour colour, int radius, int x, int y) {
+		int circleColour = processToInt(colour);
+		int x0 = 0;
+		int y0 = radius;
+		int d = 3 - 2 * radius;
+		while (y0 >= x0) {
+			if (d > 0) {
+				y0--;
+				d += 4 * (x0 - y0) + 10;
+			} else {
+				d += 4 * x0 + 6;
+			}
+			x0++;
+			writeSymmetricPixels(circleColour, x, y, x0, y0);
+		}
+	}
+
+	private void writeSymmetricPixels(int colour, int x, int y, int x0, int y0) {
+		if (inBounds(x + x0, y + y0)) img.setRGB(x + x0, y + y0, colour);
+		if (inBounds(x - x0, y + y0)) img.setRGB(x - x0, y + y0, colour);
+		if (inBounds(x + x0, y - y0)) img.setRGB(x + x0, y - y0, colour);
+		if (inBounds(x - x0, y - y0)) img.setRGB(x - x0, y - y0, colour);
+		if (inBounds(x + y0, y + x0)) img.setRGB(x + y0, y + x0, colour);
+		if (inBounds(x - y0, y + x0)) img.setRGB(x - y0, y + x0, colour);
+		if (inBounds(x + y0, y - x0)) img.setRGB(x + y0, y - x0, colour);
+		if (inBounds(x - y0, y - x0)) img.setRGB(x - y0, y - x0, colour);
+	}
+
 	public void writeTileAround(PColour colour, int width, int height, int x, int y) {
+		int x0 = x - width / 2;
+		int y0 = y - height / 2;
+		writeLine(colour, x0, y0, x0 + width, y0, Integer.MAX_VALUE);
+		writeLine(colour, x0, y0, x0, y0 + height, Integer.MAX_VALUE);
+		writeLine(colour, x0 + width, y0 + height, x0, y0 + height, Integer.MAX_VALUE);
+		writeLine(colour, x0 + width, y0 + height, x0 + width, y0, Integer.MAX_VALUE);
+	}
+
+	public void fillTileAround(PColour colour, int width, int height, int x, int y) {
 		int tileColour = processToInt(colour);
 		for (int j = y - (height / 2); j < y + (height / 2); j++) {
 			for (int i = x - (width / 2); i < x + (width / 2); i++) {
@@ -114,23 +151,23 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
-	public void writeTileAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
+	public void fillTileAroundCorner(PPMapData mapData, PEditorParams params, PVec2 origin,
 			PColour colour, int sectorIndex, int cornerIndex) {
 		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
 		int[] coords = PConversions.v2ss(corner, params.width, params.height, 
 				params.scale, origin);
-		writeTileAround(colour, params.CORNER_SIZE, params.CORNER_SIZE, coords[0], coords[1]);
+		fillTileAround(colour, params.CORNER_SIZE, params.CORNER_SIZE, coords[0], coords[1]);
 	}
 
 	public void writeMouseCoords(int x, int y) {
 		String xString = String.valueOf(x);
 		String yString = String.valueOf(y);
-		writeTile(PColour.BLACK, 63, 14, 0, 0);
+		fillTile(PColour.BLACK, 70, 14, 0, 0);
 		img.getGraphics().drawString("x:" + xString + " y:" + yString, 0, 10);
 	}
 
 	public void writeMapData(PPMapData mapData, PEditorParams params, PVec2 origin) {
-		writeTile(params.backgroundColour, width, height, 0, 0);	
+		fillTile(params.backgroundColour, width, height, 0, 0);	
 		if (params.scale > 6.0) {
 			writeBackgroundGrid(params.gridColour, params, origin);
 		}
@@ -148,7 +185,7 @@ public class PGUIRenderer extends PRenderer {
 			for (int i = 0; i < corners.length; i++) {
 				int[] coords = PConversions.v2ss(corners[i], width, height, 
 						params.scale, origin);
-				writeTileAround(params.cornerColour, params.CORNER_SIZE, 
+				fillTileAround(params.cornerColour, params.CORNER_SIZE, 
 						params.CORNER_SIZE, coords[0], coords[1]);
 			}
 		}

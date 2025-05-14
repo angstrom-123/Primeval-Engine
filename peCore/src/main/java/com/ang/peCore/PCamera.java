@@ -68,7 +68,7 @@ public class PCamera {
 	public long draw(PSectorWorld world) {
 		long startTime = System.currentTimeMillis();
 		// Clearing the previous frame
-		renderer.writeTile(backgroundCol, imageWidth, imageHeight, 0, 0);
+		renderer.fillTile(backgroundCol, imageWidth, imageHeight, 0, 0);
 		// Drawing the world
 		drawWalls(world);
 		// Displaying buffer on screen

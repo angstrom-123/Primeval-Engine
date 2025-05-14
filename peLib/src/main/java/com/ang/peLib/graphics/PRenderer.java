@@ -189,7 +189,7 @@ public class PRenderer {
 	 * @param y		 the y coordinate (in pixels) of the top left of the tile
 	 * @see   		 PColour
 	 */
-	public void writeTile(PColour colour, int width, int height, int x, int y) {
+	public void fillTile(PColour colour, int width, int height, int x, int y) {
 		int tileColour = processToInt(colour);
 		for (int j = y; j < y + height; j++) {
 			for (int i = x; i < x + width; i++) {

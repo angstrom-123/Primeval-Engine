@@ -19,6 +19,7 @@ import com.ang.peLib.utils.PConversions;
 
 public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private int 				newSectorCornerNum;
+	private double 				newSectorScale;
 	private int 				selectedSectorIndex;
 	private int 				selectedCornerIndex;
 	private int					lastSectorIndex;
@@ -83,7 +84,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		if (newSectorCornerNum != -1) {
 			renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
 					params, viewPos);
-			renderer.writeCircleAround(params.selectedColour2, params.CORNER_RADIUS, x, y);
+			int x0 = PConversions.v2ss(0.0, true, params.width, params.height, 
+					params.scale, viewPos);
+			int x1 = PConversions.v2ss(newSectorScale, true, params.width, 
+					params.height, params.scale, viewPos);
+			renderer.writeCircleAround(params.selectedColour2, x1 - x0, x, y);
 		}
 		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
@@ -103,16 +108,16 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 						params.height, params.scale, viewPos);
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
 						selectedCornerIndex, editableData, params, viewPos);
-				renderer.writeCircleAround(params.selectedColour, params.CORNER_RADIUS, 
+				renderer.fillCircleAround(params.selectedColour, params.CORNER_RADIUS, 
 						snappedCoords[0], snappedCoords[1]);
 				gui.openDataPanel(getDataForDragged(newPos.x(), newPos.y()));
-				renderer.writeCircleAroundCorner(editableData, params, viewPos, 
+				renderer.fillCircleAroundCorner(editableData, params, viewPos, 
 						params.selectedColour, lastSectorIndex, lastCornerIndex, 
 						params.CORNER_RADIUS);
 			} else {
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
 						selectedCornerIndex, editableData, params, viewPos);
-				renderer.writeCircleAround(params.selectedColour, params.CORNER_RADIUS, x, y);
+				renderer.fillCircleAround(params.selectedColour, params.CORNER_RADIUS, x, y);
 			}
 		} else {
 			renderer.writeMapData(editableData,	params, viewPos);
@@ -138,6 +143,14 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	@Override
+	public void rightMousePressed(int x, int y) {
+		newSectorScale = -1.0;
+		newSectorCornerNum = -1;
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, viewPos);
+		renderer.repaint();
+	}
+
+	@Override
 	public void mouseReleased(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
 		double[] coords = PConversions.ss2v(x, y, params.height, 
@@ -152,7 +165,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			gui.openDataPanel(getDataForSelected());
 		}
 		if (newSectorCornerNum != -1) {
-			PSector sec = PSectorFactory.newSector(newSectorCornerNum, 
+			PSector sec = PSectorFactory.newSector(newSectorCornerNum, newSectorScale,
 					new PVec2(coords[0], coords[1]));
 			if (sec != null) {
 				editableData.world.addSector(sec);
@@ -161,7 +174,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 		renderer.writeMapData(editableData, params, viewPos);
 		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
-			renderer.writeCircleAroundCorner(editableData, params, viewPos, 
+			renderer.fillCircleAroundCorner(editableData, params, viewPos, 
 					params.selectedColour, lastSectorIndex, lastCornerIndex,
 					params.CORNER_RADIUS);
 		}
@@ -229,8 +242,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	@Override 
-	public void newSector(int cornerCount) {
+	public void newSector(int cornerCount, double scale) {
 		newSectorCornerNum = cornerCount;
+		newSectorScale = scale;
 	}
 
 	@Override
@@ -286,7 +300,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 		renderer.writeMapData(editableData, params, viewPos);
 		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
-			renderer.writeTileAroundCorner(editableData, params, viewPos, 
+			renderer.fillTileAroundCorner(editableData, params, viewPos, 
 					params.selectedColour2, lastSectorIndex, lastCornerIndex);
 		}
 		renderer.repaint();

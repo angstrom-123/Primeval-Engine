@@ -32,6 +32,13 @@ public interface PMouseInputInterface {
 	void mousePressed(int x, int y);
 
 	/**
+	 * Handles the right mouse press event.
+	 * @param x the x screen space coordinate of the mouse
+	 * @param y the y screen space coordinate of the mouse
+	 */
+	void rightMousePressed(int x, int y);
+
+	/**
 	 * Handles the mouse release event.
 	 * @param x the x screen space coordinate of the mouse
 	 * @param y the y screen space coordinate of the mouse

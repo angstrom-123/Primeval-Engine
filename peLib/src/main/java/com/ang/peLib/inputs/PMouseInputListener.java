@@ -69,7 +69,11 @@ public class PMouseInputListener extends PListener implements MouseMotionListene
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		mouseInterface.mousePressed(e.getX(), e.getY());
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			mouseInterface.mousePressed(e.getX(), e.getY());
+		} else {
+			mouseInterface.rightMousePressed(e.getX(), e.getY());
+		}
 	}
 	
 	/**

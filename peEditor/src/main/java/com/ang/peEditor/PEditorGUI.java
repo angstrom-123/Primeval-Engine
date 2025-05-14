@@ -113,10 +113,19 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 
 		case "Sector":
 			{
-			String selection = (String) JOptionPane.showInputDialog(frame, "New Sector "
-					+ "Corner Count", "New Sector", JOptionPane.PLAIN_MESSAGE, null, null, "4");
-			int cornerCount = Integer.valueOf(selection);
-			ei.newSector(cornerCount);
+			JTextField countField = new JTextField(5);
+			JTextField scaleField = new JTextField(5);
+			JPanel optionPanel = new JPanel();
+			optionPanel.add(new JLabel("Corner count:"));
+			optionPanel.add(countField);
+			optionPanel.add(new JLabel("New sector scale:"));
+			optionPanel.add(scaleField);
+			int selection = JOptionPane.showConfirmDialog(frame, optionPanel, "New Sector", JOptionPane.OK_CANCEL_OPTION);
+			if (selection == JOptionPane.YES_OPTION) {
+				int cornerCount = Integer.valueOf(countField.getText());		
+				double scale = Double.valueOf(scaleField.getText());		
+				ei.newSector(cornerCount, scale);
+			}
 			}
 			break;
 
