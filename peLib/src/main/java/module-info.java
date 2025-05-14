@@ -4,6 +4,7 @@ open module com.ang.peLib {
 	exports com.ang.peLib.exceptions;
 	exports com.ang.peLib.files;
 	exports com.ang.peLib.files.pmap;
+	exports com.ang.peLib.files.json;
 	exports com.ang.peLib.graphics;
 	exports com.ang.peLib.hittables;
 	exports com.ang.peLib.inputs;

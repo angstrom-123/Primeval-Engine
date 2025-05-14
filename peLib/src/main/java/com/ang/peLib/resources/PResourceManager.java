@@ -10,10 +10,10 @@ import com.ang.peLib.exceptions.*;
  */
 public class PResourceManager {
 	private final static String SEP = System.getProperty("file.separator");
-	public final static String SPRITE_DIR = SEP + "sprite" + SEP;
-	public final static String MAP_DIR = SEP + "map" + SEP;
-	private final static String RES_PATH = "src" + SEP + "main" 
-			+ SEP + "resources" + SEP;
+	public final static String SPRITE_DIR = SEP + PResourceType.SPRITE.getDirName() + SEP;
+	public final static String MAP_DIR = SEP + PResourceType.PMAP.getDirName() + SEP;
+	public final static String CONFIG_DIR = SEP + PResourceType.CONFIG.getDirName() + SEP;
+	private final static String RES_PATH = "src" + SEP + "main" + SEP + "resources" + SEP;
 	private static String editorMapDir = null;
 	private static String editorSpriteDir = null;
 	private static String coreMapDir = null;
@@ -136,6 +136,10 @@ public class PResourceManager {
 		case SPRITE:
 			res = new PResource(resourceType, PResourceManager.SPRITE_DIR + name, true); 
 			break;
+
+		case CONFIG:
+			res = new PResource(resourceType, PResourceManager.CONFIG_DIR + name, true);
+			break;
 		
 		default:
 			throw new PResourceException(PResource.invalid(), 
@@ -175,13 +179,15 @@ public class PResourceManager {
 		PResource res;
 		switch (resourceType) {
 		case PMAP:
-			res = new PResource(resourceType, getDirOf(resourceType, module) + name, 
-					false);
+			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
 			break;
 
 		case SPRITE:
-			res = new PResource(resourceType, getDirOf(resourceType, module) + name, 
-					false); 
+			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false); 
+			break;
+
+		case CONFIG:
+			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
 			break;
 		
 		default:

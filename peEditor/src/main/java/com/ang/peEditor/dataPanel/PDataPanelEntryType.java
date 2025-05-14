@@ -1,11 +1,11 @@
 package com.ang.peEditor.dataPanel;
 
 public enum PDataPanelEntryType {
-	CORNER_INDEX("Index"),
-	CORNER_X("x", true),
-	CORNER_Y("y", true),
+	CORNER_INDEX("Index", true),
+	CORNER_X("x"),
+	CORNER_Y("y"),
 	CORNER_IS_PORTAL("Portal"),
-	SECTOR_INDEX("Index"),
+	SECTOR_INDEX("Index", true),
 	SECTOR_FLOOR("Floor Height"),
 	SECTOR_CEILING("Ceiling Height"),
 	SECTOR_LIGHT("Light Level");

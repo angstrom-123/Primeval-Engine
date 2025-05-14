@@ -47,6 +47,14 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		viewPosAtDragStart 	= new PVec2(0.0, 0.0);
 		dragStartPos 		= new PVec2(0.0, 0.0);
 		params 				= new PEditorParams();
+		try {
+			params.init();
+		} catch (PResourceException e) {
+			System.err.println("Failed to load editor config file from resources");
+			e.printStackTrace();
+			return;
+
+		}
 		mil 				= new PMouseInputListener(this);
 		renderer 			= new PGUIRenderer(params.width, params.height, mil);
 		mapHandler 			= new PPMapHandler();
@@ -285,7 +293,15 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	private void reset() {
-		params.init();
+		try {
+			params.init();
+		} catch (PResourceException e) {
+			System.err.println("Failed to load editor config file from resources");
+			e.printStackTrace();
+			exit();
+			return;
+
+		}
 		selectedSectorIndex = -1;
 		selectedCornerIndex = -1;
 		viewPos 			= new PVec2(0.0, 0.0);
@@ -353,7 +369,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private boolean findSelectedCorner(int x, int y) {
 		final PSector[] sectors = mapHandler.getSaveData().editableMapData
 				.world.getSectors();
-		final int leeway = (int) Math.round((params.CORNER_SIZE / 2) * 2.5);
+		final int leeway = (int) Math.round((params.CORNER_SIZE / 2) * 3.0);
 		for (int i = 0; i < sectors.length; i++) {
 			PVec2[] corners = sectors[i].getCorners();
 			for (int j = 0; j < corners.length; j++) {

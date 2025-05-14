@@ -85,9 +85,8 @@ public class PPMapHandler {
 	 */
 	public void loadMapData(String name) throws PResourceException {
 		PResource res = PResourceManager.fetch(PResourceType.PMAP, name);
-		String[] lines;
 		PResourceFileReader reader = new PResourceFileReader();
-		lines = reader.readFile(PResourceType.PMAP, name);
+		String[] lines = reader.readFile(PResourceType.PMAP, name);
 		PPMapData mapData;
 		PPMapParser parser = new PPMapParser(PResourceManager.MAP_DIR + name);
 		try {

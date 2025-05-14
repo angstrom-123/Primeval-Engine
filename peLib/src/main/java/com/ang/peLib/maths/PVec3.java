@@ -1,5 +1,6 @@
 package com.ang.peLib.maths;
 
+import com.ang.peLib.graphics.PColour;
 import com.ang.peLib.utils.PCopyable;
 
 /**
@@ -285,6 +286,10 @@ public class PVec3 extends PCopyable {
 				u.z() * v.x() - u.x() * v.z(),
 				u.x() * v.y() - u.y() * v.x());
 
+	}
+
+	public PColour toColour() {
+		return new PColour(x, y, z);
 	}
 
 	/**

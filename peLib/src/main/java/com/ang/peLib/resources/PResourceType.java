@@ -6,6 +6,7 @@ package com.ang.peLib.resources;
 public enum PResourceType {
 	SPRITE("sprite", "sprite"),
 	PMAP("pmap", "map"),
+	CONFIG("config", "config"),
 	INVALID("invalid", null);
 
 	private String typeString;

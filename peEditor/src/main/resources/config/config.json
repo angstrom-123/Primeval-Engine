@@ -1,0 +1,26 @@
+{
+	"default":	{
+		"snapToGrid": true,
+		"scale": 15.0,
+		"width": 1200,
+		"backgroundColour": [0.1, 0.1, 0.15],
+		"gridColour": [0.15, 0.15, 0.2],
+		"axisColour": [0.6, 0.3, 0.3],
+		"lineColour": [0.6, 0.6, 0.6],
+		"cornerColour": [0.8, 0.8, 0.8],
+		"selectedColour": [0.3, 0.4, 0.7],
+		"selectedColour2": [0.2, 0.3, 0.9],
+	},
+	"user":	{
+		"snapToGrid": true,
+		"scale": 15.0,
+		"width": 1200,
+		"backgroundColour": [0.1, 0.1, 0.15],
+		"gridColour": [0.15, 0.15, 0.2],
+		"axisColour": [0.6, 0.3, 0.3],
+		"lineColour": [0.6, 0.6, 0.6],
+		"cornerColour": [0.8, 0.8, 0.8],
+		"selectedColour": [0.3, 0.4, 0.7],
+		"selectedColour2": [0.2, 0.3, 0.9]
+	}
+}
