@@ -201,6 +201,17 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	@Override
+	public void rightMouseReleased(int x, int y) {
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
+			renderer.fillCircleAroundCorner(editableData, params, mapTranslation, 
+					params.selectedColour, lastSectorIndex, lastCornerIndex,
+					params.CORNER_RADIUS);
+			renderer.repaint();
+		}
+	}
+
+	@Override
 	public void mouseExited() {
 
 	}

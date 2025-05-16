@@ -57,7 +57,10 @@ public class PMouseInputListener extends PListener implements MouseMotionListene
 	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		mouseInterface.mouseDragged(e.getX(), e.getY());
+		// only trigger on left click drag
+		if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+			mouseInterface.mouseDragged(e.getX(), e.getY());
+		}
 	}
 
 	/**
@@ -85,7 +88,11 @@ public class PMouseInputListener extends PListener implements MouseMotionListene
 	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		mouseInterface.mouseReleased(e.getX(), e.getY());
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			mouseInterface.mouseReleased(e.getX(), e.getY());
+		} else {
+			mouseInterface.rightMouseReleased(e.getX(), e.getY());
+		}
 	}
 
 	/**
