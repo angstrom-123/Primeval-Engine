@@ -1,6 +1,6 @@
 package com.ang.peEditor;
 
-import com.ang.peEditor.dataPanel.PDataPanelEntry;
+import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry;
 
 public interface PEditorInterface {
 	void dataPanelChange(PDataPanelEntry entry, String text);
@@ -11,4 +11,8 @@ public interface PEditorInterface {
 	void undo();
 	void redo();
 	void newSector(int cornerCount, double scale);
+	void delSector(int sectorIndex);
+	void delCorner(int cornerIndex, int sectorIndex);
+	void insCornerLeft(int cornerIndex, int sectorIndex);
+	void insCornerRight(int cornerIndex, int sectorIndex);
 }

@@ -1,4 +1,4 @@
-package com.ang.peEditor.dataPanel;
+package com.ang.peEditor.gui.menu.dataMenu;
 
 public class PDataPanelEntry {
 	public final static int TOP = 0;

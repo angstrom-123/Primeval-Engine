@@ -1,5 +1,6 @@
-package com.ang.peEditor.selector;
+package com.ang.peEditor.gui.menu.selectorMenu;
 
+import com.ang.peEditor.PEditorParams;
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.files.PFileReader;
 import com.ang.peLib.resources.PModuleName;
@@ -10,15 +11,20 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 
 public class PSelector {
+	private final PEditorParams params;
 	private final int			WIDTH 					= 400;
 	private final int			HEIGHT 					= 300;
 	private final int			BUTTON_WIDTH 			= WIDTH;
@@ -35,7 +41,8 @@ public class PSelector {
 	private JFrame 				parent;
 	private PSelectorListener 	listener;
 
-	public PSelector(PSelectorType type, JFrame parent, PSelectorListener listener) {
+	public PSelector(PEditorParams params, PSelectorType type, JFrame parent, PSelectorListener listener) {
+		this.params = params;
 		this.type = type;
 		this.parent = parent;
 		this.listener = listener;
@@ -71,18 +78,34 @@ public class PSelector {
 		// init main frame
 		frame.getContentPane().setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		frame.setLayout(new BorderLayout(0, 0));
+		frame.setBackground(params.guiBgColourDark);
 		// init scrollable files container
 		scrollPane.setPreferredSize(new Dimension(WIDTH, FILE_CONTAINER_HEIGHT));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		filesContainer.setLayout(null);
+		scrollPane.setBackground(params.guiBgColourDark);
+		scrollPane.setBorder(null);
+		scrollPane.getVerticalScrollBar().setBackground(params.guiInputBgColour);
+		scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+			@Override
+			protected void configureScrollBarColors() {
+				this.thumbColor = params.guiInputBgColour;
+			}
+		});
 		// adding buttons for each file
+		filesContainer.setLayout(null);
+		filesContainer.setBorder(null);
+		filesContainer.setBackground(params.guiBgColourDark);
 		JButton[] buttons = createFileButtons();
 		for (JButton b : buttons) filesContainer.add(b);
 		filesContainer.setPreferredSize(new Dimension(
 					WIDTH, BUTTON_HEIGHT * buttons.length));
 		// init container for input bar at bottom of screen
 		inputContainer.setLayout(new BorderLayout(0, 0));
+		inputContainer.setBackground(params.guiBgColourDark);
+		submitButton.setBackground(params.guiBgColour);
+		submitButton.setForeground(Color.WHITE);
+		submitButton.setBorderPainted(false);
 		submitButton.setActionCommand(textField.getText());
 		submitButton.addActionListener(new ActionListener() {
 			@Override
@@ -90,6 +113,9 @@ public class PSelector {
 				submitPressed(textField.getText());
 			}
 		});
+		textField.setBackground(params.guiInputBgColour);
+		textField.setForeground(Color.WHITE);
+		textField.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		inputContainer.add(submitButton, BorderLayout.LINE_END);
 		inputContainer.add(textField, BorderLayout.LINE_START);
 		// adding components to main frame
@@ -115,12 +141,17 @@ public class PSelector {
 		String[] names = findFiles();
 		JButton[] buttons = new JButton[names.length];
 		for (int i = 0; i < names.length; i++) {
-			JButton button = new JButton(names[i]);
+			// JButton button = new JButton(names[i]);
+			JButton button = new JButton();
+			JLabel label = new JLabel(names[i]);
+			label.setBackground(null);
+			label.setForeground(Color.WHITE);
 			button.setActionCommand(names[i]);
+			button.setLayout(new BorderLayout(0, 0));
 			button.setBounds(0, i * BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
-			button.setBorder(null);
-			button.setForeground(Color.BLACK);
-			button.setBackground(Color.WHITE);
+			button.setForeground(Color.WHITE);
+			button.setBackground((i % 2 == 0) ? params.guiBgColour : params.guiBgColourDark);
+			button.add(label, BorderLayout.WEST);
 			button.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

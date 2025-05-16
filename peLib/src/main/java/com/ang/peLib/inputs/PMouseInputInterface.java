@@ -8,7 +8,7 @@ public interface PMouseInputInterface {
 	 * Handles the mouse scroll event.
 	 * @param units the amount that the mouse was scrolled
 	 */
-	void mouseScrolled(int units);
+	void mouseScrolled(int x, int y, int units);
 
 	/**
 	 * Handles the mouse move event.

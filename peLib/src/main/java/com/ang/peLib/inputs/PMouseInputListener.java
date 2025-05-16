@@ -33,7 +33,7 @@ public class PMouseInputListener extends PListener implements MouseMotionListene
 	 */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		mouseInterface.mouseScrolled(e.getUnitsToScroll());
+		mouseInterface.mouseScrolled(e.getX(), e.getY(), e.getUnitsToScroll());
 	}
 
 	/**

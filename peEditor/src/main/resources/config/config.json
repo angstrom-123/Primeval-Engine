@@ -10,6 +10,10 @@
 		"cornerColour": [0.8, 0.8, 0.8],
 		"selectedColour": [0.3, 0.4, 0.7],
 		"selectedColour2": [0.2, 0.3, 0.9],
+		"guiHeadingColour": "353542",
+		"guiBgColour": "454555",
+		"guiBgColourDark": "404050",
+		"guiInputBgColour": "4e4e5e"
 	},
 	"user":	{
 		"snapToGrid": true,
@@ -21,6 +25,10 @@
 		"lineColour": [0.6, 0.6, 0.6],
 		"cornerColour": [0.8, 0.8, 0.8],
 		"selectedColour": [0.3, 0.4, 0.7],
-		"selectedColour2": [0.2, 0.3, 0.9]
+		"selectedColour2": [0.2, 0.3, 0.9],
+		"guiHeadingColour": "353542",
+		"guiBgColour": "454555",
+		"guiBgColourDark": "404050",
+		"guiInputBgColour": "4e4e5e"
 	}
 }

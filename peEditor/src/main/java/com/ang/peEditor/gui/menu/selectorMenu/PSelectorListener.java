@@ -1,4 +1,4 @@
-package com.ang.peEditor.selector;
+package com.ang.peEditor.gui.menu.selectorMenu;
 
 public interface PSelectorListener {
 	void selectionMade(PSelector selector);

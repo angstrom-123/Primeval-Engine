@@ -4,11 +4,10 @@ import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.maths.PVec2;
 
 public class PSectorFactory {
-	private final static int MAXIMUM_CORNERS = 8;
 	private final static int MINIMUM_CORNERS = 3;
 
 	public static PSector newSector(int cornerCount, double scale, PVec2 at) {
-		if ((cornerCount < MINIMUM_CORNERS) || (cornerCount > MAXIMUM_CORNERS)) {
+		if (cornerCount < MINIMUM_CORNERS) {
 			return null;
 
 		}

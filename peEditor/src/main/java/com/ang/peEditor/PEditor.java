@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ang.peEditor.history.*;
-import com.ang.peEditor.dataPanel.PDataPanelEntry;
-import com.ang.peEditor.dataPanel.PDataPanelEntryType;
+import com.ang.peEditor.gui.*;
+import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry;
+import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntryType;
 import com.ang.peLib.exceptions.PResourceException;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.files.pmap.PPMapHandler;
+import com.ang.peLib.graphics.PColour;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.inputs.PMouseInputInterface;
@@ -24,9 +26,10 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private int 				selectedCornerIndex;
 	private int					lastSectorIndex;
 	private int					lastCornerIndex;
-	private PVec2 				viewPos;
-	private PVec2 				viewPosAtDragStart;
-	private PVec2 				dragStartPos;
+	private PVec2				mapTranslation;
+	private PVec2				dragStartMapTranslation;
+	private int 				dragStartX;
+	private int 				dragStartY;
 	private PEditorParams 		params;
 	private PMouseInputListener mil;
 	private PGUIRenderer 		renderer;
@@ -39,15 +42,16 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	private void init() {
-		newSectorCornerNum  = -1;
-		selectedSectorIndex = -1;
-		selectedCornerIndex = -1;
-		lastSectorIndex 	= -1;
-		lastCornerIndex 	= -1;
-		viewPos 			= new PVec2(0.0, 0.0);
-		viewPosAtDragStart 	= new PVec2(0.0, 0.0);
-		dragStartPos 		= new PVec2(0.0, 0.0);
-		params 				= new PEditorParams();
+		newSectorCornerNum		= -1;
+		selectedSectorIndex		= -1;
+		selectedCornerIndex		= -1;
+		lastSectorIndex			= -1;
+		lastCornerIndex			= -1;
+		mapTranslation			= new PVec2(0.0, 0.0);
+		dragStartMapTranslation	= new PVec2(0.0, 0.0);
+		dragStartX				= 0;
+		dragStartY				= 0;
+		params					= new PEditorParams();
 		try {
 			params.init();
 		} catch (PResourceException e) {
@@ -60,7 +64,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer 			= new PGUIRenderer(params.width, params.height, mil);
 		mapHandler 			= new PPMapHandler();
 		history				= new PHistory(params.historyLength);
-		gui 				= new PEditorGUI(renderer, this);
+		gui 				= new PEditorGUI(params, renderer, this);
 		gui.init();
 	}
 
@@ -70,12 +74,13 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 	@Override
-	public void mouseScrolled(int units) {
-		final double step = 0.05;
+	public void mouseScrolled(int x, int y, int units) {
+		final double step = 0.01;
 		params.scale *= (1 + (units * step));
 		params.scale = Math.max(params.scale, 0.1);
 		renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
-				params, viewPos);
+				params, mapTranslation);
+		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
 	}
 
@@ -83,11 +88,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	public void mouseMoved(int x, int y) {
 		if (newSectorCornerNum != -1) {
 			renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
-					params, viewPos);
+					params, mapTranslation);
 			int x0 = PConversions.v2ss(0.0, true, params.width, params.height, 
-					params.scale, viewPos);
+					params.scale, mapTranslation);
 			int x1 = PConversions.v2ss(newSectorScale, true, params.width, 
-					params.height, params.scale, viewPos);
+					params.height, params.scale, mapTranslation);
 			renderer.writeCircleAround(params.selectedColour2, x1 - x0, x, y);
 		}
 		renderer.writeMouseCoords(x, y);
@@ -98,34 +103,37 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	public void mouseDragged(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
 		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
-			renderer.writeMapData(editableData, params, viewPos);
-			double[] coords = PConversions.ss2v(x, y, params.height, 
-					params.width, params.scale, viewPos);;
+			renderer.writeMapData(editableData, params, mapTranslation);
+			double[] coords = PConversions.ss2v(x, y, params.width, 
+					params.height, params.scale, mapTranslation);;
 			PVec2 newPos = new PVec2(coords);
 			if (params.snapToGrid) {
 				newPos = newPos.round();
 				int[] snappedCoords = PConversions.v2ss(newPos, params.width, 
-						params.height, params.scale, viewPos);
+						params.height, params.scale, mapTranslation);
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
-						selectedCornerIndex, editableData, params, viewPos);
+						selectedCornerIndex, editableData, params, mapTranslation);
 				renderer.fillCircleAround(params.selectedColour, params.CORNER_RADIUS, 
 						snappedCoords[0], snappedCoords[1]);
 				gui.openDataPanel(getDataForDragged(newPos.x(), newPos.y()));
-				renderer.fillCircleAroundCorner(editableData, params, viewPos, 
+				renderer.fillCircleAroundCorner(editableData, params, mapTranslation, 
 						params.selectedColour, lastSectorIndex, lastCornerIndex, 
 						params.CORNER_RADIUS);
 			} else {
 				renderer.writeLinesToCorner(params.selectedColour, newPos, selectedSectorIndex,
-						selectedCornerIndex, editableData, params, viewPos);
+						selectedCornerIndex, editableData, params, mapTranslation);
 				renderer.fillCircleAround(params.selectedColour, params.CORNER_RADIUS, x, y);
 			}
 		} else {
-			renderer.writeMapData(editableData,	params, viewPos);
-			int dx = (int) dragStartPos.x() - x;
-			int dy = (int) dragStartPos.y() - y;
-			viewPos = viewPosAtDragStart.sub(new PVec2(dx, dy));
-
+			renderer.writeMapData(editableData,	params, mapTranslation);
+			PVec2 endPos = new PVec2(PConversions.ss2v(x, y, params.width, params.height,
+					params.scale, mapTranslation));
+			PVec2 startPos = new PVec2(PConversions.ss2v(dragStartX, dragStartY, params.width, params.height,
+					params.scale, mapTranslation));
+			PVec2 delta = endPos.sub(startPos);
+			mapTranslation = dragStartMapTranslation.add(delta);
 		}
+		gui.closeRMBPanels();
 		renderer.writeMouseCoords(x, y);
 		renderer.repaint();
 	}
@@ -136,25 +144,33 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		lastSectorIndex = selectedSectorIndex;
 		lastCornerIndex = selectedCornerIndex;
 		if (!found) {
-			dragStartPos = new PVec2(x, y);
-			viewPosAtDragStart = viewPos.copy();
-			gui.closeDataPanel();
+			dragStartX = x;
+			dragStartY = y;
+			dragStartMapTranslation = mapTranslation.copy();
+			gui.closeDataPanels();
 		}
+		gui.closeRMBPanels();
 	}
 
 	@Override
 	public void rightMousePressed(int x, int y) {
+		boolean found = findSelectedCorner(x, y);
+		lastSectorIndex = selectedSectorIndex;
+		lastCornerIndex = selectedCornerIndex;
+		if (found) {
+			gui.openRightClickMenu(x, y, lastSectorIndex, lastCornerIndex);
+		}
 		newSectorScale = -1.0;
 		newSectorCornerNum = -1;
-		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, viewPos);
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, mapTranslation);
 		renderer.repaint();
 	}
 
 	@Override
 	public void mouseReleased(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
-		double[] coords = PConversions.ss2v(x, y, params.height, 
-				params.width, params.scale, viewPos);;
+		double[] coords = PConversions.ss2v(x, y, params.width, 
+				params.height, params.scale, mapTranslation);
 		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
 			PVec2 newPos = new PVec2(coords);
 			if (params.snapToGrid) {
@@ -172,13 +188,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			}
 			newSectorCornerNum = -1;
 		}
-		renderer.writeMapData(editableData, params, viewPos);
+		renderer.writeMapData(editableData, params, mapTranslation);
 		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
-			renderer.fillCircleAroundCorner(editableData, params, viewPos, 
+			renderer.fillCircleAroundCorner(editableData, params, mapTranslation, 
 					params.selectedColour, lastSectorIndex, lastCornerIndex,
 					params.CORNER_RADIUS);
 		}
-		dragStartPos = new PVec2(0.0, 0.0);
 		selectedSectorIndex = -1;
 		selectedCornerIndex = -1;
 		renderer.writeMouseCoords(x, y);
@@ -199,7 +214,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		temp.position = new PVec2(0.0, 0.0);
 		mapHandler.setEditableMapData(temp);
 		mapHandler.setSavedMapData(temp.copy());
-		renderer.writeMapData(temp, params, viewPos);
+		renderer.writeMapData(temp, params, mapTranslation);
 		renderer.repaint();
 	}
 
@@ -212,7 +227,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			e.printStackTrace();
 		}
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
-		renderer.writeMapData(editableData, params, viewPos);
+		renderer.writeMapData(editableData, params, mapTranslation);
 		renderer.repaint();
 	}
 
@@ -298,11 +313,39 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			break;
 
 		}
-		renderer.writeMapData(editableData, params, viewPos);
+		renderer.writeMapData(editableData, params, mapTranslation);
 		if ((lastSectorIndex != -1) && (lastCornerIndex != -1)) {
-			renderer.fillTileAroundCorner(editableData, params, viewPos, 
+			renderer.fillTileAroundCorner(editableData, params, mapTranslation, 
 					params.selectedColour2, lastSectorIndex, lastCornerIndex);
 		}
+		renderer.repaint();
+	}
+
+	@Override
+	public void delSector(int sectorIndex) {
+		System.out.println("Deleting sector of index: " + sectorIndex);
+		gui.closeRMBPanels();
+		renderer.repaint();
+	}
+
+	@Override
+	public void delCorner(int cornerIndex, int sectorIndex) {
+		System.out.println("Deleting corner at indices c:" + cornerIndex + " s:" + sectorIndex);
+		gui.closeRMBPanels();
+		renderer.repaint();
+	}
+
+	@Override
+	public void insCornerLeft(int cornerIndex, int sectorIndex) {
+		System.out.println("Inserting corner left at indices c:" + cornerIndex + " s:" + sectorIndex);
+		gui.closeRMBPanels();
+		renderer.repaint();
+	}
+
+	@Override
+	public void insCornerRight(int cornerIndex, int sectorIndex) {
+		System.out.println("Inserting corner right at indices c:" + cornerIndex + " s:" + sectorIndex);
+		gui.closeRMBPanels();
 		renderer.repaint();
 	}
 
@@ -316,11 +359,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			return;
 
 		}
-		selectedSectorIndex = -1;
-		selectedCornerIndex = -1;
-		viewPos 			= new PVec2(0.0, 0.0);
-		viewPosAtDragStart 	= new PVec2(0.0, 0.0);
-		dragStartPos 		= new PVec2(0.0, 0.0);
+		selectedSectorIndex		= -1;
+		selectedCornerIndex		= -1;
+		mapTranslation			= new PVec2(0.0, 0.0);
+		dragStartMapTranslation	= new PVec2(0.0, 0.0);
+		dragStartX				= 0;
+		dragStartY				= 0;
 	}
 
 	private List<PDataPanelEntry> getDataForDragged(double x, double y) {
@@ -388,7 +432,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			PVec2[] corners = sectors[i].getCorners();
 			for (int j = 0; j < corners.length; j++) {
 				int[] coords = PConversions.v2ss(corners[j], params.width, 
-						params.height, params.scale, viewPos);
+						params.height, params.scale, mapTranslation);
 				int minX = coords[0] - leeway;
 				int maxX = coords[0] + leeway;
 				int minY = coords[1] - leeway;
