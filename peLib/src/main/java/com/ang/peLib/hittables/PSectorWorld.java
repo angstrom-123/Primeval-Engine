@@ -48,6 +48,13 @@ public class PSectorWorld extends PCopyable {
 		}
 	}
 
+	public void removeSectorAt(int sectorIndex) {
+		for (int i = sectorIndex; i < head; i++) {
+			sectors[i] = (i + 1 >= sectors.length) ? null : sectors[i + 1];
+		}
+		head--;
+	}
+
 	/**
 	 * Returns the maximum allowed sectors in this world.
 	 * @return the maximum amount of sectors specified in constructor

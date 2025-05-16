@@ -334,31 +334,40 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override
 	public void delSector(int sectorIndex) {
-		System.out.println("Deleting sector of index: " + sectorIndex);
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		editableData.world.removeSectorAt(sectorIndex);
 		gui.closeRMBPanels();
+		renderer.writeMapData(editableData, params, mapTranslation);
 		renderer.repaint();
 	}
 
 	@Override
 	public void delCorner(int cornerIndex, int sectorIndex) {
-		System.out.println("Deleting corner at indices c:" + cornerIndex + " s:" + sectorIndex);
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		editableData.world.getSectors()[sectorIndex].removeCornerAt(cornerIndex);
 		gui.closeRMBPanels();
+		renderer.writeMapData(editableData, params, mapTranslation);
 		renderer.repaint();
 	}
 
 	@Override
 	public void insCornerLeft(int cornerIndex, int sectorIndex) {
-		System.out.println("Inserting corner left at indices c:" + cornerIndex + " s:" + sectorIndex);
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		editableData.world.getSectors()[sectorIndex].insertCornerBefore(cornerIndex);
 		gui.closeRMBPanels();
+		renderer.writeMapData(editableData, params, mapTranslation);
 		renderer.repaint();
 	}
 
 	@Override
 	public void insCornerRight(int cornerIndex, int sectorIndex) {
-		System.out.println("Inserting corner right at indices c:" + cornerIndex + " s:" + sectorIndex);
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		editableData.world.getSectors()[sectorIndex].insertCornerAfter(cornerIndex);
 		gui.closeRMBPanels();
+		renderer.writeMapData(editableData, params, mapTranslation);
 		renderer.repaint();
 	}
+
 
 	private void reset() {
 		try {
