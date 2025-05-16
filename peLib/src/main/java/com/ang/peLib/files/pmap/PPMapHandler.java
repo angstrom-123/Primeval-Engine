@@ -54,6 +54,9 @@ public class PPMapHandler {
 	 */
 	@SuppressWarnings("unused")
 	public void saveMap(String name, PModuleName module) throws PResourceException {
+		if (!name.endsWith(".pmap")) {
+			name = name + ".pmap";
+		}
 		try {
 			PResource res = PResourceManager.fetch(PResourceType.PMAP, module, name);
 		} catch (PResourceException e) {
