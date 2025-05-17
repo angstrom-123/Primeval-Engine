@@ -13,6 +13,8 @@ import java.awt.event.MouseWheelListener;
  */
 public class PMouseInputListener extends PListener implements MouseMotionListener, 
 	   MouseListener, MouseWheelListener {
+	private final static int SCROLL_DEBOUNCE_MS = 50;
+	private static long lastScrollTime = 0;
 	private PMouseInputInterface mouseInterface;
 
 	/**
@@ -33,7 +35,10 @@ public class PMouseInputListener extends PListener implements MouseMotionListene
 	 */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		mouseInterface.mouseScrolled(e.getX(), e.getY(), e.getUnitsToScroll());
+		if (System.currentTimeMillis() - lastScrollTime >= SCROLL_DEBOUNCE_MS) {	
+			lastScrollTime = System.currentTimeMillis();
+			mouseInterface.mouseScrolled(e.getX(), e.getY(), e.getUnitsToScroll());
+		}
 	}
 
 	/**

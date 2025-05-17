@@ -33,6 +33,7 @@ public class PGUIRenderer extends PRenderer {
 
 	private void initGui() {
 		frame.setPreferredSize(new Dimension(width, height));
+		frame.setResizable(false);
 		layerPane.setBounds(0, 0, width, height);
 		layerPane.setPreferredSize(new Dimension(width, height));
 		layerPane.setLayout(null);

@@ -30,7 +30,6 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		menuBar.add(createFileMenu());
 		menuBar.add(createEditMenu());
 		menuBar.add(createNewMenu());
-		frame.setResizable(false);
 		frame.setJMenuBar(menuBar);
 		frame.pack();
 		frame.validate();

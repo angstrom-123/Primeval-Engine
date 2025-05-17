@@ -10,7 +10,6 @@ import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntryType;
 import com.ang.peLib.exceptions.PResourceException;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.files.pmap.PPMapHandler;
-import com.ang.peLib.graphics.PColour;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.inputs.PMouseInputInterface;
@@ -75,7 +74,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override
 	public void mouseScrolled(int x, int y, int units) {
-		final double step = 0.01;
+		final double step = 0.05;
 		params.scale *= (1 + (units * step));
 		params.scale = Math.max(params.scale, 0.1);
 		renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
