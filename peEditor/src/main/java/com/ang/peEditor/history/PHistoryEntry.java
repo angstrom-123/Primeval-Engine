@@ -1,32 +1,25 @@
 package com.ang.peEditor.history;
 
-public class PHistoryEntry {
-	public PHistoryEntryType entryType;
-	public double before0;
-	public double after0;
-	public double before1;
-	public double after1;
+import com.ang.peLib.utils.PCopyable;
 
-	public PHistoryEntry() {}
+public class PHistoryEntry<T, U> extends PCopyable {
+	public PHistoryEntryType entryType;
+	public Object field0;
+	public Object field1;
 
 	public PHistoryEntry(PHistoryEntryType entryType) {
 		this.entryType = entryType;
 	}
 
-	public PHistoryEntry copy() {
-		PHistoryEntry temp = new PHistoryEntry();
-		temp.entryType = entryType;
-		temp.setData(true, new double[]{before0, after0, before1, after1});
-		return temp;
-
+	public void setFields(Object value0, Object value1) {
+		this.field0 = value0;
+		this.field1 = value1;
 	}
 
-	public void setData(boolean isLong, double[] data) {
-		before0= data[0];
-		after0= data[1];
-		if (isLong) {
-			before1 = data[2];
-			after1 = data[3];
-		}
+	@Override
+	@SuppressWarnings("unchecked")
+	public PHistoryEntry<T, U> copy() {
+		return new PHistoryEntry<T, U>(this.entryType);
+
 	}
 }

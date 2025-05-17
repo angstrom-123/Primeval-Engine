@@ -155,10 +155,12 @@ public class PSector extends PCopyable {
 		updatePortals(newPortals);
 	}
 
-	public void insertCornerBefore(int cornerIndex) {
+	public int insertCornerBefore(int cornerIndex) {
 		PVec2[] newCorners = new PVec2[corners.length + 1];
 		int[] newPortals = new int[portalIndices.length];
+		int insertionIndex = -1;
 		if (cornerIndex == 0) {
+			insertionIndex = 0;
 			newCorners[0] = (corners[cornerIndex].add(corners[corners.length - 1])).mul(0.5);
 			for (int i = 0; i < corners.length; i++) {
 				newCorners[i + 1] = corners[i];
@@ -168,6 +170,7 @@ public class PSector extends PCopyable {
 			for (int i = 0; i < corners.length; i++) {
 				newCorners[head++] = corners[i];
 				if (i == cornerIndex - 1) {
+					insertionIndex = head;
 					newCorners[head++] = (corners[cornerIndex].add(corners[cornerIndex - 1])).mul(0.5);
 				}
 			}
@@ -181,20 +184,30 @@ public class PSector extends PCopyable {
 			}
 		}
 		updatePortals(newPortals);
+		return insertionIndex;
+
 	}
 
-	public void insertCornerAfter(int cornerIndex) {
+	public void replaceCornerAt(int index, PVec2 corner) {
+		corners[index] = corner;
+		updatePortals(portalIndices);
+	}
+
+	public int insertCornerAfter(int cornerIndex) {
 		PVec2[] newCorners = new PVec2[corners.length + 1];
 		int[] newPortals = new int[portalIndices.length];
+		int insertionIndex = -1;
 		if (cornerIndex == corners.length - 1) {
 			for (int i = 0; i < corners.length; i++) {
 				newCorners[i] = corners[i];
 			}
+			insertionIndex = newCorners.length - 1;
 			newCorners[newCorners.length - 1] = (corners[cornerIndex].add(corners[0])).mul(0.5);
 		} else {
 			int head = 0;
 			for (int i = 0; i < corners.length; i++) {
 				if (i == cornerIndex + 1) {
+					insertionIndex = head;
 					newCorners[head++] = (corners[cornerIndex].add(corners[cornerIndex + 1])).mul(0.5);
 				}
 				newCorners[head++] = corners[i];
@@ -209,6 +222,8 @@ public class PSector extends PCopyable {
 			}
 		}
 		updatePortals(newPortals);
+		return insertionIndex;
+
 	}
 
 	/**

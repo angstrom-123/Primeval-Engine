@@ -49,6 +49,7 @@ public class PEditorParams {
 			snapToGrid = (boolean) attemptToRead(JSONData, "snapToGrid", PJSONValueType.BOOLEAN);
 			scale = (double) attemptToRead(JSONData, "scale", PJSONValueType.DOUBLE);
 			width = (int) attemptToRead(JSONData, "width", PJSONValueType.INTEGER);
+			historyLength = (int) attemptToRead(JSONData, "historyLength", PJSONValueType.INTEGER);
 			backgroundColour = ((PVec3) attemptToRead(JSONData, "backgroundColour", 
 					PJSONValueType.DOUBLE_ARRAY)).toColour();
 			gridColour = ((PVec3) attemptToRead(JSONData, "gridColour", 

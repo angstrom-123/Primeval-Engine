@@ -40,12 +40,20 @@ public class PSectorWorld extends PCopyable {
 	 * @param sec the sector to add
 	 * @see		  PSector
 	 */
-	public void addSector(PSector sec) {
+	public int addSector(PSector sec) {
+		int insertionIndex = -1;
 		if (head < maxSectors) {
+			insertionIndex = head;
 			sectors[head++] = sec;
 		} else {
 			System.out.println("Failed to add sector to world");
 		}
+		return insertionIndex;
+
+	}
+
+	public void replaceSectorAt(int index, PSector sec) {
+		sectors[index] = sec;
 	}
 
 	public void removeSectorAt(int sectorIndex) {
