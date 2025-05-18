@@ -15,6 +15,7 @@ import com.ang.peEditor.PEditorParams;
 import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.inputs.PMouseInputListener;
+import com.ang.peLib.inputs.PFullKeyboardInputListener;
 import com.ang.peLib.utils.PConversions;
 import com.ang.peLib.graphics.*;
 
@@ -26,12 +27,13 @@ public class PGUIRenderer extends PRenderer {
 	private List<JPanel> subPanels = new ArrayList<JPanel>();
 	private JLayeredPane layerPane = new JLayeredPane();	
 
-	public PGUIRenderer(int width, int height, PMouseInputListener mouseListener) {
+	public PGUIRenderer(int width, int height, PFullKeyboardInputListener keyListener, 
+			PMouseInputListener mouseListener) {
 		super(width, height, mouseListener);
-		this.initGui();
+		this.initGui(keyListener, mouseListener);
 	}
 
-	private void initGui() {
+	private void initGui(PFullKeyboardInputListener kil, PMouseInputListener mil) {
 		frame.setPreferredSize(new Dimension(width, height));
 		frame.setResizable(false);
 		layerPane.setBounds(0, 0, width, height);
@@ -42,10 +44,10 @@ public class PGUIRenderer extends PRenderer {
 		imgPanel.setFocusable(true);
 		imgPanel.requestFocusInWindow();
 		imgPanel.setOpaque(true);
-		PMouseInputListener mil = (PMouseInputListener) listener;
 		imgPanel.addMouseMotionListener(mil);
 		imgPanel.addMouseListener(mil);
 		imgPanel.addMouseWheelListener(mil);
+		imgPanel.addKeyListener(kil);
 		frame.getContentPane().add(layerPane);
 		layerPane.add(imgPanel, Integer.valueOf(1));
 		frame.pack();

@@ -12,6 +12,7 @@ import com.ang.peLib.files.pmap.PPMapData;
 import com.ang.peLib.files.pmap.PPMapHandler;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.hittables.PSectorWorld;
+import com.ang.peLib.inputs.PFullKeyboardInputListener;
 import com.ang.peLib.inputs.PMouseInputInterface;
 import com.ang.peLib.inputs.PMouseInputListener;
 import com.ang.peLib.maths.PVec2;
@@ -21,21 +22,24 @@ import com.ang.peLib.utils.PConversions;
 public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private int 				newSectorCornerNum		= -1;
 	private double 				newSectorScale			= -1;
-	private int 				selectedSectorIndex		= -1;
-	private int 				selectedCornerIndex		= -1;
+	private int 				selSecIndex				= -1;
+	private int 				selCorIndex				= -1;
 	private int					lastSectorIndex			= -1;
 	private int					lastCornerIndex			= -1;
 	private PVec2				mapTranslation			= new PVec2(0.0, 0.0);
 	private PVec2				dragStartMapTranslation = new PVec2(0.0, 0.0);
 	private int 				dragStartX				= 0;
 	private int 				dragStartY 				= 0;
-	private PEditorParams 		params;
+	private PEditorParams params;
+	private PFullKeyboardInputListener kil;
 	private PMouseInputListener mil;
-	private PGUIRenderer 		renderer;
-	private PPMapHandler 		mapHandler;
-	private PEditorGUI			gui;
-	private PGUIRendererHelper  rendererHelper;
-	private PHistory			history;
+	private PShortcutHandler shortcutHandler;
+	private PGUIRenderer renderer;
+	private PPMapHandler mapHandler;
+	private PEditorGUI gui;
+	private PGUIRendererHelper rendererHelper;
+	private PHistory history;
+	private PHistory redoHistory;
 
 	public PEditor() {
 		init();
@@ -51,13 +55,16 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			return;
 
 		}
+		shortcutHandler = new PShortcutHandler(this);
+		kil = new PFullKeyboardInputListener(shortcutHandler);
 		mil = new PMouseInputListener(this);
-		renderer = new PGUIRenderer(params.width, params.height, mil);
+		renderer = new PGUIRenderer(params.width, params.height, kil, mil);
 		mapHandler = new PPMapHandler();
 		gui = new PEditorGUI(params, renderer, this);
 		gui.init();
 		rendererHelper = new PGUIRendererHelper(params, renderer, mapHandler, gui);
 		history	= new PHistory(params.historyLength);
+		redoHistory	= new PHistory(params.historyLength);
 	}
 
 	public void start() {
@@ -81,9 +88,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override
 	public void mouseDragged(int x, int y) {
-		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
-			PVec2 draggedPos = rendererHelper.mouseDragSelection(x, y, selectedCornerIndex,
-					selectedSectorIndex, mapTranslation);
+		if ((selSecIndex != -1) && (selCorIndex != -1)) {
+			PVec2 draggedPos = rendererHelper.mouseDragSelection(x, y, selCorIndex,
+					selSecIndex, mapTranslation);
 			gui.openDataPanel(getDataForDragged(draggedPos.x(), draggedPos.y()));
 		} else {
 			PVec2 startPos = new PVec2(PConversions.ss2v(dragStartX, dragStartY, 
@@ -102,8 +109,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void mousePressed(int x, int y) {
 		boolean found = findSelectedCorner(x, y);
-		lastSectorIndex = selectedSectorIndex;
-		lastCornerIndex = selectedCornerIndex;
+		lastSectorIndex = selSecIndex;
+		lastCornerIndex = selCorIndex;
 		if (!found) {
 			dragStartX = x;
 			dragStartY = y;
@@ -116,8 +123,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void rightMousePressed(int x, int y) {
 		boolean found = findSelectedCorner(x, y);
-		lastSectorIndex = selectedSectorIndex;
-		lastCornerIndex = selectedCornerIndex;
+		lastSectorIndex = selSecIndex;
+		lastCornerIndex = selCorIndex;
 		if (found) {
 			gui.openRightClickMenu(x, y, lastSectorIndex, lastCornerIndex);
 		}
@@ -132,10 +139,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
 		double[] coords = PConversions.ss2v(x, y, params.width, 
 				params.height, params.scale, mapTranslation);
-		if ((selectedSectorIndex != -1) && (selectedCornerIndex != -1)) {
+		if ((selSecIndex != -1) && (selCorIndex != -1)) {
+			history.push(editableData.world.copy());
 			moveSelectedCornerTo(coords);
 		}
 		if (newSectorCornerNum != -1) {
+			history.push(editableData.world.copy());
 			insertNewSectorAt(coords);
 		}
 		renderer.writeMapData(editableData, params, mapTranslation);
@@ -143,8 +152,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			renderer.fillCircleAroundCorner(editableData, params, mapTranslation, 
 					params.selectedColour, lastSectorIndex, lastCornerIndex,params.CORNER_RADIUS);
 		}
-		selectedSectorIndex = -1;
-		selectedCornerIndex = -1;
+		selSecIndex = -1;
+		selCorIndex = -1;
 		rendererHelper.refresh(x, y);
 	}
 
@@ -154,9 +163,8 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			newPos = newPos.round();
 		}
 		PSector sec = mapHandler.getSaveData().editableMapData.world
-				.getSector(selectedSectorIndex);
-		// move corner
-		sec.getCorners()[selectedCornerIndex] = newPos;
+				.getSector(selSecIndex);
+		sec.getCorners()[selCorIndex] = newPos;
 		gui.openDataPanel(getDataForSelected());
 	}
 
@@ -164,8 +172,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		PSector sec = PSectorFactory.newSector(newSectorCornerNum, newSectorScale,
 				new PVec2(coords[0], coords[1]));
 		if (sec != null) {
-			// insert sector
-			int index = mapHandler.getSaveData().editableMapData.world.addSector(sec);
+			mapHandler.getSaveData().editableMapData.world.addSector(sec);
 		}
 		newSectorCornerNum = -1;
 	}
@@ -229,12 +236,26 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override 
 	public void undo() {
-		System.out.println("undo");
+		PSectorWorld entry = history.pop();
+		if (entry == null) return;
+
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		redoHistory.push(editableData.world.copy());
+		editableData.world = entry;
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, mapTranslation);
+		renderer.repaint();
 	}
 
 	@Override 
 	public void redo() {
-		System.out.println("redo");
+		PSectorWorld entry = redoHistory.pop();
+		if (entry == null) return;
+
+		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		history.push(editableData.world.copy());
+		editableData.world = entry;
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, mapTranslation);
+		renderer.repaint();
 	}
 
 	@Override 
@@ -256,6 +277,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			{
 			double val = Double.valueOf(text);
 			PVec2 newPos = new PVec2(val, sector.getCorner(panelEntry.cornerIndex).y());
+			history.push(editableData.world.copy());
 			// move corner
 			sector.getCorners()[panelEntry.cornerIndex] = newPos;
 			}
@@ -265,6 +287,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			{
 			double val = Double.valueOf(text);
 			PVec2 newPos = new PVec2(sector.getCorner(panelEntry.cornerIndex).x(), val);
+			history.push(editableData.world.copy());
 			// move corner
 			sector.getCorners()[panelEntry.cornerIndex] = newPos;
 			}
@@ -273,6 +296,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		case CORNER_IS_PORTAL:
 			{
 			boolean isPortal = Boolean.valueOf(text);
+			history.push(editableData.world.copy());
 			// set as portal
 			sector.setAsPortal(panelEntry.cornerIndex, isPortal);
 			}
@@ -281,6 +305,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		case SECTOR_FLOOR:
 			{
 			double val = Double.valueOf(text);
+			history.push(editableData.world.copy());
 			// change floor height
 			sector.setHeight(val, sector.getCeilingHeight());
 			}
@@ -289,6 +314,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		case SECTOR_CEILING:
 			{
 			double val = Double.valueOf(text);
+			history.push(editableData.world.copy());
 			// change ceiling height
 			sector.setHeight(sector.getFloorHeight(), val);
 			}
@@ -297,6 +323,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		case SECTOR_LIGHT:
 			{
 			double val = Double.valueOf(text);
+			history.push(editableData.world.copy());
 			// change light level
 			sector.setLightLevel(val);
 			}
@@ -314,6 +341,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void delSector(int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		history.push(editableData.world.copy());
 		// remove sector
 		editableData.world.removeSectorAt(sectorIndex);
 		// update gui
@@ -325,6 +353,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void delCorner(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		history.push(editableData.world.copy());
 		// remove corner
 		editableData.world.getSectors()[sectorIndex].removeCornerAt(cornerIndex);
 		// update gui
@@ -336,9 +365,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void insCornerLeft(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		history.push(editableData.world.copy());
 		// insert corner
-		int newCornerIndex = editableData.world.getSectors()[sectorIndex].
-			insertCornerBefore(cornerIndex);
+		editableData.world.getSectors()[sectorIndex].insertCornerBefore(cornerIndex);
 		// update gui
 		gui.closeRMBPanels();
 		renderer.writeMapData(editableData, params, mapTranslation);
@@ -348,9 +377,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void insCornerRight(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
+		history.push(editableData.world.copy());
 		// insert corner
-		int newCornerIndex = editableData.world.getSectors()[sectorIndex].
-				insertCornerAfter(cornerIndex);
+		editableData.world.getSectors()[sectorIndex].insertCornerAfter(cornerIndex);
 		// update gui
 		gui.closeRMBPanels();
 		renderer.writeMapData(editableData, params, mapTranslation);
@@ -368,12 +397,14 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 			return;
 
 		}
-		selectedSectorIndex		= -1;
-		selectedCornerIndex		= -1;
+		selSecIndex		= -1;
+		selCorIndex		= -1;
 		mapTranslation			= new PVec2(0.0, 0.0);
 		dragStartMapTranslation	= new PVec2(0.0, 0.0);
 		dragStartX				= 0;
 		dragStartY				= 0;
+		history.clear();
+		redoHistory.clear();
 	}
 
 	private List<PDataPanelEntry> getDataForDragged(double x, double y) {
@@ -415,15 +446,15 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 				int minY = coords[1] - leeway;
 				int maxY = coords[1] + leeway;
 				if ((x >= minX) && (x <= maxX) && (y >= minY) && (y <= maxY)) {
-					selectedSectorIndex = i;
-					selectedCornerIndex = j;
+					selSecIndex = i;
+					selCorIndex = j;
 					return true;
 
 				}
 			}
 		}
-		selectedSectorIndex = -1;
-		selectedCornerIndex = -1;
+		selSecIndex = -1;
+		selCorIndex = -1;
 		return false;
 
 	}

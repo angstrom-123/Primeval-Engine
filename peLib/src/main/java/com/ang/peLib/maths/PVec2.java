@@ -6,8 +6,8 @@ import com.ang.peLib.utils.PCopyable;
  * Represents a 2 dimensional vector.
  */
 public class PVec2 extends PCopyable {
-	private double x = 0.0;
-	private double y = 0.0;
+	private double x;
+	private double y;
 
 	/**
 	 * Default constructor.
@@ -71,7 +71,7 @@ public class PVec2 extends PCopyable {
 	 * @return the 3D vector
 	 * @see    PVec3
 	 */
-	public PVec3 toVec3() {
+	public PVec3 toVec3() { 
 		return new PVec3(x, y, 0.0);
 
 	}	
@@ -92,7 +92,7 @@ public class PVec2 extends PCopyable {
 			break;
 
 		default:
-			break;
+			throw new NullPointerException();
 
 		}
 	}
@@ -111,7 +111,7 @@ public class PVec2 extends PCopyable {
 			return y;
 
 		default:
-			return 0.0;
+			throw new NullPointerException();
 
 		}
 	}
