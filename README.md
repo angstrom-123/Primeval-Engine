@@ -120,3 +120,28 @@ by distance and drew the sectors back to front. This effectively simulates real 
 occlusion. Here we can see both sectors being drawn in the same vertical slice.
 
 <img src="https://github.com/user-attachments/assets/e94afc06-cfaf-48da-b79e-92fde0517167" width="50%">
+
+At this point, I decided to create a map editor inspired by the one that aided in 
+the creation of doom. This would be a top-down, 2D map editor that visually 
+represents sectors and their corners and allows for manipulation of all required
+parameters. After some iteration on the .pmap file format, I was able to get maps
+saving and loading from the editor and to the game (it took almost a month to make
+the editor work!). 
+
+<img src="https://github.com/user-attachments/assets/54dcaf62-03b2-40d0-975b-62ef51a9f327" width="50%">
+
+Once I had this working, I created a new test level to begin implementing what 
+Doom likes to call "flats" (floors and ceilings). These are specifically 
+characterised by being continuos runs of texture at the same vertical coordinate
+but to start, I first just got plat colours showing up where they should. I chose 
+green for ceiligns (like the one that we are standing on) and blue for floors.
+
+<img src="https://github.com/user-attachments/assets/137520cc-628a-4764-a80f-787c66b97a8f" width="50%">
+
+The algorithm used for filling these in only does some very basic calculations 
+and masking so it suffers from "bleed" at the bounds of outer sectors. This will
+not be an issue in the final product as levels will be completely enclosed, any 
+"outside" regions will be imitated by using a skybox texture.
+
+<img src="https://github.com/user-attachments/assets/b2db913e-ca67-4b48-a8dd-15e5e1e7f22e" width="50%">
+
