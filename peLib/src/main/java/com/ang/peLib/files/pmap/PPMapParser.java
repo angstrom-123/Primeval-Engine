@@ -66,7 +66,7 @@ public class PPMapParser {
 		PVec2[] corners = new PVec2[0];
 		int[] sectors = new int[0];
 		PVec2[] heights = new PVec2[0];
-		PVec2[] portals = new PVec2[0];
+		int[] portals = new int[0];
 		PColour[] colours = new PColour[0];
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
@@ -77,7 +77,7 @@ public class PPMapParser {
 			} else if (line.equals("!HEIGHT")) {
 				heights = extractVec2s(i + 1, lines);	
 			} else if (line.equals("!PORTAL")) {
-				portals = extractVec2s(i + 1, lines);
+				portals = extractInts(i + 1, lines);
 			} else if (line.equals("!COLOUR")) {
 				colours = extractColours(i + 1, lines);	
 			}
@@ -110,7 +110,8 @@ public class PPMapParser {
 	 * @see 				   com.ang.peLib.maths.PVec2
 	 */
 	private PSectorWorld constructWorld(PVec2[] corners, int[] sectors, PVec2[] heights, 
-			PVec2[] portals, PColour[] colours) throws PParseException {
+			int[] portals, PColour[] colours) throws PParseException {
+			// PVec2[] portals, PColour[] colours) throws PParseException {
 		PSectorWorld world = new PSectorWorld(1000); // arbitrary size limit
 		for (int i = 0; i < sectors.length; i++) {
 			// get sector limits
@@ -126,9 +127,8 @@ public class PPMapParser {
 			int[] sectorPortals = new int[sectorCorners.length];
 			int head = 0;
 			for (int j = 0; j < portals.length; j++) {
-				if ((portals[j].x() < limit) && (portals[j].y() < limit)) {
-					sectorPortals[head++] = (int) portals[j].x() - sectors[i];
-					sectorPortals[head++] = (int) portals[j].y() - sectors[i];
+				if ((portals[j] >= sectors[i]) && (portals[j] < limit)) {
+					sectorPortals[head++] = portals[j] - sectors[i];
 				}
 			}
 			sectorPortals = PArrays.reduceArray(sectorPortals, head);
@@ -158,10 +158,10 @@ public class PPMapParser {
 		for (int i = startLine; i < lines.length; i++) {
 			String line = lines[i];
 			if (line.charAt(0) == '!') {
-				if (head == 0) {
-					throw new PParseException(path, i);
-
-				}
+				// if (head == 0) {
+				// 	throw new PParseException(path, i);
+				//
+				// }
 				break;
 
 			}

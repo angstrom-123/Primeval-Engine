@@ -1,9 +1,11 @@
 package com.ang.peLib.graphics;
 
+import com.ang.peLib.utils.PCopyable;
+
 /**
  * Represents a colour with 3 channels (r, g, b) and provides utilities.
  */
-public class PColour {
+public class PColour extends PCopyable {
 	private double r;
 	private double g;
 	private double b;
@@ -68,6 +70,10 @@ public class PColour {
 
 	}
 
+	public PColour mul(PColour c) {
+		return new PColour(this.r * c.r, this.g * c.g, this.b * c.b);
+	}
+
 	/**
 	 * Returns a given colour channel.
 	 * @param  component the index of the component to return (0:r, 1:g, 2:b)
@@ -113,6 +119,16 @@ public class PColour {
 			break;
 
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public PColour copy() {
+		return new PColour(r, g, b);
+
 	}
 
 	/**

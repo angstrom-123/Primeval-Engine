@@ -239,7 +239,7 @@ public class PVec2 extends PCopyable {
 	 */
 	@Override
 	public String toString() {
-		return ("x: " + x + "\n" + "y: " + y);
+		return ("x: " + x + " y: " + y);
 
 	}
 }

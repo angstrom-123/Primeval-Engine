@@ -74,7 +74,13 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	@Override
 	public void mouseScrolled(int x, int y, int units) {
-		rendererHelper.mouseScroll(x, y, units, mapTranslation);
+		final double step = 0.08;
+		params.scale *= (1 + (units * step));
+		params.scale = Math.max(params.scale, 0.1);
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
+				params, mapTranslation);
+		renderer.writeMouseCoords(x, y);
+		renderer.repaint();
 	}
 
 	@Override
@@ -191,6 +197,23 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	@Override
 	public void mouseExited() {
 
+	}
+
+	@Override
+	public void changePosition(double x, double y) {
+		PVec2 pos = new PVec2(x, y);
+		mapHandler.getSaveData().editableMapData.position = pos;
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, mapTranslation);
+		renderer.repaint();
+	}
+
+	@Override
+	public void changeFacing(double x, double y) {
+		PVec2 facing = new PVec2(x, y);
+		facing = facing.unitVector();
+		mapHandler.getSaveData().editableMapData.facing = facing;
+		renderer.writeMapData(mapHandler.getSaveData().editableMapData, params, mapTranslation);
+		renderer.repaint();
 	}
 
 	@Override

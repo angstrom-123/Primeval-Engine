@@ -3,8 +3,6 @@ package com.ang.peLib.graphics;
 import com.ang.peLib.inputs.*;
 import com.ang.peLib.threads.PUpdateWorker;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -64,6 +62,14 @@ public class PRenderer {
 		this.listener = listener;
 	}
 
+	public PRenderer(int width, int height, PFullKeyboardInputListener listener) {
+		this.width = width;
+		this.height = height;
+		this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		this.imgPanel = new PImagePanel(img);
+		this.listener = listener;
+	}
+
 	public void terminateOnClose(PUpdateWorker worker) {
 		PUpdateWorker[] temp = new PUpdateWorker[workersToKill.length + 1];
 		for (int i = 0; i < workersToKill.length; i++) {
@@ -71,6 +77,10 @@ public class PRenderer {
 		}
 		temp[temp.length - 1] = worker;
 		workersToKill = temp;
+	}
+
+	public void writeToTitleBar(String text) {
+		frame.setTitle(text);
 	}
 
 	/**
@@ -110,10 +120,18 @@ public class PRenderer {
 		frame.repaint();
 	}
 
+	public void setScale(double multiplier) {
+		frame.setSize((int) Math.round(imgPanel.getWidth() * multiplier), 
+				(int) Math.round(imgPanel.getHeight() * multiplier));
+		frame.setLocationRelativeTo(null);
+		frame.repaint();
+	}
+
 	/**
 	 * Initializes the renderer with an input listener.
 	 * @param listener the {@link com.ang.peLib.inputs.PMouseInputListener} or 
-	 * 				   the {@link com.ang.peLib.inputs.PMovementInputListener}
+	 * 				   the {@link com.ang.peLib.inputs.PMovementInputListener} or
+	 * 				   the {@link com.ang.peLib.inputs.PFullKeyboardInputListener}
 	 * 				   to attach to the window. Can be {@code null} if no 
 	 * 				   listener should be attached 
 	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
@@ -129,6 +147,9 @@ public class PRenderer {
 		imgPanel.requestFocusInWindow();
 		if (listener instanceof PMovementInputListener) {
 			PMovementInputListener il = (PMovementInputListener) listener;
+			imgPanel.addKeyListener(il);
+		} else if (listener instanceof PFullKeyboardInputListener) {
+			PFullKeyboardInputListener il = (PFullKeyboardInputListener) listener;
 			imgPanel.addKeyListener(il);
 		} else if (listener instanceof PMouseInputListener) {
 			PMouseInputListener mil = (PMouseInputListener) listener;
@@ -181,13 +202,18 @@ public class PRenderer {
 	public void writeColumn(PColour colour, int x, int bottom, int top) {
 		int columnColour = processToInt(colour);
 		// image panel pixel indexing starts in the top left so it is filled backwards
-		for (int y = 0; y < height; y++) {
-			if ((y >= top) && (y <= bottom)) {
-				if (!inBounds(x, y)) {
-					continue;
-
-				}
+		for (int y = top; y <= bottom; y++) {
+			if (inBounds(x, y)) {
 				img.setRGB(x, y, columnColour);
+			}
+		}
+	}
+
+	public void writeRow(PColour colour, int y, int left, int right) {
+		int rowColour = processToInt(colour);
+		for (int x = left; x <= right; x++) {
+			if (inBounds(x, y)) {
+				img.setRGB(x, y, rowColour);
 			}
 		}
 	}

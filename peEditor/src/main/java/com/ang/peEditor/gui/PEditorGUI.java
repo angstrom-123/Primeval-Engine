@@ -30,6 +30,7 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		menuBar.add(createFileMenu());
 		menuBar.add(createEditMenu());
 		menuBar.add(createNewMenu());
+		menuBar.add(createConfigMenu());
 		frame.setJMenuBar(menuBar);
 		frame.pack();
 		frame.validate();
@@ -128,11 +129,50 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 			optionPanel.add(countField);
 			optionPanel.add(new JLabel("New sector scale:"));
 			optionPanel.add(scaleField);
-			int selection = JOptionPane.showConfirmDialog(frame, optionPanel, "New Sector", JOptionPane.OK_CANCEL_OPTION);
+			int selection = JOptionPane.showConfirmDialog(frame, optionPanel, "New Sector", 
+					JOptionPane.OK_CANCEL_OPTION);
 			if (selection == JOptionPane.YES_OPTION) {
 				int cornerCount = Integer.valueOf(countField.getText());		
 				double scale = Double.valueOf(scaleField.getText());		
 				ei.newSector(cornerCount, scale);
+			}
+			}
+			break;
+
+		case "Spawn Position":
+			{
+			JTextField xField = new JTextField(5);
+			JTextField yField = new JTextField(5);
+			JPanel optionPanel = new JPanel();
+			optionPanel.add(new JLabel("x:"));
+			optionPanel.add(xField);
+			optionPanel.add(new JLabel("y:"));
+			optionPanel.add(yField);
+			int selection = JOptionPane.showConfirmDialog(frame, optionPanel, "Spawn Coordinates", 
+					JOptionPane.OK_CANCEL_OPTION);
+			if (selection == JOptionPane.YES_OPTION) {
+				double x = Double.valueOf(xField.getText());		
+				double y = Double.valueOf(yField.getText());		
+				ei.changePosition(x, y);
+			}
+			}
+			break;
+
+		case "Spawn Facing":
+			{
+			JTextField xField = new JTextField(5);
+			JTextField yField = new JTextField(5);
+			JPanel optionPanel = new JPanel();
+			optionPanel.add(new JLabel("x:"));
+			optionPanel.add(xField);
+			optionPanel.add(new JLabel("y:"));
+			optionPanel.add(yField);
+			int selection = JOptionPane.showConfirmDialog(frame, optionPanel, "Spawn Facing Vector", 
+					JOptionPane.OK_CANCEL_OPTION);
+			if (selection == JOptionPane.YES_OPTION) {
+				double x = Double.valueOf(xField.getText());		
+				double y = Double.valueOf(yField.getText());		
+				ei.changeFacing(x, y);
 			}
 			}
 			break;
@@ -229,5 +269,18 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		itemSector.addActionListener(this);
 		newMenu.add(itemSector);
 		return newMenu;
+
+	}
+
+	private JMenu createConfigMenu() {
+		JMenu newMenu = new JMenu("Config");
+		JMenuItem itemSpawnPos = new JMenuItem("Spawn Position");
+		JMenuItem itemSpawnFacing = new JMenuItem("Spawn Facing");
+		itemSpawnPos.addActionListener(this);
+		itemSpawnFacing.addActionListener(this);
+		newMenu.add(itemSpawnPos);
+		newMenu.add(itemSpawnFacing);
+		return newMenu;
+
 	}
 }

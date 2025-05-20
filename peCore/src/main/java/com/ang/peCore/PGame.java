@@ -1,16 +1,19 @@
 package com.ang.peCore;
 
+import java.awt.event.KeyEvent;
+
 import com.ang.peLib.threads.*;
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.hittables.*;
 import com.ang.peLib.inputs.*;
 import com.ang.peLib.files.pmap.*;
 
-public class PGame implements PThreadInterface, PMovementInputInterface {
+public class PGame implements PThreadInterface, PMovementInputInterface, PFullKeyboardInputInterface {
 	private final int horizontalResolution = PGameParams.horizontalResolution;
 	private final int frameMs = 1000 / PGameParams.frameRate;
 	private boolean[] keyInputs = new boolean[256];
-	private PMovementInputListener listener = new PMovementInputListener(this);
+	// private PMovementInputListener listener = new PMovementInputListener(this);
+	private PFullKeyboardInputListener listener = new PFullKeyboardInputListener(this);
 	private PCamera cam = new PCamera(horizontalResolution);
 	private PCameraMover controller = new PCameraMover(cam);
 	private PSectorWorld world;
@@ -29,8 +32,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 	}
 
 	private void testGame() {
-		// if (!loadMapFile("testMap.pmap")) {
-		if (!loadMapFile("george.pmap")) {
+		if (!loadMapFile("entrypoint.pmap")) {
+		// if (!loadMapFile("g.pmap")) {
 			System.err.println("Failed to load test level");
 			return;
 
@@ -53,6 +56,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 		}
 		PPMapData mapData = handler.getSaveData().savedMapData;
 		world = mapData.world;
+		System.out.println(mapData.position);
+		System.out.println(mapData.facing);
 		cam.setTransform(mapData.position, mapData.facing);
 		return true;
 
@@ -60,9 +65,13 @@ public class PGame implements PThreadInterface, PMovementInputInterface {
 
 	@Override
 	public void update() {
+		if (keyInputs[KeyEvent.VK_CONTROL] && keyInputs[KeyEvent.VK_M]) {
+			cam.cycleRenderMode(System.currentTimeMillis());
+		}
 		controller.update(keyInputs);
 		cam.update();
-		cam.draw(world);
+		long renderMS = cam.draw(world);
+		cam.getRenderer().writeToTitleBar("Frame ms: " + String.valueOf(renderMS));
 	}
 
 	@Override

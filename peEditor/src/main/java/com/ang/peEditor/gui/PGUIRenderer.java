@@ -240,6 +240,9 @@ public class PGUIRenderer extends PRenderer {
 						params.CORNER_SIZE, coords[0], coords[1]);
 			}
 		}
+		int[] coords = PConversions.v2ss(mapData.position, width, height, 
+				params.scale, translation);
+		fillCircleAround(PColour.GREEN, 5, coords[0], coords[1]);
 	}
 
 	public void writeBackgroundGrid(PColour colour, PEditorParams params, PVec2 translation) {

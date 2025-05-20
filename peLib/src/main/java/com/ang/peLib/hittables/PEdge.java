@@ -1,6 +1,7 @@
 package com.ang.peLib.hittables;
 
 import com.ang.peLib.maths.*;
+import com.ang.peLib.utils.PCopyable;
 import com.ang.peLib.graphics.PColour;
 
 /**
@@ -11,11 +12,12 @@ import com.ang.peLib.graphics.PColour;
  * @see PSector
  * @see com.ang.peLib.maths.PVec2
  */
-public class PEdge {
+public class PEdge extends PCopyable {
 	private PVec2 p0;
 	private PVec2 p1;
 	private PColour albedo;
 	private boolean portal;
+	private PVec2 normal;
 
 	/**
 	 * Contructs an edge with a colour between 2 points.
@@ -29,6 +31,10 @@ public class PEdge {
 		this.p0 = p0;
 		this.p1 = p1;
 		this.albedo = albedo;
+		// clockwise winding
+		double dx = p1.x() - p0.x();
+		double dy = p1.y() - p0.y();
+		this.normal = new PVec2(dy, -dx);
 	}
 
 	/**
@@ -69,10 +75,10 @@ public class PEdge {
 	 * @see					PHitRecord
 	 */
 	public boolean hit(PRay r, PInterval tInterval, PHitRecord rec) {
-		if (portal) {
-			return false;
-
-		}
+		// if (portal) {
+		// 	return false;
+		//
+		// }
 		PVec2 v1 = r.getOrigin().sub(p0);
 		PVec2 v2 = p1.sub(p0);
 		PVec2 v3 = new PVec2(-r.getDirection().y(), r.getDirection().x());
@@ -83,11 +89,26 @@ public class PEdge {
 				tInterval.setMax(t1);
 				rec.setT(t1);
 				rec.setColour(albedo);
+				rec.setBackface(PVec2.dot(r.getDirection(), normal) >= 0.0);
+				rec.setPortal(portal);
 				return true;
 
 			}
 		}
 		return false;
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public PEdge copy() {
+		PEdge out = new PEdge(p0.copy(), p1.copy(), albedo.copy());
+		// out.setHeight(floorHeight, ceilingHeight);
+		if (portal) out.setAsPortal();
+		return out;
 
 	}
 

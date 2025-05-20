@@ -21,6 +21,11 @@
       <artifactId>peLib</artifactId>
       <version>1.0.0-alpha</version>
     </dependency>
+    <dependency>
+      <groupId>com.ang.peCore</groupId>
+      <artifactId>peCore</artifactId>
+      <version>1.0.0-alpha</version>
+    </dependency>
 	<dependency>
 	  <groupId>org.apache.maven.plugins</groupId>
 	  <artifactId>maven-dependency-plugin</artifactId>

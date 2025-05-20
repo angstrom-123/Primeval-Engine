@@ -3,6 +3,8 @@ package com.ang.peEditor;
 import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry;
 
 public interface PEditorInterface {
+	void changePosition(double x, double y);
+	void changeFacing(double x, double y);
 	void dataPanelChange(PDataPanelEntry entry, String text);
 	void save(String name);
 	void open(String name);

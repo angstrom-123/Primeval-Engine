@@ -12,6 +12,8 @@ public class PHitRecord {
 	private PColour colour; // colour of the surface at the hit point
 	private double floorHeight; // floor height of edge at hit
 	private double ceilingHeight; // ceiling height of edge at hit
+	private boolean isBackface; // true if this hit is on the inside of a sector
+	private boolean isPortal;
 
 	/**
 	 * {@inheritDoc}
@@ -22,6 +24,7 @@ public class PHitRecord {
 		temp.setColour(colour);
 		temp.setFloor(floorHeight);
 		temp.setCeiling(ceilingHeight);
+		temp.setBackface(isBackface);
 		return temp;
 
 	}
@@ -65,6 +68,16 @@ public class PHitRecord {
 
 	}
 
+	public boolean isBackface() {
+		return isBackface;
+
+	}
+
+	public boolean isPortal() {
+		return isPortal;
+
+	}
+
 	/**
 	 * Sets the distance to the hit for this record.
 	 * @param t the distance to the hit
@@ -88,7 +101,7 @@ public class PHitRecord {
 	 * @see				  PSector
 	 */
 	public void setFloor(double floorHeight) {
-		this.floorHeight= floorHeight;
+		this.floorHeight = floorHeight;
 	}
 
 	/**
@@ -98,5 +111,13 @@ public class PHitRecord {
 	 */
 	public void setCeiling(double ceilingHeight) {
 		this.ceilingHeight = ceilingHeight;
+	}
+
+	public void setBackface(boolean isBackface) {
+		this.isBackface = isBackface;
+	}
+
+	public void setPortal(boolean isPortal) {
+		this.isPortal = isPortal;
 	}
 }

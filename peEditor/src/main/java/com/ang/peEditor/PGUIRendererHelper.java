@@ -26,15 +26,6 @@ public class PGUIRendererHelper {
 		renderer.repaint();
 	}
 
-	public void mouseScroll(int x, int y, int units, PVec2 translation) {
-		final double step = 0.05;
-		params.scale *= (1 + (units * step));
-		params.scale = Math.max(params.scale, 0.1);
-		renderer.writeMapData(mapHandler.getSaveData().editableMapData, 
-				params, translation);
-		refresh(x, y);
-	}
-
 	public void mouseMove(int x, int y, PVec2 translation) {
 		refresh(x, y);
 	}

@@ -9,9 +9,9 @@ import com.ang.peLib.maths.PVec2;
  * Holds data about a map and provides utilities for managing the map data.
  */
 public class PPMapData extends PCopyable {
-	public PSectorWorld world;
-	public PVec2 position;
-	public PVec2 facing;
+	public PSectorWorld world = null;
+	public PVec2 position = new PVec2(0.0, 0.0);
+	public PVec2 facing = new PVec2(1.0, 0.0);
 
 	/**
 	 * {@inheritDoc}
@@ -92,11 +92,17 @@ public class PPMapData extends PCopyable {
 					+ " " + String.valueOf(sec.getCeilingHeight());
 		}
 		lines[head++] = "!PORTAL";
+		sectorStart = 0;
 		for (PSector sec : world.getSectors()) {
-			for (int i = 0; i < sec.getPortalIndices().length - 1; i++) {
-				lines[head++] = String.valueOf(sec.getPortalIndices()[i])
-						+ " " + String.valueOf(sec.getPortalIndices()[i + 1]);
+			int[] portalIndices = sec.getPortalIndices();
+			for (int i = 0; i < portalIndices.length; i++) {
+				lines[head++] = String.valueOf(sectorStart + portalIndices[i]);
 			}
+			sectorStart += sec.getCorners().length;
+			// for (int i = 0; i < portalIndices.length - 1; i++) { // TODO: need to change this to an int, and store them all individually
+			// 	lines[head++] = String.valueOf(sectorStart + sec.getPortalIndices()[i])
+			// 			+ " " + String.valueOf(sectorStart + sec.getPortalIndices()[i + 1]);
+			// }
 		}
 		lines[head++] = "!POSITION";
 		lines[head++] = String.valueOf(position.x())
@@ -120,7 +126,7 @@ public class PPMapData extends PCopyable {
 		count += 2;
 		for (PSector sec : world.getSectors()) {
 			count += 2;
-			count += sec.getPortalIndices().length / 2;
+			count += sec.getPortalIndices().length;
 			count += sec.getCorners().length;
 		}
 		// TODO: temporarily adding 1 colour, implement

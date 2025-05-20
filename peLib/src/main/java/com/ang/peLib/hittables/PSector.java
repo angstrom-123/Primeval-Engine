@@ -72,6 +72,7 @@ public class PSector extends PCopyable {
 			PEdge wall;
 			int nextI = (i < corners.length - 1) ? i + 1 : 0;
 			wall = new PEdge(corners[i], corners[nextI], new PColour(1.0, 1.0, 1.0));
+			// wall.setHeight(floorHeight, ceilingHeight);
 			if (isPortal(i, nextI)) {
 				wall.setAsPortal();
 			}
@@ -99,6 +100,9 @@ public class PSector extends PCopyable {
 	public void setHeight(double floorHeight, double ceilingHeight) {
 		this.floorHeight = floorHeight;
 		this.ceilingHeight = ceilingHeight;
+		// for (int i = 0; i < walls.length; i++) {
+		// 	walls[i].setHeight(floorHeight, ceilingHeight);
+		// }
 	}
 
 	/**
