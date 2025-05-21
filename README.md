@@ -139,9 +139,21 @@ green for ceiligns (like the one that we are standing on) and blue for floors.
 <img src="https://github.com/user-attachments/assets/137520cc-628a-4764-a80f-787c66b97a8f" width="50%">
 
 The algorithm used for filling these in only does some very basic calculations 
-and masking so it suffers from "bleed" at the bounds of outer sectors. This will
-not be an issue in the final product as levels will be completely enclosed, any 
-"outside" regions will be imitated by using a skybox texture.
+and masking so it suffers from "bleed" at the bounds of outer sectors.
 
 <img src="https://github.com/user-attachments/assets/b2db913e-ca67-4b48-a8dd-15e5e1e7f22e" width="50%">
+
+This issue can be addressed by calculating the bounds of the floor and ceiling of 
+each sector in a less naive way. To determine the bounds, I calculate 2 masks for 
+every frame: one for the floors (blue), and one for the ceilings (green).
+
+<img src="https://github.com/user-attachments/assets/d8e0b3a3-0e4a-4465-abcb-bddd7488b966" width="50%"><img src="https://github.com/user-attachments/assets/a73d0c79-a57c-4101-972f-d6a740216bc5" width="50%">
+
+I can then use these masks to constrain the bounds of the floors and ceilings that
+I render. At this point, I also implemented backface culling. Culled walls can
+be seen in red by looking through portals in some of the sectors.
+
+<img src="https://github.com/user-attachments/assets/0208c7c8-16e5-414c-a4f3-8d17d03b240d" width="50%"><img src="https://github.com/user-attachments/assets/7a365056-b7c1-4b54-b895-c14d709d7113" width="50%">
+
+
 
