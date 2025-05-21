@@ -75,10 +75,6 @@ public class PEdge extends PCopyable {
 	 * @see					PHitRecord
 	 */
 	public boolean hit(PRay r, PInterval tInterval, PHitRecord rec) {
-		// if (portal) {
-		// 	return false;
-		//
-		// }
 		PVec2 v1 = r.getOrigin().sub(p0);
 		PVec2 v2 = p1.sub(p0);
 		PVec2 v3 = new PVec2(-r.getDirection().y(), r.getDirection().x());

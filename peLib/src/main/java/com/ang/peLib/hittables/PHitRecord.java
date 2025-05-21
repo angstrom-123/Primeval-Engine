@@ -1,23 +1,27 @@
 package com.ang.peLib.hittables;
 
 import com.ang.peLib.graphics.PColour;
+import com.ang.peLib.utils.PCopyable;
 
 /**
  * Stores information about a collision between a ray and a hittable.
  * @see PEdge
  * @see PSector
  */
-public class PHitRecord {
+public class PHitRecord extends PCopyable {
 	private double t; // distance to the hit
 	private PColour colour; // colour of the surface at the hit point
 	private double floorHeight; // floor height of edge at hit
 	private double ceilingHeight; // ceiling height of edge at hit
 	private boolean isBackface; // true if this hit is on the inside of a sector
 	private boolean isPortal;
+	private int sectorIndex;
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	@SuppressWarnings("unchecked")
 	public PHitRecord copy() {
 		PHitRecord temp = new PHitRecord();
 		temp.setT(t);
@@ -25,6 +29,8 @@ public class PHitRecord {
 		temp.setFloor(floorHeight);
 		temp.setCeiling(ceilingHeight);
 		temp.setBackface(isBackface);
+		temp.setPortal(isPortal);
+		temp.setSectorIndex(sectorIndex);
 		return temp;
 
 	}
@@ -78,6 +84,11 @@ public class PHitRecord {
 
 	}
 
+	public int getSectorIndex() {
+		return sectorIndex;
+
+	}
+
 	/**
 	 * Sets the distance to the hit for this record.
 	 * @param t the distance to the hit
@@ -119,5 +130,9 @@ public class PHitRecord {
 
 	public void setPortal(boolean isPortal) {
 		this.isPortal = isPortal;
+	}
+
+	public void setSectorIndex(int sectorIndex) {
+		this.sectorIndex = sectorIndex;
 	}
 }

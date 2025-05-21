@@ -32,17 +32,15 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 	}
 
 	private void testGame() {
-		if (!loadMapFile("entrypoint.pmap")) {
-		// if (!loadMapFile("g.pmap")) {
-			System.err.println("Failed to load test level");
-			return;
-
+		String testFile = "entrypoint.pmap";
+		if (loadMapFile(testFile)) {
+			PUpdateWorker uw = new PUpdateWorker(frameMs);
+			uw.setInterface(this);
+			cam.getRenderer().terminateOnClose(uw);
+			uw.run();
+		} else {
+			System.out.println("Failed to load test level");
 		}
-		cam.init(listener);
-		PUpdateWorker uw = new PUpdateWorker(frameMs);
-		uw.setInterface(this);
-		cam.getRenderer().terminateOnClose(uw);
-		uw.run();
 	}
 
 	private boolean loadMapFile(String fileName) {
@@ -56,9 +54,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		}
 		PPMapData mapData = handler.getSaveData().savedMapData;
 		world = mapData.world;
-		System.out.println(mapData.position);
-		System.out.println(mapData.facing);
 		cam.setTransform(mapData.position, mapData.facing);
+		cam.init(listener);
 		return true;
 
 	}

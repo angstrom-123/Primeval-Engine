@@ -209,6 +209,23 @@ public class PRenderer {
 		}
 	}
 
+	public void writeColumnTo(PColour colour, int x, int bottom, boolean[] mask, boolean upward) {
+		int columnColour = processToInt(colour);
+		if (upward) {
+			for (int y = bottom; y > 0 && !mask[y]; y--) {
+				if (inBounds(x, y)) {
+					img.setRGB(x, y, columnColour);
+				}
+			}
+		} else {
+			for (int y = bottom; y < mask.length && !mask[y]; y++) {
+				if (inBounds(x, y)) {
+					img.setRGB(x, y, columnColour);
+				}
+			}
+		}
+	}
+
 	public void writeRow(PColour colour, int y, int left, int right) {
 		int rowColour = processToInt(colour);
 		for (int x = left; x <= right; x++) {

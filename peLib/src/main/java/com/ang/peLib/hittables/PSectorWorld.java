@@ -143,6 +143,7 @@ public class PSectorWorld extends PCopyable {
 			PSector sec = sectors[i];
 			for (PHitRecord rec : sec.allHits(r, tInterval.copy())) {
 				if ((rec.getT() >= 0.0) & (rec.getT() < tInterval.getMax())) {
+					rec.setSectorIndex(i);
 					hits[hitsHead++] = rec;
 				}
 			}
