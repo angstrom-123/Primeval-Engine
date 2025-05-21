@@ -5,5 +5,6 @@ public enum PJSONValueType {
 	INTEGER,
 	HEXADECIMAL,
 	DOUBLE,
-	DOUBLE_ARRAY;
+	PVEC3,
+	PCOLOUR;
 }

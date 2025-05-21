@@ -82,35 +82,32 @@ public class PResource {
 	 */
 	public boolean valid() {
 		switch (resourceType) {
-		case PMAP:
-			if (!path.endsWith(".pmap")) {
-				return false;
+			case PMAP -> {
+				if (!path.endsWith(".pmap")) return false;
+
+				if (!file.getParentFile().getName().equals(PResourceType.PMAP.getDirName())) {
+					return false;
+
+				}
+				return true;
 
 			}
-			if (!file.getParentFile().getName().equals(PResourceType.PMAP.getDirName())) {
-				return false;
+			case SPRITE -> {
+				// TODO: implement
+				return true;
 
 			}
-			return true;
+			case CONFIG -> {
+				if (!path.endsWith(".json")) return false;
 
-		case SPRITE:
-			// TODO: implement
-			return true;
+				if (!file.getParentFile().getName().equals(PResourceType.CONFIG.getDirName())) {
+					return false;
 
-		case CONFIG:
-			if (!path.endsWith(".json")) {
-				return false;
-
-			}
-			if (!file.getParentFile().getName().equals(PResourceType.CONFIG.getDirName())) {
-				return false;
+				}
+				return true;
 
 			}
-			return true;
-
-		default:
-			return false;
-
+			default -> { return false; }
 		}
 	}
 

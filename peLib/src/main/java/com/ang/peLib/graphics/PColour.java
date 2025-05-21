@@ -33,6 +33,16 @@ public class PColour extends PCopyable {
 		this.b = b;
 	}
 
+	public PColour(double[] vals) {
+		if (vals.length != 3) {
+			throw new NullPointerException();
+
+		}
+		this.r = vals[0];
+		this.g = vals[1];
+		this.b = vals[2];
+	}
+
 	/**
 	 * Returns the intensity of the red channel.
 	 * @return the red channel
@@ -81,18 +91,10 @@ public class PColour extends PCopyable {
 	 */
 	public double getComponent(int component) {
 		switch (component) {
-		case 0:
-			return r;
-
-		case 1:
-			return g;
-
-		case 2:
-			return b;
-
-		default:
-			return 0.0;
-
+		case 0 -> { return r; }
+		case 1 -> { return g; }
+		case 2 -> { return b; }
+		default -> throw new NullPointerException();
 		}
 	}
 
@@ -103,21 +105,10 @@ public class PColour extends PCopyable {
 	 */
 	public void setComponent(int component, double val) {
 		switch (component) {
-		case 0:
-			r = val;
-			break;
-
-		case 1:
-			g = val;
-			break;
-
-		case 2:
-			b = val;
-			break;
-
-		default:
-			break;
-
+		case 0 -> r = val;
+		case 1 -> g = val;
+		case 2 -> b = val;
+		default -> throw new NullPointerException();
 		}
 	}
 

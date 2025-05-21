@@ -20,16 +20,16 @@ import com.ang.peLib.resources.PModuleName;
 import com.ang.peLib.utils.PConversions;
 
 public class PEditor implements PMouseInputInterface, PEditorInterface {
-	private int 				newSectorCornerNum		= -1;
-	private double 				newSectorScale			= -1;
-	private int 				selSecIndex				= -1;
-	private int 				selCorIndex				= -1;
-	private int					lastSectorIndex			= -1;
-	private int					lastCornerIndex			= -1;
-	private PVec2				mapTranslation			= new PVec2(0.0, 0.0);
-	private PVec2				dragStartMapTranslation = new PVec2(0.0, 0.0);
-	private int 				dragStartX				= 0;
-	private int 				dragStartY 				= 0;
+	private int newSectorCornerNum = -1;
+	private double newSectorScale = -1;
+	private int selSecIndex	= -1;
+	private int selCorIndex	= -1;
+	private int	lastSectorIndex	= -1;
+	private int	lastCornerIndex = -1;
+	private PVec2 mapTranslation = new PVec2(0.0, 0.0);
+	private PVec2 dragStartMapTranslation = new PVec2(0.0, 0.0);
+	private int dragStartX = 0;
+	private int dragStartY = 0;
 	private PEditorParams params;
 	private PFullKeyboardInputListener kil;
 	private PMouseInputListener mil;

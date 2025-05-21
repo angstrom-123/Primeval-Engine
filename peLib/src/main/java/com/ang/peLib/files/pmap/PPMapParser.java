@@ -111,7 +111,6 @@ public class PPMapParser {
 	 */
 	private PSectorWorld constructWorld(PVec2[] corners, int[] sectors, PVec2[] heights, 
 			int[] portals, PColour[] colours) throws PParseException {
-			// PVec2[] portals, PColour[] colours) throws PParseException {
 		PSectorWorld world = new PSectorWorld(1000); // arbitrary size limit
 		for (int i = 0; i < sectors.length; i++) {
 			// get sector limits
@@ -158,10 +157,6 @@ public class PPMapParser {
 		for (int i = startLine; i < lines.length; i++) {
 			String line = lines[i];
 			if (line.charAt(0) == '!') {
-				// if (head == 0) {
-				// 	throw new PParseException(path, i);
-				//
-				// }
 				break;
 
 			}

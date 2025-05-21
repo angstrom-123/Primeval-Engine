@@ -83,17 +83,9 @@ public class PVec2 extends PCopyable {
 	 */
 	public void setAxis(int axis, double val) {
 		switch (axis) {
-		case 0:
-			x = val;
-			break;
-
-		case 1:
-			y = val;
-			break;
-
-		default:
-			throw new NullPointerException();
-
+			case 0 -> x = val;
+			case 1 -> y = val;
+			default -> throw new NullPointerException();
 		}
 	}
 
@@ -104,15 +96,9 @@ public class PVec2 extends PCopyable {
 	 */
 	public double getAxis(int axis) {
 		switch (axis) {
-		case 0:
-			return x;
-
-		case 1:
-			return y;
-
-		default:
-			throw new NullPointerException();
-
+			case 0 -> { return x; }
+			case 1 -> { return y; }
+			default -> throw new NullPointerException();
 		}
 	}
 

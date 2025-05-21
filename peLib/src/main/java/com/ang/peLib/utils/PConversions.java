@@ -70,11 +70,6 @@ public class PConversions {
 	 */
 	public static int v2ss(double coord, boolean isX, int screenWidth, 
 			int screenHeight, double scale, PVec2 translation) {
-		// int scaled = (int) Math.round(coord * scale);
-		// int transpose = isX 
-		// ? (screenWidth / 2) + (int) translation.x() 
-		// : (screenHeight / 2) + (int) translation.y();
-		// return scaled + transpose;
 		double transpose = isX 
 		? translation.x()
 		: translation.y();
@@ -120,11 +115,6 @@ public class PConversions {
 	 */
 	public static double ss2v(int coord, boolean isX, int screenWidth, 
 			int screenHeight, double scale, PVec2 translation) {
-		// double transpose = isX
-		// ? ((double) screenWidth / 2) + translation.x()
-		// : ((double) screenHeight / 2) + translation.y();
-		// return ((double) (coord - transpose)) / scale;
-
 		int offset = isX
 		? screenWidth / 2
 		: screenHeight / 2;

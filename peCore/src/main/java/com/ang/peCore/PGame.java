@@ -9,14 +9,33 @@ import com.ang.peLib.inputs.*;
 import com.ang.peLib.files.pmap.*;
 
 public class PGame implements PThreadInterface, PMovementInputInterface, PFullKeyboardInputInterface {
-	private final int horizontalResolution = PGameParams.horizontalResolution;
-	private final int frameMs = 1000 / PGameParams.frameRate;
+	private long debounceTimer = 0;
 	private boolean[] keyInputs = new boolean[256];
-	// private PMovementInputListener listener = new PMovementInputListener(this);
 	private PFullKeyboardInputListener listener = new PFullKeyboardInputListener(this);
-	private PCamera cam = new PCamera(horizontalResolution);
-	private PCameraMover controller = new PCameraMover(cam);
+	private int frameMs;
+	private PCamera cam;
+	private PCameraMover controller;
 	private PSectorWorld world;
+	private PGameParams params;
+
+	public PGame() {
+		init();
+	}
+
+	private void init() {
+		params = new PGameParams();
+		try {
+			params.init();
+		} catch (PResourceException e) {
+			System.err.println("Failed to load game config file from resources");
+			e.printStackTrace();
+			return;
+
+		}
+		frameMs = 1000 / params.frameRate;
+		cam = new PCamera(params);
+		controller = new PCameraMover(cam); 
+	}
 
 	public void start(boolean test) {
 		if (test) {
@@ -62,8 +81,11 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 
 	@Override
 	public void update() {
-		if (keyInputs[KeyEvent.VK_CONTROL] && keyInputs[KeyEvent.VK_M]) {
-			cam.cycleRenderMode(System.currentTimeMillis());
+		final long debounceTime = 200;
+		if ((System.currentTimeMillis() - debounceTimer > debounceTime) 
+				&& (keyInputs[KeyEvent.VK_CONTROL] && keyInputs[KeyEvent.VK_M])) {
+			cam.cycleRenderMode();
+			debounceTimer = System.currentTimeMillis();
 		}
 		controller.update(keyInputs);
 		cam.update();

@@ -129,22 +129,10 @@ public class PResourceManager {
 		}
 		PResource res;
 		switch (resourceType) {
-		case PMAP:
-			res = new PResource(resourceType, PResourceManager.MAP_DIR + name, true);
-			break;
-
-		case SPRITE:
-			res = new PResource(resourceType, PResourceManager.SPRITE_DIR + name, true); 
-			break;
-
-		case CONFIG:
-			res = new PResource(resourceType, PResourceManager.CONFIG_DIR + name, true);
-			break;
-		
-		default:
-			throw new PResourceException(PResource.invalid(), 
-					PResourceExceptionType.INVALID);
-
+			case PMAP -> res = new PResource(resourceType, PResourceManager.MAP_DIR + name, true);
+			case SPRITE -> res = new PResource(resourceType, PResourceManager.SPRITE_DIR + name, true); 
+			case CONFIG -> res = new PResource(resourceType, PResourceManager.CONFIG_DIR + name, true);
+			default -> throw new PResourceException(PResource.invalid(), PResourceExceptionType.INVALID);
 		}
 		if (!res.exists()) {
 			throw new PResourceException(res, PResourceExceptionType.NOT_FOUND);
@@ -178,22 +166,10 @@ public class PResourceManager {
 		}
 		PResource res;
 		switch (resourceType) {
-		case PMAP:
-			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
-			break;
-
-		case SPRITE:
-			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false); 
-			break;
-
-		case CONFIG:
-			res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
-			break;
-		
-		default:
-			throw new PResourceException(PResource.invalid(), 
-					PResourceExceptionType.INVALID);
-
+			case PMAP -> res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
+			case SPRITE -> res = new PResource(resourceType, getDirOf(resourceType, module) + name, false); 
+			case CONFIG -> res = new PResource(resourceType, getDirOf(resourceType, module) + name, false);
+			default -> throw new PResourceException(PResource.invalid(), PResourceExceptionType.INVALID);
 		}
 		if (!res.exists()) {
 			throw new PResourceException(res, PResourceExceptionType.NOT_FOUND);

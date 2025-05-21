@@ -28,6 +28,16 @@ public class PVec3 extends PCopyable {
 		this.z = z;
 	}
 
+	public PVec3(double[] vals) {
+		if (vals.length != 3) {
+			throw new NullPointerException();
+
+		}
+		this.x = vals[0];
+		this.y = vals[1];
+		this.z = vals[2];
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -83,20 +93,10 @@ public class PVec3 extends PCopyable {
 	 */
 	public void setAxis(int axis, double val) {
 		switch (axis) {
-		case 0:
-			x = val;
-			break;
-
-		case 1:
-			y = val;
-			break;
-		case 2:
-			z = val;
-			break;
-
-		default:
-			break;
-
+			case 0 -> x = val;
+			case 1 -> y = val;
+			case 2 -> z = val;
+			default -> throw new NullPointerException();
 		}
 	}
 
@@ -107,18 +107,10 @@ public class PVec3 extends PCopyable {
 	 */
 	public double getAxis(int axis) {
 		switch (axis) {
-		case 0:
-			return x;
-
-		case 1:
-			return y;
-
-		case 2:
-			return z;
-
-		default:
-			return 0.0;
-
+			case 0 -> { return x; }
+			case 1 -> { return y; }
+			case 2 -> { return z; }
+			default -> throw new NullPointerException();
 		}
 	}
 

@@ -5,9 +5,9 @@ import com.ang.peLib.maths.PVec2;
 import java.awt.event.KeyEvent;
 
 public class PCameraMover {
-	private final double	MOVEMENT_STEP 	= 0.18;
-	private final double	TURN_STEP 		= Math.PI / 45.0;
-	private PCamera 		camera;
+	private final double MOVEMENT_STEP = 0.18;
+	private final double TURN_STEP = Math.PI / 45.0;
+	private PCamera camera;
 
 	public PCameraMover(PCamera camera) {
 		this.camera = camera;	

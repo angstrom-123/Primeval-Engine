@@ -1,0 +1,18 @@
+{
+	"default": {
+		"frameRate": 60,
+		"imageWidth": 320,
+		"aspectNumerator": 16.0,
+		"aspectDenominator": 9.0,
+		"scale": 4.0,
+		"fovDenominator": 4.0
+	},
+	"user": {
+		"frameRate": 60,
+		"imageWidth": 480,
+		"aspectNumerator": 16.0,
+		"aspectDenominator": 9.0,
+		"scale": 3.0,
+		"fovDenominator": 4.0
+	}
+}
