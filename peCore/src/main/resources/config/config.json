@@ -9,10 +9,10 @@
 	},
 	"user": {
 		"frameRate": 60,
-		"imageWidth": 480,
+		"imageWidth": 640,
 		"aspectNumerator": 16.0,
 		"aspectDenominator": 9.0,
-		"scale": 3.0,
+		"scale": 2.0,
 		"fovDenominator": 4.0
 	}
 }

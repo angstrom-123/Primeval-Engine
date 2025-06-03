@@ -62,7 +62,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		mapHandler = new PPMapHandler();
 		gui = new PEditorGUI(params, renderer, this);
 		gui.init();
-		rendererHelper = new PGUIRendererHelper(params, renderer, mapHandler, gui);
+		rendererHelper = new PGUIRendererHelper(params, renderer, mapHandler);
 		history	= new PHistory(params.historyLength);
 		redoHistory	= new PHistory(params.historyLength);
 	}
@@ -166,7 +166,7 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private void moveSelectedCornerTo(double[] coords) {
 		PVec2 newPos = new PVec2(coords);
 		if (params.snapToGrid) {
-			newPos = newPos.round();
+			newPos = newPos.roundToHalf();
 		}
 		PSector sec = mapHandler.getSaveData().editableMapData.world
 				.getSector(selSecIndex);

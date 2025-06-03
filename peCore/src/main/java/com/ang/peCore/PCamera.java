@@ -35,8 +35,6 @@ public class PCamera {
 	public void setTransform(PVec2 position, PVec2 facing) {
 		this.position = position;
 		this.facing = facing;
-		this.position = new PVec2(-20.0, 0.0);
-		this.facing = (new PVec2(1.0, 1.0)).unitVector();
 	}
 
 	public void changePosition(PVec2 positionDelta) {
@@ -53,9 +51,12 @@ public class PCamera {
 		facing = new PVec2(xPos, yPos).unitVector();
 	}
 
+	public void changeElevation(double delta) {
+		elevation += delta;
+		update();
+	}
+
 	public void init(PFullKeyboardInputListener listener) {
-		// imageHeight = (int) Math.round((double) imageWidth / aspectRatio);
-		// imageWidth = Math.max(imageWidth, 1);
 		renderer = new PRenderer(params.imageWidth, params.imageHeight, listener);
 		renderer.init();
 		viewportHeight = 2.0 * Math.tan(params.fov / 2.0);
@@ -113,7 +114,8 @@ public class PCamera {
 			PRay r = getRay(i);	
 			PHitRecord[] hits = world.allHits(r, PInterval.universe());
 			recSorter.quicksort(hits, 0, hits.length - 1);
-			for (int j = hits.length - 1; j >= 0; j--) { // draw back to front
+			// recSorter.bubblesort(hits);
+			for (int j = hits.length - 1; j >= 0; j--) {
 				int[] bounds = getColumnBounds(r, hits[j]);
 				masks[hits[j].getSectorIndex()].saveToBoundingMasks(elevation, hits[j], i, bounds);
 			}
@@ -122,25 +124,43 @@ public class PCamera {
 
 	}
 
-	private void drawSectors(PSectorWorld world, PFlatMask[] masks, boolean cullBackfaces) {
+	private void drawSectors(PSectorWorld world, PFlatMask[] masks, boolean drawBackfaces) {
+		PColour blu = PColour.BLUE;
+		PColour grn = PColour.GREEN;
 		for (int i = 0; i < params.imageWidth; i++) {
-			PRay r = getRay(i);	
+			PRay r = getRay(i);
 			PHitRecord[] hits = world.allHits(r, PInterval.universe());
 			recSorter.quicksort(hits, 0, hits.length - 1);
+			// recSorter.bubblesort(hits);
 			for (int j = hits.length - 1; j >= 0; j--) {
-				int[] bounds = getColumnBounds(r, hits[j]);
-				if (hits[j].isBackface()) {
-					if (!cullBackfaces && !hits[j].isPortal()) {
-						renderer.writeColumn(rayColour(r, hits[j]), i, bounds[0], bounds[1]);
+				PFlatMask secMask = masks[hits[j].getSectorIndex()];
+				if (hits[j].isPortal() && hits[j].isBackface()) {
+					if (getFloorHeight(hits[j]) < 0.0) { // floor above view
+						renderer.writeColumn(grn, i, secMask.floor[i][0], secMask.floor[i][1]);
+					} 
+					if (getFloorHeight(hits[j]) > 0.0) { // floor below view
+						renderer.writeColumn(blu, i, secMask.floor[i][0], secMask.floor[i][1]);
 					}
-					if (hits[j].getFloorHeight() > elevation) {
-						int[][] mask = masks[hits[j].getSectorIndex()].floorMask;
-						renderer.writeColumn(PColour.BLUE, i, mask[i][0], mask[i][1]);
-					} else if (hits[j].getCeilingHeight() < elevation) {
-						int[][] mask = masks[hits[j].getSectorIndex()].ceilingMask;
-						renderer.writeColumn(PColour.GREEN, i, mask[i][0], mask[i][1]);
+					if (getCeilingHeight(hits[j]) < 0.0) { // ceiling above view
+						renderer.writeColumn(grn, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
+					} 
+					if (getCeilingHeight(hits[j]) > 0.0) { // ceiling below view
+						renderer.writeColumn(blu, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
 					}
 				} else if (!hits[j].isPortal()) {
+					int[] bounds = getColumnBounds(r, hits[j]);
+					if (getFloorHeight(hits[j]) < 0.0) { // floor above view
+						renderer.writeColumn(grn, i, secMask.floor[i][0], secMask.floor[i][1]);
+					} 
+					if (getFloorHeight(hits[j]) > 0.0) { // floor below view
+						renderer.writeColumn(blu, i, secMask.floor[i][0], secMask.floor[i][1]);
+					}
+					if (getCeilingHeight(hits[j]) < 0.0) { // ceiling above view
+						renderer.writeColumn(grn, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
+					} 
+					if (getCeilingHeight(hits[j]) > 0.0) { // ceiling below view
+						renderer.writeColumn(blu, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
+					}
 					renderer.writeColumn(rayColour(r, hits[j]), i, bounds[0], bounds[1]);
 				}
 			}
@@ -150,8 +170,8 @@ public class PCamera {
 	private void drawFloorMask(PColour colour, PFlatMask[] masks) {
 		for (int i = 0; i < params.imageWidth; i++) {
 			for (PFlatMask mask : masks) {
-				renderer.writePixel(colour, i, mask.floorMask[i][0]);
-				renderer.writePixel(colour, i, mask.floorMask[i][1]);
+				renderer.writePixel(colour, i, mask.floor[i][0]);
+				renderer.writePixel(colour, i, mask.floor[i][1]);
 			}
 		}
 	}
@@ -159,8 +179,8 @@ public class PCamera {
 	private void drawCeilingMask(PColour colour, PFlatMask[] masks) {
 		for (int i = 0; i < params.imageWidth; i++) {
 			for (PFlatMask mask : masks) {
-				renderer.writePixel(colour, i, mask.ceilingMask[i][0]);
-				renderer.writePixel(colour, i, mask.ceilingMask[i][1]);
+				renderer.writePixel(colour, i, mask.ceiling[i][0]);
+				renderer.writePixel(colour, i, mask.ceiling[i][1]);
 			}
 		}
 	}
@@ -177,14 +197,14 @@ public class PCamera {
 
 	private double getDepth(PRay r, PHitRecord rec) {
 		double distance = (r.at(rec.getT()).sub(r.getOrigin())).length();
-		double value = 1.0 - (distance / 50.0);
+		double value = 1.0 - (distance / 20.0);
 		return value;
 
 	}
 	private int[] getColumnBounds(PRay r, PHitRecord rec) {
 		double distance = (r.at(rec.getT()).sub(r.getOrigin())).length();
-		int botCoord = (int) Math.round((params.imageHeight / distance) * rec.getFloorHeight());
-		int topCoord = (int) Math.round((params.imageHeight / distance) * rec.getCeilingHeight());
+		int botCoord = (int) Math.round((params.imageHeight / distance) * getFloorHeight(rec));
+		int topCoord = (int) Math.round((params.imageHeight / distance) * getCeilingHeight(rec));
 		int bottom = (params.imageHeight / 2) + botCoord;
 		int top = (params.imageHeight / 2) + topCoord;
 		return new int[]{clamp(params.imageHeight - bottom, 0, params.imageHeight - 1), 
@@ -204,6 +224,16 @@ public class PCamera {
 		PVec2 pixelPos = pixel0Position.add(offsetX);
 		PVec2 rayDir = pixelPos.sub(position);
 		return new PRay(position, rayDir);
+
+	}
+
+	private double getFloorHeight(PHitRecord hitRec) {
+		return hitRec.getFloorHeight() - elevation;
+
+	}
+
+	private double getCeilingHeight(PHitRecord hitRec) {
+		return hitRec.getCeilingHeight() - elevation;
 
 	}
 }

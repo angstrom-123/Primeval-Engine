@@ -10,6 +10,9 @@ import java.awt.event.KeyListener;
  */
 public class PMovementInputListener extends PListener implements KeyListener {
 	private PMovementInputInterface movementInterface;
+	private final int[] TRACKED = new int[]{
+			KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, 
+			KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN};
 
 	/**
 	 * Constructs the listener with an output interface.
@@ -30,24 +33,7 @@ public class PMovementInputListener extends PListener implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if (key == KeyEvent.VK_W) {
-			movementInterface.pressed(key);
-		}
-		if (key == KeyEvent.VK_A) {
-			movementInterface.pressed(key);
-		}
-		if (key == KeyEvent.VK_S) {
-			movementInterface.pressed(key);
-		}
-		if (key == KeyEvent.VK_D) {
-			movementInterface.pressed(key);
-		}
-		if (key == KeyEvent.VK_LEFT) {
-			movementInterface.pressed(key);
-		}
-		if (key == KeyEvent.VK_RIGHT) {
-			movementInterface.pressed(key);
-		}
+		for (int i : TRACKED) if (i == key) movementInterface.pressed(key);
 	}
 
 	/**
@@ -60,24 +46,7 @@ public class PMovementInputListener extends PListener implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
-		if (key == KeyEvent.VK_W) {
-			movementInterface.released(key);
-		}
-		if (key == KeyEvent.VK_A) {
-			movementInterface.released(key);
-		}
-		if (key == KeyEvent.VK_S) {
-			movementInterface.released(key);
-		}
-		if (key == KeyEvent.VK_D) {
-			movementInterface.released(key);
-		}
-		if (key == KeyEvent.VK_LEFT) {
-			movementInterface.released(key);
-		}
-		if (key == KeyEvent.VK_RIGHT) {
-			movementInterface.released(key);
-		}
+		for (int i : TRACKED) if (i == key) movementInterface.released(key);
 	}
 
 	/**

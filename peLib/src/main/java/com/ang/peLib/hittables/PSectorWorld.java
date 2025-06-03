@@ -21,6 +21,11 @@ public class PSectorWorld extends PCopyable {
 		sectors = new PSector[maxSectors];
 	}
 
+	public int size() {
+		return head;
+
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -58,7 +63,7 @@ public class PSectorWorld extends PCopyable {
 
 	public void removeSectorAt(int sectorIndex) {
 		for (int i = sectorIndex; i < head; i++) {
-			sectors[i] = (i + 1 >= sectors.length) ? null : sectors[i + 1];
+			sectors[i] = sectors[i + 1];
 		}
 		head--;
 	}

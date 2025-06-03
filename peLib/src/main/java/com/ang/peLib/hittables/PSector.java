@@ -31,8 +31,14 @@ public class PSector extends PCopyable {
 	 * 						of a portal edge (edge with no collision or visiblity)
 	 */
 	public PSector(PVec2[] corners, int[] portalIndices) {
-		this.corners = corners;
 		this.portalIndices = cleanPortalIndices(portalIndices);
+		this.corners = corners;
+		if (clockwise(corners)) { // enforce anticlockwise winding
+			this.corners = PArrays.reverse(corners, PVec2.class);
+			for (int i = 0; i < portalIndices.length; i++) {
+				portalIndices[i] = corners.length - 1 - portalIndices[i];
+			}
+		}
 		walls = new PEdge[corners.length];
 		int head = 0;
 		for (int i = 0; i < corners.length; i++) {
@@ -64,6 +70,20 @@ public class PSector extends PCopyable {
 
 	}
 
+	private boolean clockwise(PVec2[] corners) {
+		// shoelace area formula
+		double doubleArea = 0.0;
+		for (int i = 0; i < corners.length; i++) {
+			int nextIndex = (i == corners.length - 1) ? 0 : i + 1;
+			doubleArea += corners[i].x() * corners[nextIndex].y();
+			doubleArea -= corners[i].y() * corners[nextIndex].x();
+		}
+		if (doubleArea > 0.0) return false; // negative if clockwise winding
+
+		return true;
+
+	}
+
 	private void updatePortals(int[] newPortalIndices) {
 		portalIndices = newPortalIndices;
 		walls = new PEdge[corners.length];
@@ -72,7 +92,6 @@ public class PSector extends PCopyable {
 			PEdge wall;
 			int nextI = (i < corners.length - 1) ? i + 1 : 0;
 			wall = new PEdge(corners[i], corners[nextI], new PColour(1.0, 1.0, 1.0));
-			// wall.setHeight(floorHeight, ceilingHeight);
 			if (isPortal(i, nextI)) {
 				wall.setAsPortal();
 			}
@@ -114,17 +133,22 @@ public class PSector extends PCopyable {
 		this.lightLevel = lightLevel;
 	}
 
+	public void offset(PVec2 delta) {
+		for (int i = 0; i < corners.length; i++) {
+			corners[i] = corners[i].add(delta);
+		}
+	}
+
 	public void setAsPortal(int cornerIndex, boolean isPortal) {
-		int[] newPortals;
 		if (isPortal && !isPortal(cornerIndex)) {
-			newPortals = new int[portalIndices.length + 1];
+			int[] newPortals = new int[portalIndices.length + 1];
 			for (int i = 0; i < portalIndices.length; i++) {
 				newPortals[i] = portalIndices[i];
 			}
 			newPortals[newPortals.length - 1] = cornerIndex;
 			updatePortals(newPortals);
-		} else if (isPortal(cornerIndex)) {
-			newPortals = new int[portalIndices.length - 1];
+		} else if (!isPortal && isPortal(cornerIndex)) {
+			int[] newPortals = new int[portalIndices.length - 1];
 			int j = 0;
 			for (int i = 0; i < portalIndices.length; i++) {
 				if (portalIndices[i] == cornerIndex) continue;
@@ -219,7 +243,7 @@ public class PSector extends PCopyable {
 		}
 		corners = newCorners;
 		for (int i = 0; i < portalIndices.length; i++) {
-			if (portalIndices[i] >= cornerIndex) {
+			if (portalIndices[i] > cornerIndex) {
 				newPortals[i] = portalIndices[i] + 1;
 			} else {
 				newPortals[i] = portalIndices[i];

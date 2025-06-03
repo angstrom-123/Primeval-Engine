@@ -19,7 +19,7 @@
 	"user":	{
 		"snapToGrid": true,
 		"scale": 15.0,
-		"width": 1680,
+		"width": 1200,
 		"historyLength": 15,
 		"backgroundColour": [0.1, 0.1, 0.15],
 		"gridColour": [0.15, 0.15, 0.2],

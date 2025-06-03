@@ -20,7 +20,7 @@ public class PVec2 extends PCopyable {
 	 */
 	public PVec2(double[] vals) {
 		if (vals.length != 2) {
-			throw new NullPointerException();
+			throw new IndexOutOfBoundsException();
 		
 		}
 		this.x = vals[0];
@@ -85,7 +85,7 @@ public class PVec2 extends PCopyable {
 		switch (axis) {
 			case 0 -> x = val;
 			case 1 -> y = val;
-			default -> throw new NullPointerException();
+			default -> throw new IndexOutOfBoundsException();
 		}
 	}
 
@@ -98,7 +98,7 @@ public class PVec2 extends PCopyable {
 		switch (axis) {
 			case 0 -> { return x; }
 			case 1 -> { return y; }
-			default -> throw new NullPointerException();
+			default -> throw new IndexOutOfBoundsException();
 		}
 	}
 
@@ -148,6 +148,11 @@ public class PVec2 extends PCopyable {
 	 */
 	public PVec2 round() {
 		return new PVec2(Math.round(x), Math.round(y));
+
+	}
+
+	public PVec2 roundToHalf() {
+		return new PVec2(Math.round(x * 2.0) / 2.0, Math.round(y * 2.0) / 2.0);
 
 	}
 

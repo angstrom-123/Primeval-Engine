@@ -35,7 +35,7 @@ public class PColour extends PCopyable {
 
 	public PColour(double[] vals) {
 		if (vals.length != 3) {
-			throw new NullPointerException();
+			throw new IndexOutOfBoundsException();
 
 		}
 		this.r = vals[0];
@@ -94,7 +94,7 @@ public class PColour extends PCopyable {
 		case 0 -> { return r; }
 		case 1 -> { return g; }
 		case 2 -> { return b; }
-		default -> throw new NullPointerException();
+		default -> throw new IndexOutOfBoundsException();
 		}
 	}
 
@@ -108,7 +108,7 @@ public class PColour extends PCopyable {
 		case 0 -> r = val;
 		case 1 -> g = val;
 		case 2 -> b = val;
-		default -> throw new NullPointerException();
+		default -> throw new IndexOutOfBoundsException();
 		}
 	}
 

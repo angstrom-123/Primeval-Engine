@@ -3,8 +3,8 @@ package com.ang.peEditor.gui.menu.rmbMenu;
 public enum PRMBPanelActionType {
 	DELETE_SECTOR("Delete Sector"),
 	DELETE_CORNER("Delete Corner"),
-	ADD_CORNER_LEFT("Insert Left"),
-	ADD_CORNER_RIGHT("Insert Right");
+	ADD_CORNER_LEFT("Insert Before"),
+	ADD_CORNER_RIGHT("Insert After");
 
 	private String action;
 
