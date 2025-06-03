@@ -79,7 +79,7 @@ public class PCamera {
 	}
 
 	public void cycleRenderMode() {
-		final int maxRenderMode = 3;
+		final int maxRenderMode = 2;
 		if (++renderMode > maxRenderMode) {
 			renderMode = 0;
 		}
@@ -89,10 +89,9 @@ public class PCamera {
 		long startTime = System.currentTimeMillis();
 		renderer.fillTile(backgroundCol, params.imageWidth, params.imageHeight, 0, 0);
 		switch (renderMode) {
-			case 0 -> drawWorld(world, true);
-			case 1 -> drawWorld(world, false);
-			case 2 -> drawFloorMask(PColour.BLUE, calculateMasks(world));
-			case 3 -> drawCeilingMask(PColour.GREEN, calculateMasks(world));
+			case 0 -> drawWorld(world);
+			case 1 -> drawFloorMask(PColour.BLUE, calculateMasks(world));
+			case 2 -> drawCeilingMask(PColour.GREEN, calculateMasks(world));
 			default -> { return -1; }
 		}
 		renderer.repaint();
@@ -100,9 +99,9 @@ public class PCamera {
 
 	}
 
-	private void drawWorld(PSectorWorld world, boolean cullBackfaces) {
+	private void drawWorld(PSectorWorld world) {
 		PFlatMask[] masks = calculateMasks(world);
-		drawSectors(world, masks, cullBackfaces);
+		drawSectors(world, masks);
 	}
 
 	private PFlatMask[] calculateMasks(PSectorWorld world) {
@@ -124,44 +123,40 @@ public class PCamera {
 
 	}
 
-	private void drawSectors(PSectorWorld world, PFlatMask[] masks, boolean drawBackfaces) {
-		PColour blu = PColour.BLUE;
-		PColour grn = PColour.GREEN;
-		for (int i = 0; i < params.imageWidth; i++) {
-			PRay r = getRay(i);
+	private void drawSectors(PSectorWorld world, PFlatMask[] masks) {
+		for (int x = 0; x < params.imageWidth; x++) {
+			PRay r = getRay(x);
 			PHitRecord[] hits = world.allHits(r, PInterval.universe());
 			recSorter.quicksort(hits, 0, hits.length - 1);
 			// recSorter.bubblesort(hits);
-			for (int j = hits.length - 1; j >= 0; j--) {
-				PFlatMask secMask = masks[hits[j].getSectorIndex()];
-				if (hits[j].isPortal() && hits[j].isBackface()) {
-					if (getFloorHeight(hits[j]) < 0.0) { // floor above view
-						renderer.writeColumn(grn, i, secMask.floor[i][0], secMask.floor[i][1]);
-					} 
-					if (getFloorHeight(hits[j]) > 0.0) { // floor below view
-						renderer.writeColumn(blu, i, secMask.floor[i][0], secMask.floor[i][1]);
-					}
-					if (getCeilingHeight(hits[j]) < 0.0) { // ceiling above view
-						renderer.writeColumn(grn, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
-					} 
-					if (getCeilingHeight(hits[j]) > 0.0) { // ceiling below view
-						renderer.writeColumn(blu, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
-					}
-				} else if (!hits[j].isPortal()) {
-					int[] bounds = getColumnBounds(r, hits[j]);
-					if (getFloorHeight(hits[j]) < 0.0) { // floor above view
-						renderer.writeColumn(grn, i, secMask.floor[i][0], secMask.floor[i][1]);
-					} 
-					if (getFloorHeight(hits[j]) > 0.0) { // floor below view
-						renderer.writeColumn(blu, i, secMask.floor[i][0], secMask.floor[i][1]);
-					}
-					if (getCeilingHeight(hits[j]) < 0.0) { // ceiling above view
-						renderer.writeColumn(grn, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
-					} 
-					if (getCeilingHeight(hits[j]) > 0.0) { // ceiling below view
-						renderer.writeColumn(blu, i, secMask.ceiling[i][0], secMask.ceiling[i][1]);
-					}
-					renderer.writeColumn(rayColour(r, hits[j]), i, bounds[0], bounds[1]);
+			drawSlice(r, hits, masks, x);
+		}
+	}
+
+	private void drawSlice(PRay r, PHitRecord[] hits, PFlatMask[] masks, int x) {
+		PColour fCol = PColour.GREEN;
+		PColour cCol = PColour.BLUE;
+		for (int j = hits.length - 1; j >= 0; j--) {
+			PFlatMask mask = masks[hits[j].getSectorIndex()];
+			if (hits[j].isBackface()) {
+				if (getFloorHeight(hits[j]) < 0.0) { // floor above view
+					renderer.writeColumn(fCol, x, mask.floor[x][0], mask.floor[x][1]);
+				} 
+				if (getFloorHeight(hits[j]) > 0.0) { // floor below view
+					renderer.writeColumn(cCol, x, mask.floor[x][0], mask.floor[x][1]);
+				}
+				if (getCeilingHeight(hits[j]) < 0.0) { // ceiling above view
+					renderer.writeColumn(fCol, x, mask.ceiling[x][0], mask.ceiling[x][1]);
+				} 
+				if (getCeilingHeight(hits[j]) > 0.0) { // ceiling below view
+					renderer.writeColumn(cCol, x, mask.ceiling[x][0], mask.ceiling[x][1]);
+				}
+			} 
+			if (!hits[j].isPortal()) {
+				int[] bounds = getColumnBounds(r, hits[j]);
+				PColour columnColour = rayColour(r, hits[j]);
+				if (columnColour != null) {
+					renderer.writeColumn(columnColour, x, bounds[0], bounds[1]);
 				}
 			}
 		}
@@ -187,9 +182,6 @@ public class PCamera {
 
 	private PColour rayColour(PRay r, PHitRecord rec) {
 		PColour colour = rec.getColour();	
-		if (rec.isBackface()) {
-			colour = new PColour(1.0, 0.0, 0.0);
-		}
 		colour = colour.mul(getDepth(r, rec));
 		return colour;
 

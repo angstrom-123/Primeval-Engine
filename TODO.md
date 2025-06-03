@@ -1,7 +1,7 @@
 ## TODO
 
 # Core 
-- Drawing floors and ceilings
+- Rendering top / middle / bottom textures of walls
 - Collisions
 - Sprites
 - Interactable objects

@@ -12,6 +12,8 @@ public class PHitRecord extends PCopyable {
 	private double t; // distance to the hit
 	private double portalT;
 	private PColour colour; // colour of the surface at the hit point
+	private PColour upperColour;
+	private PColour lowerColour;
 	private double floorHeight; // floor height of edge at hit
 	private double ceilingHeight; // ceiling height of edge at hit
 	private boolean isBackface; // true if this hit is on the inside of a sector
@@ -28,6 +30,8 @@ public class PHitRecord extends PCopyable {
 		temp.setT(t);
 		temp.setPortalT(portalT);
 		temp.setColour(colour);
+		temp.setUpperColour(upperColour);
+		temp.setLowerColour(lowerColour);
 		temp.setFloor(floorHeight);
 		temp.setCeiling(ceilingHeight);
 		temp.setBackface(isBackface);
@@ -58,6 +62,16 @@ public class PHitRecord extends PCopyable {
 	 */
 	public PColour getColour() {
 		return colour;
+
+	}
+
+	public PColour getUpperColour() {
+		return upperColour;
+
+	}
+
+	public PColour getLowerColour() {
+		return lowerColour;
 
 	}
 
@@ -115,6 +129,14 @@ public class PHitRecord extends PCopyable {
 	 */
 	public void setColour(PColour colour) {
 		this.colour = colour;
+	}
+
+	public void setUpperColour(PColour colour) {
+		this.upperColour = colour;
+	}
+
+	public void setLowerColour(PColour colour) {
+		this.lowerColour = colour;
 	}
 
 	/**

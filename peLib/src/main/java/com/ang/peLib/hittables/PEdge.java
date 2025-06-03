@@ -16,6 +16,8 @@ public class PEdge extends PCopyable {
 	private PVec2 p0;
 	private PVec2 p1;
 	private PColour albedo;
+	private PColour upperColour;
+	private PColour lowerColour;
 	private boolean portal;
 	private PVec2 normal;
 
@@ -31,6 +33,8 @@ public class PEdge extends PCopyable {
 		this.p0 = p0;
 		this.p1 = p1;
 		this.albedo = albedo;
+		this.upperColour = albedo;
+		this.lowerColour = albedo;
 		// clockwise winding
 		double dx = p1.x() - p0.x();
 		double dy = p1.y() - p0.y();
@@ -62,6 +66,16 @@ public class PEdge extends PCopyable {
 
 	}
 
+	public PColour getUpperColour() {
+		return upperColour;
+
+	}
+
+	public PColour getLowerColour() {
+		return lowerColour;
+
+	}
+
 	public PVec2 getNormal() {
 		return normal;
 
@@ -70,6 +84,14 @@ public class PEdge extends PCopyable {
 	public boolean isPortal() {
 		return portal;
 
+	}
+
+	public void setUpperColour(PColour colour) {
+		this.upperColour = colour;
+	}
+
+	public void setLowerColour(PColour colour) {
+		this.lowerColour = colour;
 	}
 	
 	/**
@@ -100,6 +122,8 @@ public class PEdge extends PCopyable {
 				tInterval.setMax(t1);
 				rec.setT(t1);
 				rec.setColour(albedo);
+				rec.setUpperColour(upperColour);
+				rec.setLowerColour(lowerColour);
 				rec.setBackface(PVec2.dot(r.getDirection(), normal) >= 0.0);
 				rec.setPortal(portal);
 				return true;
@@ -118,6 +142,8 @@ public class PEdge extends PCopyable {
 	public PEdge copy() {
 		PEdge out = new PEdge(p0.copy(), p1.copy(), albedo.copy());
 		if (portal) out.setAsPortal();
+		out.setUpperColour(upperColour);
+		out.setLowerColour(lowerColour);
 		return out;
 
 	}
