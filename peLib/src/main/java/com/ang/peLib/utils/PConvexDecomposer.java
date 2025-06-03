@@ -9,7 +9,7 @@ import com.ang.peLib.maths.PRay;
 import com.ang.peLib.maths.PVec2;
 
 public class PConvexDecomposer {
-	private PVisualizer visualizer = new PVisualizer(); // debug
+	// private PVisualizer visualizer = new PVisualizer(); // debug
 	private PSectorWorld world;
 
 	public PConvexDecomposer(PSectorWorld world) {
@@ -25,7 +25,7 @@ public class PConvexDecomposer {
 			if (!found) break;
 
 		}
-		visualizer.visualize(world); // debug
+		// visualizer.visualize(world); // debug
 		return world;
 
 	}
