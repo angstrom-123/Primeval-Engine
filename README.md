@@ -155,5 +155,15 @@ be seen in red by looking through portals in some of the sectors.
 
 <img src="https://github.com/user-attachments/assets/0208c7c8-16e5-414c-a4f3-8d17d03b240d" width="50%"><img src="https://github.com/user-attachments/assets/7a365056-b7c1-4b54-b895-c14d709d7113" width="50%">
 
+This approach works for the extremely simple scenes that I have been testing with so 
+far, but it falls apart when working with an indoor level. To fix this, I altered the 
+logic used to draw flats (such as walls and ceilings). 
 
+<img src="https://github.com/user-attachments/assets/32b076dd-570a-49a7-95f6-e4bfd7b6ca20" width="50%">
 
+The major issue then became that 
+non-convex sectors would cause floors and ceilings to be cut off when rendering certain 
+portions. To solve this, I wrote a convex decomposition algorithm to break up a sector into
+smaller (convex) sectors that render correctly. This allows for sectors of any shape.
+
+<img src="https://github.com/user-attachments/assets/48aac168-226f-46a8-b095-c45ba6682080" width="50%">
