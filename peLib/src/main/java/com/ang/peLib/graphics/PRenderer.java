@@ -6,7 +6,6 @@ import com.ang.peLib.threads.PUpdateWorker;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -63,6 +62,14 @@ public class PRenderer {
 		this.listener = listener;
 	}
 
+	/**
+	 * Constructs the renderer with a listener for all keyboard inputs.
+	 * This renderer tracks all keyboard inputs allowing for shortcuts.
+	 * @param width    the width of the window to create and render to
+	 * @param height   the height of the window to create and render to
+	 * @param listener the keyboard listener to use
+	 * @see   		   com.ang.peLib.inputs.PMouseInputListener
+	 */
 	public PRenderer(int width, int height, PFullKeyboardInputListener listener) {
 		this.width = width;
 		this.height = height;
@@ -71,6 +78,10 @@ public class PRenderer {
 		this.listener = listener;
 	}
 
+	/**
+	 * Adds a worker to the list of processes to kill when closing the window.
+	 * @param worker the worker to be killed when closing the window
+	 */
 	public void terminateOnClose(PUpdateWorker worker) {
 		PUpdateWorker[] temp = new PUpdateWorker[workersToKill.length + 1];
 		for (int i = 0; i < workersToKill.length; i++) {
@@ -80,6 +91,10 @@ public class PRenderer {
 		workersToKill = temp;
 	}
 
+	/**
+	 * Writes a string to the title bar of the window.
+	 * @param text the text to write to the title bar
+	 */
 	public void writeToTitleBar(String text) {
 		frame.setTitle(text);
 	}
@@ -121,6 +136,10 @@ public class PRenderer {
 		frame.repaint();
 	}
 
+	/**
+	 * Applies a multiplier to the size of each pixel.
+	 * @param multiplier the multiplier to apply
+	 */
 	public void setScale(double multiplier) {
 		frame.setSize((int) Math.round(imgPanel.getWidth() * multiplier), 
 				(int) Math.round(imgPanel.getHeight() * multiplier));
@@ -130,13 +149,6 @@ public class PRenderer {
 
 	/**
 	 * Initializes the renderer with an input listener.
-	 * @param listener the {@link com.ang.peLib.inputs.PMouseInputListener} or 
-	 * 				   the {@link com.ang.peLib.inputs.PMovementInputListener} or
-	 * 				   the {@link com.ang.peLib.inputs.PFullKeyboardInputListener}
-	 * 				   to attach to the window. Can be {@code null} if no 
-	 * 				   listener should be attached 
-	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
-	 * @see 		   com.ang.peLib.inputs.PMovementInputListener
 	 */
 	public void init() {
 		imgPanel.setPreferredSize(new Dimension(width, height));
@@ -210,27 +222,27 @@ public class PRenderer {
 		}
 	}
 
-	public void writeColumnTo(PColour colour, int x, int bottom, boolean[] mask, boolean upward) {
-		int columnColour = processToInt(colour);
-		if (upward) {
-			for (int y = bottom; y > 0 && !mask[y]; y--) {
-				if (inBounds(x, y)) {
-					img.setRGB(x, y, columnColour);
-				}
-			}
-		} else {
-			for (int y = bottom; y < mask.length && !mask[y]; y++) {
-				if (inBounds(x, y)) {
-					img.setRGB(x, y, columnColour);
-				}
-			}
-		}
-	}
-
+	/**
+	 * Writes a line between 2 screenspace coordinates.
+	 * @param colour the colour the draw the line in
+	 * @param x0 	 x screenspace coordinate to start the line at
+	 * @param y0 	 y screenspace coordinate to start the line at
+	 * @param x1 	 x screenspace coordinate to end the line at
+	 * @param y1 	 y screenspace coordinate to end the line at
+	 */
 	public void writeLine(PColour colour, int x0, int y0, int x1, int y1) {
 		writeLine(colour, x0, y0, x1, y1, Integer.MAX_VALUE);
 	}
 
+	/**
+	 * Writes a dotted line between 2 screenspace coordinates.
+	 * @param colour  the colour the draw the line in
+	 * @param x0 	  x screenspace coordinate to start the line at
+	 * @param y0 	  y screenspace coordinate to start the line at
+	 * @param x1 	  x screenspace coordinate to end the line at
+	 * @param y1 	  y screenspace coordinate to end the line at
+	 * @param dotrate amount of consecutive pixels between gaps
+	 */
 	public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotrate) {
 		int lineColour = processToInt(colour);
 		if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
@@ -242,6 +254,10 @@ public class PRenderer {
 		}
 	}
 
+	/**
+	 * Writes a line down from the starting coordinates to the ending coordinates.
+	 * @see #writeLine(PColour, int, int, int, int, int)
+	 */
 	private void writeLineLow(int lineColour, int x0, int y0, int x1, int y1, int dotrate) {
 		int dx = x1 - x0;
 		int dy = y1 - y0;
@@ -265,6 +281,10 @@ public class PRenderer {
 		}
 	}
 
+	/**
+	 * Writes a line up from the starting coordinates to the ending coordinates.
+	 * @see #writeLine(PColour, int, int, int, int, int)
+	 */
 	private void writeLineHigh(int lineColour, int x0, int y0, int x1, int y1, int dotrate) {
 		int dx = x1 - x0;
 		int dy = y1 - y0;
@@ -285,15 +305,6 @@ public class PRenderer {
 				counter = 0;
 			} 
 			counter++;
-		}
-	}
-
-	public void writeRow(PColour colour, int y, int left, int right) {
-		int rowColour = processToInt(colour);
-		for (int x = left; x <= right; x++) {
-			if (inBounds(x, y)) {
-				img.setRGB(x, y, rowColour);
-			}
 		}
 	}
 
@@ -323,6 +334,12 @@ public class PRenderer {
 		}
 	}
 
+	/**
+	 * Writes text at the specified coordinates.
+	 * @param text the text to write 
+	 * @param x    x screenspace coordinate to write the text at
+	 * @param y    y screenspace coordinate to write the text at
+	 */
 	public void writeText(String text, int x, int y) {
 		img.getGraphics().drawString(text, x, y);
 	}
@@ -346,6 +363,12 @@ public class PRenderer {
 
 	}
 
+	/**
+	 * Checks if a given screenspace coordinate is within the bounds of the screen.
+	 * @param  x the x coordinate to check
+	 * @param  y the y coordinate to check
+	 * @return {@code true} if the point is in bounds, else {@code false}
+	 */
 	protected boolean inBounds(int x, int y) {
 		if ((x < 0) || (x >= width) || (y < 0) || (y >= height)) {
 			return false;

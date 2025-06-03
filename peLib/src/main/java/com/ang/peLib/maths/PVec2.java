@@ -151,6 +151,10 @@ public class PVec2 extends PCopyable {
 
 	}
 
+	/**
+	 * Returns a rounded copy of the vector to the nearest 0.5.
+	 * @return   the rounded copy
+	 */
 	public PVec2 roundToHalf() {
 		return new PVec2(Math.round(x * 2.0) / 2.0, Math.round(y * 2.0) / 2.0);
 

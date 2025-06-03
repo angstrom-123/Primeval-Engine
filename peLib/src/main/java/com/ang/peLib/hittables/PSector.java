@@ -70,6 +70,11 @@ public class PSector extends PCopyable {
 
 	}
 
+	/**
+	 * Determines if the points passed in are wound clockwise or anti clockwise.
+	 * @param  corners array of corners to test
+	 * @return 		   {@code true} if the corners have clockwise winding, else {@code false}
+	 */
 	private boolean clockwise(PVec2[] corners) {
 		// shoelace area formula
 		double doubleArea = 0.0;
@@ -84,6 +89,10 @@ public class PSector extends PCopyable {
 
 	}
 
+	/**
+	 * Refreshes the sector with new portal indices.
+	 * @param newPortalIndices indices of new portal corners
+	 */
 	private void updatePortals(int[] newPortalIndices) {
 		portalIndices = newPortalIndices;
 		walls = new PEdge[corners.length];
@@ -133,12 +142,21 @@ public class PSector extends PCopyable {
 		this.lightLevel = lightLevel;
 	}
 
+	/**
+	 * Pushes all corners in the sector by an offset.
+	 * @param delta the vector to add to the position of each corner
+	 */
 	public void offset(PVec2 delta) {
 		for (int i = 0; i < corners.length; i++) {
 			corners[i] = corners[i].add(delta);
 		}
 	}
 
+	/**
+	 * Changes a specified corner to a given portal status.
+	 * @param cornerIndex index of the corner to change
+	 * @param isPortal	  if the corner should be a portal or not
+	 */
 	public void setAsPortal(int cornerIndex, boolean isPortal) {
 		if (isPortal && !isPortal(cornerIndex)) {
 			int[] newPortals = new int[portalIndices.length + 1];
@@ -160,6 +178,10 @@ public class PSector extends PCopyable {
 		}
 	}
 
+	/**
+	 * Removes a corner at a given index, maintaining correct portal indices.
+	 * @param cornerIndex index of the corner to remove
+	 */
 	public void removeCornerAt(int cornerIndex) {
 		if (corners.length <= 3) return; // Sector must have an interior, so at least 3 corners
 
@@ -183,6 +205,11 @@ public class PSector extends PCopyable {
 		updatePortals(newPortals);
 	}
 
+	/**
+	 * Inserts a corner immediately before a corner at a given index.
+	 * @param  cornerIndex index of the corner to insert the new corner before 
+	 * @return 			   index that the new corner was inserted at
+	 */
 	public int insertCornerBefore(int cornerIndex) {
 		PVec2[] newCorners = new PVec2[corners.length + 1];
 		int[] newPortals = new int[portalIndices.length];
@@ -216,11 +243,21 @@ public class PSector extends PCopyable {
 
 	}
 
+	/**
+	 * Replaces a corner at a given index with another corner.
+	 * @param index  index of the corner to replace 
+	 * @param corner the corner to insert in its place
+	 */
 	public void replaceCornerAt(int index, PVec2 corner) {
 		corners[index] = corner;
 		updatePortals(portalIndices);
 	}
 
+	/**
+	 * Inserts a corner immediately after a corner at a given index.
+	 * @param  cornerIndex index of the corner to insert the new corner after 
+	 * @return 			   index that the new corner was inserted at
+	 */
 	public int insertCornerAfter(int cornerIndex) {
 		PVec2[] newCorners = new PVec2[corners.length + 1];
 		int[] newPortals = new int[portalIndices.length];
@@ -301,6 +338,11 @@ public class PSector extends PCopyable {
 
 	}
 
+	/**
+	 * Returns a corner at a given index from this sector.
+	 * @param  i index of the corner to return 
+	 * @return   the corner at the specified index
+	 */
 	public PVec2 getCorner(int i) {
 		if ((i >= corners.length) || (i < 0)) return null;
 

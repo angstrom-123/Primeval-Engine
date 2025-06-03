@@ -21,6 +21,10 @@ public class PSectorWorld extends PCopyable {
 		sectors = new PSector[maxSectors];
 	}
 
+	/**
+	 * Returns the occupied size of the world.
+	 * @return the amount of sectors in the world
+	 */
 	public int size() {
 		return head;
 
@@ -57,10 +61,21 @@ public class PSectorWorld extends PCopyable {
 
 	}
 
+	/**
+	 * Replaces a sector at a particular index with another.
+	 * @param index the index of the sector to replace 
+	 * @param sec 	the sector to insert in its place
+	 * @see   PSector
+	 */
 	public void replaceSectorAt(int index, PSector sec) {
 		sectors[index] = sec;
 	}
 
+	/**
+	 * Removes a sector at a particular index.
+	 * @param sectorIndex index of the sector to remove
+	 * @see   PSector
+	 */
 	public void removeSectorAt(int sectorIndex) {
 		for (int i = sectorIndex; i < head; i++) {
 			sectors[i] = sectors[i + 1];
@@ -88,6 +103,12 @@ public class PSectorWorld extends PCopyable {
 
 	}
 
+	/**
+	 * Returns a sector at a particular index
+	 * @param  i 	   index of the sector to return
+	 * @return   	   the sector at the specified index
+	 * @see    PSector
+	 */
 	public PSector getSector(int i) {
 		if ((i >= head) || (i < 0)) return null;
 

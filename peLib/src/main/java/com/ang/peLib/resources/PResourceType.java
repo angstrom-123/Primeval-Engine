@@ -22,6 +22,10 @@ public enum PResourceType {
 		this.dirName = dirName;
 	}
 	
+	/**
+	 * Returns the expected directory name this resource is in.
+	 * @return name of the directory that should contain this resource.
+	 */
 	public String getDirName() {
 		return dirName;
 

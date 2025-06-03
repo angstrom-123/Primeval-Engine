@@ -3,11 +3,19 @@ package com.ang.peLib.files.json;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides an object for organizing json data.
+ */
 public class PJSONObject {
 	public Map<String, String> valueMap = new HashMap<String, String>();
 	public String name;
 	public PJSONObject[] parents;
 
+	/**
+	 * Constructs a new PJSONObject with a name and a parent object.
+	 * @param name   name of this object 
+	 * @param parent the parent file of this object, null if there is no parent
+	 */
 	public PJSONObject(String name, PJSONObject parent) {
 		this.name = name;
 		if (parent != null) {
@@ -24,6 +32,11 @@ public class PJSONObject {
 		}
 	}
 
+	/**
+	 * Saves a key value pair to this object.
+	 * @param key 	the key to store
+	 * @param value the value to store
+	 */
 	public void addToMap(String key, String value) {
 		String entryKey = "";
 		for (int i = parents.length - 1; i >= 0; i--) {
@@ -35,6 +48,10 @@ public class PJSONObject {
 		valueMap.put(entryKey, value);
 	}
 
+	/**
+	 * Returns a string representation of the object.
+	 * @return string representation of the object
+	 */
 	@Override
 	public String toString() {
 		String out = name;

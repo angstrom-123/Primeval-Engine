@@ -80,6 +80,10 @@ public class PColour extends PCopyable {
 
 	}
 
+	/**
+	 * Multiplies each component in this colour by another.
+	 * @param c the colour to multiply by
+	 */
 	public PColour mul(PColour c) {
 		return new PColour(this.r * c.r, this.g * c.g, this.b * c.b);
 	}

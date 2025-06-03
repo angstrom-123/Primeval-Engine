@@ -2,10 +2,19 @@ package com.ang.peLib.graphics;
 
 import com.ang.peLib.hittables.PHitRecord;
 
+/**
+ * Class for representing a floor or ceiling mask for a sector.
+ */
 public class PFlatMask {
 	public int[][] floor;
 	public int[][] ceiling;
 
+	/**
+	 * Constructs a new flatmask with a width and height (should be equal to 
+	 * screen width and heigh).
+	 * @param width  the width of the mask
+	 * @param height the height of the mask
+	 */
 	public PFlatMask(int width, int height) {
 		floor = new int[width][2];
 		ceiling = new int[width][2];
@@ -17,6 +26,14 @@ public class PFlatMask {
 		}
 	}
 
+	/**
+	 * Saves the bounds of a vertical column of pixels to the current sector's 
+	 * flatmask.
+	 * @param elevation the current elevation of the camera 
+	 * @param hitRec    the hitRecord representing the intersecion that is being masked
+	 * @param x			x coordinate of the pixel being saved 
+	 * @param bounds    the upper and lower pixel coordinates of the column at the x point
+	 */
 	public void saveToBoundingMasks(double elevation, PHitRecord hitRec, int x, int[] bounds) {
 		if (hitRec.isBackface()) {
 			if (hitRec.getFloorHeight() < elevation) {
@@ -41,21 +58,5 @@ public class PFlatMask {
 				ceiling[x][0] = bounds[1];
 			}
 		}
-
-		// if (hitRec.isBackface()) {
-		// 	floor[x][1] = bounds[0];
-		// 	ceiling[x][0] = bounds[1];
-		// } else {
-		// 	floor[x][0] = bounds[0];
-		// 	ceiling[x][1] = bounds[1];
-		// }
-
-		// if (hitRec.isBackface()) {
-		// 	floor[x][0] = bounds[0];
-		// 	ceiling[x][1] = bounds[1];
-		// } else {
-		// 	floor[x][1] = bounds[0];
-		// 	ceiling[x][0] = bounds[1];
-		// }
 	}
 }

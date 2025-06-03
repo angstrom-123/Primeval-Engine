@@ -6,13 +6,29 @@ import com.ang.peLib.exceptions.PParseException;
 import com.ang.peLib.graphics.PColour;
 import com.ang.peLib.maths.PVec3;
 
+/**
+ * Provides utilities for extracting values from json data.
+ */
 public class PJSONExtractor {
 	Map<String, String> jsonData;
 
+	/**
+	 * Constructs a new extracter with a map of data to parse.
+	 * @param jsonData key value pairs representing a json file
+	 */
 	public PJSONExtractor(Map<String, String> jsonData) {
 		this.jsonData = jsonData;
 	}
 
+	/**
+	 * Attempts to extract a given variable from the file.
+	 * First attempts to read the variable under the "user" object, then falls 
+	 * back to "default"; if neither are found then an error is thrown.
+	 * @param  key			   key for the requested value
+	 * @param  type 		   supported json datatype represented by the value
+	 * @return 				   value held behind the key in the data as an object
+	 * @throws PParseException if the requested key cannot be extracted from the file
+	 */
 	public Object tryToExtract(String key, PJSONValueType type) throws PParseException {
 		String user = jsonData.getOrDefault("user." + key, null);
 		String def = jsonData.getOrDefault("default." + key, null);
@@ -43,6 +59,11 @@ public class PJSONExtractor {
 
 	}
 
+	/**
+	 * Converts a string representing an array to an array.
+	 * @param  line the string representing the array 
+	 * @return 		array represented by the line, this is always a double[] 
+	 */
 	private double[] arrayFromString(String line) {
 		line = line.replace("[", "");
 		line = line.replace("]", "");

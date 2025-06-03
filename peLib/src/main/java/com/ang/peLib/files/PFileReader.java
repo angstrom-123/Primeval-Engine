@@ -14,11 +14,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 
+/**
+ * Provides functions for reading files and directories from other modules.
+ */
 public class PFileReader {
 	/**
 	 * Finds the files that are children of a given resource directory of a 
 	 * given module.
-	 * All paths are given as absolute paths from the root directory. This will 
+	 * All paths are given relative to the resources directory. This will 
 	 * fail if the directory structure of the engine is disrupted.
 	 * @param  resourceType	 	  type of resource held in the directory to read
 	 * @param  module 			  name of the module containing the dir to read
@@ -48,6 +51,22 @@ public class PFileReader {
 
 	}
 
+	/**
+	 * Returns a resource file with a specified name as an array of strings.
+	 * Resources are stored under multiple subdirectories. The specified resource 
+	 * is searched for under the subdirectory listed by the resource manager for 
+	 * the specified resource type. Multiple resources can have the same name as 
+	 * long as they are different resource types. 
+	 * @param  resourceType		  the type of resource that is stored in the file
+	 * @param  name				  the name of the file to read
+	 * @param  module 			  the name of the module containing the file to read
+	 * @return 					  array of strings where each element is a line 
+	 * 							  from the specified file.
+	 * @throws PResourceException if there is a problem with reading the file
+	 * @see 					  #PFileReader(int)
+	 * @see 				      com.ang.peLib.resources.PResourceType
+	 * @see 				      com.ang.peLib.resources.PResourceManager
+	 */
 	public String[] readFile(PResourceType resourceType, PModuleName module,
 			String name) throws PResourceException {
 		PResource res = PResourceManager.fetch(resourceType, module, name);
@@ -74,6 +93,22 @@ public class PFileReader {
 		}
 	}
 
+	/**
+	 * Returns a binary encoded resource file with a specified name as an array 
+	 * of bytes.
+	 * Resources are stored under multiple subdirectories. The specified resource 
+	 * is searched for under the subdirectory listed by the resource manager for 
+	 * the specified resource type. Multiple resources can have the same name as 
+	 * long as they are different resource types.
+	 * @param  resourceType		  the type of resource that is stored in the file
+	 * @param  module 			  the name of the module containing the file to read
+	 * @param  name				  the name of the file to read
+	 * @return 					  array of bytes where each element is a byte from 
+	 * 							  the specified file
+	 * @throws PResourceException if there is a problem with reading the file
+	 * @see 				      com.ang.peLib.resources.PResourceType
+	 * @see 				      com.ang.peLib.resources.PResourceManager
+	 */
 	public byte[] readFileAsBytes(PResourceType resourceType, PModuleName module, 
 			String name) throws PResourceException {
 		PResource res = PResourceManager.fetch(resourceType, module, name);
@@ -95,6 +130,14 @@ public class PFileReader {
 		}
 	}
 
+	/**
+	 * Returns an input stream to a given resource in a given module.
+	 * @param  resourceType		  type of resource that the file is
+	 * @param  module			  module that contains the file in /resources/
+	 * @param  name				  name of the file to read (including extension)
+	 * @return 					  input stream to the specified file
+	 * @throws PResourceException if there is a problem acquiring the input stream
+	 */
 	private InputStream getInputStream(PResourceType resourceType, PModuleName module, 
 			String name) throws PResourceException {
 		InputStream s;

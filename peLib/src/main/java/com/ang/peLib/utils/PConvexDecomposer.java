@@ -8,14 +8,30 @@ import com.ang.peLib.maths.PInterval;
 import com.ang.peLib.maths.PRay;
 import com.ang.peLib.maths.PVec2;
 
+/**
+ * Breaks down all non-convex sectors in a world to a number of smaller, convex sectors.
+ * @see com.ang.peLib.hittables.PSector
+ * @see com.ang.peLib.hittables.PSectorWorld
+ */
 public class PConvexDecomposer {
 	// private PVisualizer visualizer = new PVisualizer(); // debug
 	private PSectorWorld world;
 
+	/**
+	 * Constructs a new decomposer for a world.
+	 * @param world the world to be decomposed
+	 * @see   com.ang.peLib.hittables.PSectorWorld
+	 */
 	public PConvexDecomposer(PSectorWorld world) {
 		this.world = world;
 	}
 
+	/**
+	 * Performs convex decomposition.
+	 * @return the world with decomposed sectors.
+	 * @see    com.ang.peLib.hittables.PSector
+	 * @see    com.ang.peLib.hittables.PSectorWorld
+	 */
 	public PSectorWorld decompose() {
 		while (true) {
 			boolean found = false;
@@ -30,6 +46,11 @@ public class PConvexDecomposer {
 
 	}
 
+	/**
+	 * Recursively resolves all concave corners for a sector at the given index.
+	 * @param  sectorIndex index of the sector in the world to resolve
+	 * @return 			   {@code true} if the sector was decomposed, {@code false} if already convex
+	 */
 	private boolean resolveSector(int sectorIndex) {
 		int reflexIndex = findReflex(world.getSector(sectorIndex));
 		if (reflexIndex == -1) return false;
@@ -47,6 +68,13 @@ public class PConvexDecomposer {
 
 	}
 
+	/**
+	 * Resolves a single concave corner in a given sector by bisecting the parent sector.
+	 * @param  sec 		   the sector that the corner should be resolved in 
+	 * @param  reflexIndex index of the concave corner in the sector
+	 * @return 			   pair of sectors created by splitting the inputted sector
+	 * @see 			   com.ang.peLib.hittables.PSector
+	 */
 	private PSector[] resolveReflex(PSector sec, int reflexIndex) {
 		int[] indices = getBisectionIndices(sec, reflexIndex);
 		if (indices[1] == -1) {
@@ -58,6 +86,14 @@ public class PConvexDecomposer {
 
 	}
 
+	/**
+	 * Splits a sector into 2 sectors between 2 corners.
+	 * @param sec 			  the sector to bisect 
+	 * @param bisecStartIndex index of the corner where the bisection should start
+	 * @param bisecEndIndex   index of the corner where the bisection should end
+	 * @return 			   	  pair of sectors created by splitting the inputted sector
+	 * @see 				  com.ang.peLib.hittables.PSector
+	 */
 	private PSector[] bisect(PSector sec, int bisecStartIndex, int bisecEndIndex) {
 		sec.setAsPortal(bisecStartIndex, true);
 		sec.setAsPortal(bisecEndIndex, true);
@@ -89,6 +125,13 @@ public class PConvexDecomposer {
 
 	}
 
+	/**
+	 * Constructs a subsector from an original sector and a subset of its points.
+	 * @param  originalSec   parent sector to construct from 
+	 * @param  cornerIndices subset of indices from parent sector to construct a new 
+	 * 						 sector with
+	 * @return 				 a new sector constructed from the given points
+	 */
 	private PSector buildSector(PSector originalSec, int[] cornerIndices) {
 		PVec2[] corners = new PVec2[cornerIndices.length];
 		int[] portalIndices = new int[cornerIndices.length];

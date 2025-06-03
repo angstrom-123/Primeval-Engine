@@ -17,16 +17,14 @@ import java.util.zip.ZipFile;
 import java.io.File;
 
 /**
- * Provides functions for reading files and directories.
+ * Provides functions for reading files and directories the current module's resources.
  */
 public class PResourceFileReader {
 	/**
-	 * Finds the files that are children of a given resource directory of a 
-	 * given module.
+	 * Finds the files that are children of a given resource directory.
 	 * All paths are given relative to the resources directory. This will 
 	 * fail if the directory structure of the engine is disrupted.
 	 * @param  resourceType	 	  type of resource held in the directory to read
-	 * @param  module 			  name of the module containing the dir to read
 	 * @param  onlyChildren		  specifies if the paths to files should be 
 	 * 							  included in the return, or only the filenames 
 	 * @return 				      an array of paths that are subdirectories of 
@@ -82,7 +80,6 @@ public class PResourceFileReader {
 	 * long as they are different resource types. 
 	 * @param  resourceType		  the type of resource that is stored in the file
 	 * @param  name				  the name of the file to read
-	 * @param  module 			  the name of the module containing the file to read
 	 * @return 					  array of strings where each element is a line 
 	 * 							  from the specified file.
 	 * @throws PResourceException if there is a problem with reading the file
@@ -123,7 +120,6 @@ public class PResourceFileReader {
 	 * the specified resource type. Multiple resources can have the same name as 
 	 * long as they are different resource types.
 	 * @param  resourceType		  the type of resource that is stored in the file
-	 * @param  module 			  the name of the module containing the file to read
 	 * @param  name				  the name of the file to read
 	 * @return 					  array of bytes where each element is a byte from 
 	 * 							  the specified file

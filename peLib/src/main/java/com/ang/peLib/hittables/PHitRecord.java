@@ -10,7 +10,6 @@ import com.ang.peLib.utils.PCopyable;
  */
 public class PHitRecord extends PCopyable {
 	private double t; // distance to the hit
-	private double portalT;
 	private PColour colour; // colour of the surface at the hit point
 	private PColour upperColour;
 	private PColour lowerColour;
@@ -28,7 +27,6 @@ public class PHitRecord extends PCopyable {
 	public PHitRecord copy() {
 		PHitRecord temp = new PHitRecord();
 		temp.setT(t);
-		temp.setPortalT(portalT);
 		temp.setColour(colour);
 		temp.setUpperColour(upperColour);
 		temp.setLowerColour(lowerColour);
@@ -50,13 +48,8 @@ public class PHitRecord extends PCopyable {
 
 	}
 
-	public double getPortalT() {
-		return portalT;
-
-	}
-
 	/**
-	 * Returns the colour at the hit point stored.
+	 * Returns the main colour at the hit point stored.
 	 * @return colour at the hit stored in this record
 	 * @see    com.ang.peLib.graphics.PColour 
 	 */
@@ -65,11 +58,21 @@ public class PHitRecord extends PCopyable {
 
 	}
 
+	/**
+	 * Returns the upper colour at the hit point stored.
+	 * @return upper colour at the hit stored in this record
+	 * @see    com.ang.peLib.graphics.PColour 
+	 */
 	public PColour getUpperColour() {
 		return upperColour;
 
 	}
 
+	/**
+	 * Returns the lower colour at the hit point stored.
+	 * @return lower colour at the hit stored in this record
+	 * @see    com.ang.peLib.graphics.PColour 
+	 */
 	public PColour getLowerColour() {
 		return lowerColour;
 
@@ -95,16 +98,29 @@ public class PHitRecord extends PCopyable {
 
 	}
 
+	/**
+	 * Checks if the hitRecord hit a backface or a frontface.
+	 * @return {@code true} if the hitRecord is for a backface, else {@code false}
+	 */
 	public boolean isBackface() {
 		return isBackface;
 
 	}
 
+	/**
+	 * Checks if the hitRecord hit a portal.
+	 * @return {@code true} if this hitRecord is for a portal hit, else {@code false}
+	 */
 	public boolean isPortal() {
 		return isPortal;
 
 	}
 
+	/**
+	 * Returns the index of the sector that this hitRecord is for.
+	 * @return index of the sector hit
+	 * @see    com.ang.peLib.hittables.PSector
+	 */
 	public int getSectorIndex() {
 		return sectorIndex;
 
@@ -118,12 +134,8 @@ public class PHitRecord extends PCopyable {
 		this.t = t;
 	}
 
-	public void setPortalT(double portalT) {
-		this.portalT = portalT;
-	}
-
 	/**
-	 * Sets the colour of the surface at the hit point.
+	 * Sets the main colour of the surface at the hit point.
 	 * @param colour the colour of the surface at the hit point
 	 * @see			 com.ang.peLib.graphics.PColour
 	 */
@@ -131,10 +143,20 @@ public class PHitRecord extends PCopyable {
 		this.colour = colour;
 	}
 
+	/**
+	 * Sets the upper colour of the surface at the hit point.
+	 * @param colour the colour of the surface at the hit point
+	 * @see			 com.ang.peLib.graphics.PColour
+	 */
 	public void setUpperColour(PColour colour) {
 		this.upperColour = colour;
 	}
 
+	/**
+	 * Sets the lower colour of the surface at the hit point.
+	 * @param colour the colour of the surface at the hit point
+	 * @see			 com.ang.peLib.graphics.PColour
+	 */
 	public void setLowerColour(PColour colour) {
 		this.lowerColour = colour;
 	}
@@ -157,14 +179,26 @@ public class PHitRecord extends PCopyable {
 		this.ceilingHeight = ceilingHeight;
 	}
 
+	/**
+	 * Sets the hit as a backface hit or a frontface hit.
+	 * @param isBackface if the hit is a backface
+	 */
 	public void setBackface(boolean isBackface) {
 		this.isBackface = isBackface;
 	}
 
+	/**
+	 * Sets the hit as a portal hit or a normal hit.
+	 * @param isPortal if the hit is a portal
+	 */
 	public void setPortal(boolean isPortal) {
 		this.isPortal = isPortal;
 	}
 
+	/**
+	 * Sets the index of the sector that the hit is recorded for.
+	 * @param sectorIndex the index to set
+	 */
 	public void setSectorIndex(int sectorIndex) {
 		this.sectorIndex = sectorIndex;
 	}

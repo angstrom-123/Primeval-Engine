@@ -2,13 +2,24 @@ package com.ang.peLib.utils;
 
 import java.util.Comparator;
 
+/**
+ * Allows for various sorting techniques on copyable objects by various comparators.
+ */
 public class PCopyableSorter<T extends PCopyable> {
 	private Comparator<? super T> comparator;
 
+	/**
+	 * Constructs a new sorter with a comparator.
+	 * @param comparator a way to compare the objects to be sorted
+	 */
 	public PCopyableSorter(Comparator<? super T> comparator) {
 		this.comparator = comparator;
 	}
 
+	/**
+	 * Performs a bubble sort on the given array.
+	 * @param arr the array to sort
+	 */
 	public void bubblesort(T[] arr) {
 		int n = arr.length;
 		for (int i = 0; i < n - 1; i++) {
@@ -24,6 +35,10 @@ public class PCopyableSorter<T extends PCopyable> {
 		}
 	}
 
+	/**
+	 * Performs a quick sort on the given array.
+	 * @param arr the array to sort
+	 */
 	public void quicksort(T[] arr, int left, int right) {
 		if (left < right) {
 			int mid = partition(arr, left, right);
@@ -32,6 +47,13 @@ public class PCopyableSorter<T extends PCopyable> {
 		}
 	}
 
+	/**
+	 * Performs a quick sort partition.
+	 * @param  arr   array to partition
+	 * @param  left  left pointer for the partition
+	 * @param  right right pointer for the partition
+	 * @return 		 midpoint of the partition
+	 */
 	private int partition(T[] arr, int left, int right) {
 		int i = left;
 		for (int j = left; j < right; j++) {
@@ -45,6 +67,12 @@ public class PCopyableSorter<T extends PCopyable> {
 
 	}
 
+	/**
+	 * Swaps objects at 2 indices in the given array.
+	 * @param arr the array to swap in 
+	 * @param i   first swap index
+	 * @param j   second swap index
+	 */
 	private void swap(T[] arr, int i, int j) {
 		T temp = arr[i].copy();
 		arr[i] = arr[j];

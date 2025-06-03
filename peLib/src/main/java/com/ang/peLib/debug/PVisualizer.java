@@ -9,6 +9,9 @@ import com.ang.peLib.inputs.PMouseInputListener;
 import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.utils.PConversions;
 
+/**
+ * Provides simple visualization of worlds, sectors, and lines for debugging.
+ */
 public class PVisualizer implements PMouseInputInterface {
 	private final int WIDTH = 1200;
 	private final int HEIGHT = (int) Math.round((double) WIDTH / (16.0 / 9.0));
@@ -18,6 +21,9 @@ public class PVisualizer implements PMouseInputInterface {
 	private final PVec2 offset = new PVec2(0.0, 0.0);
 	private PRenderer renderer;
 
+	/**
+	 * Constructs a new visualizer.
+	 */
 	public PVisualizer() {
 		PMouseInputListener listener = new PMouseInputListener(this);
 		renderer = new PRenderer(WIDTH, HEIGHT, listener);
@@ -25,12 +31,24 @@ public class PVisualizer implements PMouseInputInterface {
 		renderer.setScale(1.0);
 	}
 
+	/**
+	 * Renders a sector world to the screen with random colour for each sector and 
+	 * index labels for each corner.
+	 * @param world the sector world to render 
+	 * @see   com.ang.peLib.hittables.PSectorWorld
+	 */
 	public void visualize(PSectorWorld world) {
 		renderer.fillTile(PColour.BLACK, WIDTH, HEIGHT, 0, 0);
 		for (PSector sec : world.getSectors()) visualize(sec, false);
 		renderer.repaint();
 	}
 
+	/**
+	 * Renders a sector to the screen with random colour and index labels for each corner.
+	 * @param sec 	  the sector to render 
+	 * @param doClear if the screen should be wiped before rendering the sector
+	 * @see   com.ang.peLib.hittables.PSector
+	 */
 	public void visualize(PSector sec, boolean doClear) {
 		if (doClear) renderer.fillTile(PColour.BLACK, WIDTH, HEIGHT, 0, 0);
 		PColour colour = new PColour(Math.random(), Math.random(), Math.random());
@@ -48,11 +66,19 @@ public class PVisualizer implements PMouseInputInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Renders a line between 2 points.
+	 * @param colour the colour of the line to render 
+	 * @param from   the starting point of the line 
+	 * @param to 	 the ending point of the line
+	 */
 	public void showLine(PColour colour, PVec2 from, PVec2 to) {
 		int[] coords = PConversions.v2ss(from, to, WIDTH, HEIGHT, SCALE, offset);
 		renderer.writeLine(colour, coords[0], coords[1], coords[2], coords[3]);
 		renderer.repaint();
 	}
+
+	// Overriding mouse listener functions for future use
 
 	@Override
 	public void mouseScrolled(int x, int y, int units) {}

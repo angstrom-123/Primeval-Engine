@@ -280,6 +280,11 @@ public class PVec3 extends PCopyable {
 
 	}
 
+	/**
+	 * Converts the vector to a colour.
+	 * @return a new colour with x mapped to r, y to g, and z to b 
+	 * @see    com.ang.peLib.graphics.PColour
+	 */
 	public PColour toColour() {
 		return new PColour(x, y, z);
 	}

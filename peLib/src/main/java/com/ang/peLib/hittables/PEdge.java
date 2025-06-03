@@ -61,35 +61,67 @@ public class PEdge extends PCopyable {
 
 	}
 
+	/**
+	 * Returns the main colour of the edge.
+	 * @return the main colour of the edge 
+	 * @see    com.ang.peLib.graphics.PColour
+	 */
 	public PColour getAlbedo() {
 		return albedo;
 
 	}
 
+	/**
+	 * Returns the upper colour of the edge.
+	 * @return the upper colour of the edge 
+	 * @see    com.ang.peLib.graphics.PColour
+	 */
 	public PColour getUpperColour() {
 		return upperColour;
 
 	}
 
+	/**
+	 * Returns the lower colour of the edge.
+	 * @return the lower colour of the edge 
+	 * @see    com.ang.peLib.graphics.PColour
+	 */
 	public PColour getLowerColour() {
 		return lowerColour;
 
 	}
 
+	/**
+	 * Returns the unit normal vector if the edge.
+	 * @return normal vector of the edge
+	 * @see    com.ang.peLib.maths.PVec2
+	 */
 	public PVec2 getNormal() {
 		return normal;
 
 	}
 
+	/**
+	 * Returns id the edge is a portal.
+	 * @return {@code true} if the edge is a portal, else {@code false}
+	 */
 	public boolean isPortal() {
 		return portal;
 
 	}
 
+	/**
+	 * Sets the upper colour of the edge.
+	 * @param colour the colour to set
+	 */
 	public void setUpperColour(PColour colour) {
 		this.upperColour = colour;
 	}
 
+	/**
+	 * Sets the lower colour of the edge.
+	 * @param colour the colour to set
+	 */
 	public void setLowerColour(PColour colour) {
 		this.lowerColour = colour;
 	}
