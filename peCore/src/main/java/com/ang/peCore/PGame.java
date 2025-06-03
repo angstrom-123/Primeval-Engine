@@ -2,6 +2,7 @@ package com.ang.peCore;
 
 import java.awt.event.KeyEvent;
 
+import com.ang.peLib.utils.PConvexDecomposer;
 import com.ang.peLib.threads.*;
 import com.ang.peLib.exceptions.*;
 import com.ang.peLib.hittables.*;
@@ -51,7 +52,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 	}
 
 	private void testGame() {
-		String testFile = "entrypoint.pmap";
+		// String testFile = "simpleTest.pmap";
+		String testFile = "test.pmap";
 		if (loadMapFile(testFile)) {
 			PUpdateWorker uw = new PUpdateWorker(frameMs);
 			uw.setInterface(this);
@@ -73,6 +75,8 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		}
 		PPMapData mapData = handler.getSaveData().savedMapData;
 		world = mapData.world;
+		PConvexDecomposer decomposer = new PConvexDecomposer(world);
+		world = decomposer.decompose();
 		cam.setTransform(mapData.position, mapData.facing);
 		cam.init(listener);
 		return true;

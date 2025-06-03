@@ -6,6 +6,7 @@ import com.ang.peLib.threads.PUpdateWorker;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -226,6 +227,67 @@ public class PRenderer {
 		}
 	}
 
+	public void writeLine(PColour colour, int x0, int y0, int x1, int y1) {
+		writeLine(colour, x0, y0, x1, y1, Integer.MAX_VALUE);
+	}
+
+	public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotrate) {
+		int lineColour = processToInt(colour);
+		if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
+			if (x0 > x1) writeLineLow(lineColour, x1, y1, x0, y0, dotrate);
+			else writeLineLow(lineColour, x0, y0, x1, y1, dotrate);
+		} else {
+			if (y0 > y1) writeLineHigh(lineColour, x1, y1, x0, y0, dotrate);
+			else writeLineHigh(lineColour, x0, y0, x1, y1, dotrate);
+		}
+	}
+
+	private void writeLineLow(int lineColour, int x0, int y0, int x1, int y1, int dotrate) {
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+		int yIncrement = (dy < 0) ? -1 : 1;
+		dy *= yIncrement;
+		int error = 2 * dy - dx;
+		int y = y0;
+		boolean doDraw = true;
+		int counter = 0;
+		for (int x = x0; x < x1; x++) {
+			if (doDraw && inBounds(x, y)) img.setRGB(x, y, lineColour);
+			if (error > 0) {
+				y += yIncrement;
+				error += 2 * (dy - dx);
+			} else error += 2 * dy;
+			if (counter >= dotrate) {
+				doDraw = !doDraw;
+				counter = 0;
+			} 
+			counter++;
+		}
+	}
+
+	private void writeLineHigh(int lineColour, int x0, int y0, int x1, int y1, int dotrate) {
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+		int xIncrement = (dx < 0) ? -1 : 1;
+		dx *= xIncrement;
+		int error = 2 * dx - dy;
+		int x = x0;
+		boolean doDraw = true;
+		int counter = 0;
+		for (int y = y0; y < y1; y++) {
+			if (doDraw && inBounds(x, y)) img.setRGB(x, y, lineColour);
+			if (error > 0) {
+				x += xIncrement;
+				error += 2 * (dx - dy);
+			} else error += 2 * dx;
+			if (counter >= dotrate) {
+				doDraw = !doDraw;
+				counter = 0;
+			} 
+			counter++;
+		}
+	}
+
 	public void writeRow(PColour colour, int y, int left, int right) {
 		int rowColour = processToInt(colour);
 		for (int x = left; x <= right; x++) {
@@ -259,6 +321,10 @@ public class PRenderer {
 				img.setRGB(i, j, tileColour);
 			}
 		}
+	}
+
+	public void writeText(String text, int x, int y) {
+		img.getGraphics().drawString(text, x, y);
 	}
 
 	/**

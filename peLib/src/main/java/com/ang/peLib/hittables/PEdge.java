@@ -34,7 +34,7 @@ public class PEdge extends PCopyable {
 		// clockwise winding
 		double dx = p1.x() - p0.x();
 		double dy = p1.y() - p0.y();
-		this.normal = new PVec2(dy, -dx);
+		this.normal = (new PVec2(dy, -dx)).unitVector();
 	}
 
 	/**
@@ -54,6 +54,21 @@ public class PEdge extends PCopyable {
 	 */
 	public PVec2 getP1() {
 		return p1;
+
+	}
+
+	public PColour getAlbedo() {
+		return albedo;
+
+	}
+
+	public PVec2 getNormal() {
+		return normal;
+
+	}
+
+	public boolean isPortal() {
+		return portal;
 
 	}
 	
@@ -102,7 +117,6 @@ public class PEdge extends PCopyable {
 	@SuppressWarnings("unchecked")
 	public PEdge copy() {
 		PEdge out = new PEdge(p0.copy(), p1.copy(), albedo.copy());
-		// out.setHeight(floorHeight, ceilingHeight);
 		if (portal) out.setAsPortal();
 		return out;
 

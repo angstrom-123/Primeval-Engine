@@ -3,7 +3,6 @@ package com.ang.peEditor;
 import com.ang.peEditor.gui.PEditorGUI;
 import com.ang.peEditor.gui.PGUIRenderer;
 import com.ang.peLib.files.pmap.PPMapHandler;
-import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.utils.PConversions;
 
@@ -11,14 +10,12 @@ public class PGUIRendererHelper {
 	private final PEditorParams params;
 	private final PGUIRenderer renderer;
 	private final PPMapHandler mapHandler;
-	private final PEditorGUI gui;
 
 	public PGUIRendererHelper(PEditorParams params, PGUIRenderer renderer, 
-			PPMapHandler mapHandler, PEditorGUI gui) {
+			PPMapHandler mapHandler) {
 		this.params = params;
 		this.renderer = renderer;
 		this.mapHandler = mapHandler;
-		this.gui = gui;
 	}
 
 	public void refresh(int x, int y) {
@@ -50,7 +47,7 @@ public class PGUIRendererHelper {
 		int[] renderCoords = new int[]{x, y};
 		PVec2 newPos = new PVec2(coords);
 		if (params.snapToGrid) {
-			newPos = newPos.round();
+			newPos = newPos.roundToHalf();
 			renderCoords = PConversions.v2ss(newPos, params.width, 
 					params.height, params.scale, translation);
 		}

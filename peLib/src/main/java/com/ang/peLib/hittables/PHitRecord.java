@@ -10,6 +10,7 @@ import com.ang.peLib.utils.PCopyable;
  */
 public class PHitRecord extends PCopyable {
 	private double t; // distance to the hit
+	private double portalT;
 	private PColour colour; // colour of the surface at the hit point
 	private double floorHeight; // floor height of edge at hit
 	private double ceilingHeight; // ceiling height of edge at hit
@@ -25,6 +26,7 @@ public class PHitRecord extends PCopyable {
 	public PHitRecord copy() {
 		PHitRecord temp = new PHitRecord();
 		temp.setT(t);
+		temp.setPortalT(portalT);
 		temp.setColour(colour);
 		temp.setFloor(floorHeight);
 		temp.setCeiling(ceilingHeight);
@@ -41,6 +43,11 @@ public class PHitRecord extends PCopyable {
 	 */
 	public double getT() {
 		return t;
+
+	}
+
+	public double getPortalT() {
+		return portalT;
 
 	}
 
@@ -95,6 +102,10 @@ public class PHitRecord extends PCopyable {
 	 */
 	public void setT(double t) {
 		this.t = t;
+	}
+
+	public void setPortalT(double portalT) {
+		this.portalT = portalT;
 	}
 
 	/**

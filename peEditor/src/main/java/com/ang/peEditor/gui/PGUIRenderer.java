@@ -34,7 +34,6 @@ public class PGUIRenderer extends PRenderer {
 	}
 
 	private void initGui(PFullKeyboardInputListener kil, PMouseInputListener mil) {
-		frame.setPreferredSize(new Dimension(width, height));
 		frame.setResizable(false);
 		layerPane.setBounds(0, 0, width, height);
 		layerPane.setPreferredSize(new Dimension(width, height));
@@ -289,74 +288,74 @@ public class PGUIRenderer extends PRenderer {
 				nextCornerCoords[0], nextCornerCoords[1], Integer.MAX_VALUE);
 	}
 
-	public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotRate) {
-		int lineColour = processToInt(colour);
-		if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-			if (x0 > x1) {
-				writeLineLow(lineColour, x1, y1, x0, y0, dotRate);
-			} else {
-				writeLineLow(lineColour, x0, y0, x1, y1, dotRate);
-			}
-		} else {
-			if (y0 > y1) {
-				writeLineHigh(lineColour, x1, y1, x0, y0, dotRate);
-			} else {
-				writeLineHigh(lineColour, x0, y0, x1, y1, dotRate);
-			}
-		}
-	}
-
-	private void writeLineLow(int colour, int x0, int y0, int x1, int y1, int dotRate) {
-		int dx = x1 - x0;
-		int dy = y1 - y0;
-		int yIncrement = (dy < 0) ? -1 : 1;
-		dy *= yIncrement;
-		int error = (2 * dy) - dx;
-		int y = y0;
-		boolean doDraw = true;
-		int counter = 0;
-		for (int x = x0; x < x1; x++) {
-			if (doDraw && inBounds(x, y)) {
-				img.setRGB(x, y, colour);
-			}
-			if (error > 0) {
-				y += yIncrement;
-				error += 2 * (dy - dx);
-			} else {
-				error += 2 * dy;
-			}
-			if (counter >= dotRate) {
-				doDraw = !doDraw;
-				counter = 0;
-			}
-			counter++;
-		}
-	}
-
-	private void writeLineHigh(int colour, int x0, int y0, int x1, int y1, int dotRate) {
-		int dx = x1 - x0;
-		int dy = y1 - y0;
-		int xIncrement = (dx < 0) ? -1 : 1;
-		dx *= xIncrement;
-		int error = (2 * dx) - dy;
-		int x = x0;
-		boolean doDraw = true;
-		int counter = 0;
-		for (int y = y0; y < y1; y++) {
-			if (doDraw && inBounds(x, y)) {
-				img.setRGB(x, y, colour);
-			}
-			if (error > 0) {
-				x += xIncrement;
-				error += 2 * (dx - dy);
-			} else {
-				error += 2 * dx;
-			}
-			if (counter >= dotRate) {
-				doDraw = !doDraw;
-				counter = 0;
-			}
-			counter++;
-		}
-	}
+	// public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotRate) {
+	// 	int lineColour = processToInt(colour);
+	// 	if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
+	// 		if (x0 > x1) {
+	// 			writeLineLow(lineColour, x1, y1, x0, y0, dotRate);
+	// 		} else {
+	// 			writeLineLow(lineColour, x0, y0, x1, y1, dotRate);
+	// 		}
+	// 	} else {
+	// 		if (y0 > y1) {
+	// 			writeLineHigh(lineColour, x1, y1, x0, y0, dotRate);
+	// 		} else {
+	// 			writeLineHigh(lineColour, x0, y0, x1, y1, dotRate);
+	// 		}
+	// 	}
+	// }
+	//
+	// private void writeLineLow(int colour, int x0, int y0, int x1, int y1, int dotRate) {
+	// 	int dx = x1 - x0;
+	// 	int dy = y1 - y0;
+	// 	int yIncrement = (dy < 0) ? -1 : 1;
+	// 	dy *= yIncrement;
+	// 	int error = (2 * dy) - dx;
+	// 	int y = y0;
+	// 	boolean doDraw = true;
+	// 	int counter = 0;
+	// 	for (int x = x0; x < x1; x++) {
+	// 		if (doDraw && inBounds(x, y)) {
+	// 			img.setRGB(x, y, colour);
+	// 		}
+	// 		if (error > 0) {
+	// 			y += yIncrement;
+	// 			error += 2 * (dy - dx);
+	// 		} else {
+	// 			error += 2 * dy;
+	// 		}
+	// 		if (counter >= dotRate) {
+	// 			doDraw = !doDraw;
+	// 			counter = 0;
+	// 		}
+	// 		counter++;
+	// 	}
+	// }
+	//
+	// private void writeLineHigh(int colour, int x0, int y0, int x1, int y1, int dotRate) {
+	// 	int dx = x1 - x0;
+	// 	int dy = y1 - y0;
+	// 	int xIncrement = (dx < 0) ? -1 : 1;
+	// 	dx *= xIncrement;
+	// 	int error = (2 * dx) - dy;
+	// 	int x = x0;
+	// 	boolean doDraw = true;
+	// 	int counter = 0;
+	// 	for (int y = y0; y < y1; y++) {
+	// 		if (doDraw && inBounds(x, y)) {
+	// 			img.setRGB(x, y, colour);
+	// 		}
+	// 		if (error > 0) {
+	// 			x += xIncrement;
+	// 			error += 2 * (dx - dy);
+	// 		} else {
+	// 			error += 2 * dx;
+	// 		}
+	// 		if (counter >= dotRate) {
+	// 			doDraw = !doDraw;
+	// 			counter = 0;
+	// 		}
+	// 		counter++;
+	// 	}
+	// }
 }

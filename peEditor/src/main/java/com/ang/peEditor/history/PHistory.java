@@ -4,32 +4,32 @@ import com.ang.peLib.hittables.PSectorWorld;
 
 public class PHistory { // circular stack
 	private PSectorWorld[] entries;
-	private int head = 0;
 
 	public PHistory(int length) {
 		this.entries = new PSectorWorld[length];
 	}
 
 	public void push(PSectorWorld entry) {
-		entries[head++] = entry;
-		if (head == entries.length) {
-			head = 0;
+		PSectorWorld[] newEntries = new PSectorWorld[entries.length];
+		for (int i = 0; i < entries.length - 1; i++) {
+			if (entries[i] == null) break;
+
+			newEntries[i + 1] = entries[i].copy();
 		}
+		newEntries[0] = entry.copy();
+		entries = newEntries;
 	}
 
 	public PSectorWorld pop() {
-		PSectorWorld out = null;
-		if (head != 0) {
-			out = entries[--head].copy();
-			entries[head] = null;
+		PSectorWorld out = entries[0];
+		PSectorWorld[] newEntries = new PSectorWorld[entries.length];
+		for (int i = 0; i < entries.length - 1; i++) {
+			if (entries[i + 1] == null) break;
 
+			newEntries[i] = entries[i + 1].copy();
 		}
+		entries = newEntries;
 		return out;
-
-	}
-
-	public int getSize() {
-		return head;
 
 	}
 

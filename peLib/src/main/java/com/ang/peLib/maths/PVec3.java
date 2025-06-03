@@ -30,7 +30,7 @@ public class PVec3 extends PCopyable {
 
 	public PVec3(double[] vals) {
 		if (vals.length != 3) {
-			throw new NullPointerException();
+			throw new IndexOutOfBoundsException();
 
 		}
 		this.x = vals[0];
@@ -96,7 +96,7 @@ public class PVec3 extends PCopyable {
 			case 0 -> x = val;
 			case 1 -> y = val;
 			case 2 -> z = val;
-			default -> throw new NullPointerException();
+			default -> throw new IndexOutOfBoundsException();
 		}
 	}
 
@@ -110,7 +110,7 @@ public class PVec3 extends PCopyable {
 			case 0 -> { return x; }
 			case 1 -> { return y; }
 			case 2 -> { return z; }
-			default -> throw new NullPointerException();
+			default -> throw new IndexOutOfBoundsException();
 		}
 	}
 
