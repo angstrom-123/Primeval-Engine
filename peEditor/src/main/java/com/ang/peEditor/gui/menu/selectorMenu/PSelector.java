@@ -23,6 +23,9 @@ import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 
+/**
+ * Class for displaying a custom file selector withing a specified directory.
+ */
 public class PSelector {
 	private final PEditorParams params;
 	private final int			WIDTH 					= 400;
@@ -41,6 +44,13 @@ public class PSelector {
 	private JFrame 				parent;
 	private PSelectorListener 	listener;
 
+	/**
+	 * Constructs a new selector.
+	 * @param params   editor params used for colours 
+	 * @param type     selector type (open or save)
+	 * @param parent   jframe that this selector is tied to 
+	 * @param listener the listener to send events to
+	 */
 	public PSelector(PEditorParams params, PSelectorType type, JFrame parent, PSelectorListener listener) {
 		this.params = params;
 		this.type = type;
@@ -50,20 +60,35 @@ public class PSelector {
 		initComponents();
 	}
 
+	/**
+	 * Returns the selector type of this selector.
+	 * @return the selector type
+	 * @see    PSelectorType
+	 */
 	public PSelectorType getType() {
 		return type;
 
 	}
 
+	/**
+	 * Returns the selected string in the selector.
+	 * @return the entered / selected string
+	 */
 	public String getSelection() {
 		return selection;
 
 	}
 
+	/**
+	 * Sets the visibility of the selector to true.
+	 */
 	public void show() {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Creates components for the selector.
+	 */
 	private void init() {
 		frame 			= new JFrame();
 		filesContainer 	= new JPanel();
@@ -74,6 +99,9 @@ public class PSelector {
 		selection 		= null;
 	}
 
+	/**
+	 * Initializes all components for the selector.
+	 */
 	private void initComponents() {
 		// init main frame
 		frame.getContentPane().setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -137,6 +165,10 @@ public class PSelector {
 		});
 	}
 
+	/**
+	 * Creates a button for each file in the target directory.
+	 * @return array of buttons for each file in the dir
+	 */
 	private JButton[] createFileButtons() {
 		String[] names = findFiles();
 		JButton[] buttons = new JButton[names.length];
@@ -164,17 +196,32 @@ public class PSelector {
 
 	}
 
+	/**
+	 * Handles the button pressed event for a file button.
+	 * Updates the text field at the bottom with the new file name
+	 * @param e the action event that was triggered
+	 */
 	private void buttonPressed(ActionEvent e) {
 		selection = e.getActionCommand();
 		textField.setText(e.getActionCommand());
 	}
 
+	/**
+	 * Handles the submit button pressed event for a file button.
+	 * Sends the name of the file to the listener
+	 * @param text the string that was in the text field at the bottom of the selector,
+	 * 			   this is the name of the selected file
+	 */
 	private void submitPressed(String text) {
 		selection = text;
 		listener.selectionMade(this);	
 		frame.dispose();
 	}
 
+	/**
+	 * Finds all files within the editor's resources/map directory.
+	 * @return array of names of all the files in the editor's map resource dir
+	 */
 	private String[] findFiles() {
 		PFileReader dirReader = new PFileReader();
 		try {

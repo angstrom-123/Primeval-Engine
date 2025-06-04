@@ -2,6 +2,9 @@ package com.ang.peEditor;
 
 import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry;
 
+/**
+ * Interface for sending events to the main editor.
+ */
 public interface PEditorInterface {
 	void changePosition(double x, double y);
 	void changeFacing(double x, double y);

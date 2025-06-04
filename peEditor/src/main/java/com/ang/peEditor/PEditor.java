@@ -5,11 +5,9 @@ import java.util.List;
 
 import com.ang.peEditor.history.*;
 import com.ang.peEditor.gui.*;
-import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry;
-import com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntryFactory;
+import com.ang.peEditor.gui.menu.dataMenu.*;
+import com.ang.peLib.files.pmap.*;
 import com.ang.peLib.exceptions.PResourceException;
-import com.ang.peLib.files.pmap.PPMapData;
-import com.ang.peLib.files.pmap.PPMapHandler;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.hittables.PSectorWorld;
 import com.ang.peLib.inputs.PFullKeyboardInputListener;
@@ -19,6 +17,9 @@ import com.ang.peLib.maths.PVec2;
 import com.ang.peLib.resources.PModuleName;
 import com.ang.peLib.utils.PConversions;
 
+/**
+ * Main class for running the editor.
+ */
 public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private int newSectorCornerNum = -1;
 	private double newSectorScale = -1;
@@ -41,10 +42,16 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	private PHistory history;
 	private PHistory redoHistory;
 
+	/**
+	 * Constructs.
+	 */
 	public PEditor() {
 		init();
 	}
 
+	/**
+	 * Initializes editor objects, attempts to read config file.
+	 */
 	private void init() {
 		params = new PEditorParams();
 		try {
@@ -67,11 +74,20 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		redoHistory	= new PHistory(params.historyLength);
 	}
 
+	/**
+	 * Runs the editor.
+	 */
 	public void start() {
 		System.out.println("Editor running");
 		newFile();
 	}
 
+	/**
+	 * Handles the mouse scroll event by zooming the map in and out.
+	 * @param x     screen space x coordinate of the mouse
+	 * @param y     screen space y coordinate of the mouse
+	 * @param units amount scrolled
+	 */
 	@Override
 	public void mouseScrolled(int x, int y, int units) {
 		final double step = 0.08;
@@ -83,6 +99,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the mouse moved event by rendering the mouse coordinates.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 */
 	@Override
 	public void mouseMoved(int x, int y) {
 		if (newSectorCornerNum == -1) {
@@ -92,6 +113,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 	}
 
+	/**
+	 * Handles the mouse dragged event by moving corners or panning the view.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 */
 	@Override
 	public void mouseDragged(int x, int y) {
 		if ((selSecIndex != -1) && (selCorIndex != -1)) {
@@ -112,6 +138,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		rendererHelper.refresh(x, y);
 	}
 
+	/**
+	 * Handles the mouse pressed event by selecting or deselecting a corner.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 */
 	@Override
 	public void mousePressed(int x, int y) {
 		boolean found = findSelectedCorner(x, y);
@@ -126,6 +157,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		gui.closeRMBPanels();
 	}
 
+	/**
+	 * Handles the right click event by opening a menu.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 * @see   com.ang.peEditor.gui.menu.rmbMenu.PRMBPanel
+	 */
 	@Override
 	public void rightMousePressed(int x, int y) {
 		boolean found = findSelectedCorner(x, y);
@@ -140,6 +177,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the mouse released event by updating moved corners and inserted sectors.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 */
 	@Override
 	public void mouseReleased(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -163,6 +205,10 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		rendererHelper.refresh(x, y);
 	}
 
+	/**
+	 * Moves the selected corner to specified world space coordinates.
+	 * @param coords x and y world space coordinates to move the selected corner to 
+	 */
 	private void moveSelectedCornerTo(double[] coords) {
 		PVec2 newPos = new PVec2(coords);
 		if (params.snapToGrid) {
@@ -174,6 +220,10 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		gui.openDataPanel(getDataForSelected());
 	}
 
+	/**
+	 * Inserts a new sector at the specified coordinates.
+	 * @param coords x and y world space coordinates to insert a new sector around
+	 */
 	private void insertNewSectorAt(double[] coords) {
 		PSector sec = PSectorFactory.newSector(newSectorCornerNum, newSectorScale,
 				new PVec2(coords[0], coords[1]));
@@ -183,6 +233,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		newSectorCornerNum = -1;
 	}
 
+	/**
+	 * Handles the right click released event by cancelling new sector insertion.
+	 * @param x screen space x coordinate of the mouse
+	 * @param y screen space y coordinate of the mouse
+	 */
 	@Override
 	public void rightMouseReleased(int x, int y) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -194,11 +249,20 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 	}
 
+	/**
+	 * Handles the mouse exited event.
+	 * Currently does nothing
+	 */
 	@Override
 	public void mouseExited() {
 
 	}
 
+	/**
+	 * Handles the change position event by setting the position of the player in the map.
+	 * @param x world space x coordinate of the player
+	 * @param y world space y coordinate of the player
+	 */
 	@Override
 	public void changePosition(double x, double y) {
 		PVec2 pos = new PVec2(x, y);
@@ -207,6 +271,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the change facing event by setting the facing vector of the player in the map.
+	 * @param x world space x component of the facing vector
+	 * @param y world space y component of the facing vector
+	 */
 	@Override
 	public void changeFacing(double x, double y) {
 		PVec2 facing = new PVec2(x, y);
@@ -216,6 +285,9 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the new file event by creating a new blank map file to edit.
+	 */
 	@Override
 	public void newFile() {
 		reset();
@@ -229,6 +301,10 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the open event by loading the map with the specified name for editing.
+	 * @param name name of the map file to load
+	 */
 	@Override 
 	public void open(String name) {
 		reset();
@@ -242,6 +318,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the save event by saving the currently editable map under the 
+	 * specified name.
+	 * If the name specified already exists, the old file is automatically overwritten
+	 * @param name name of the file to save the current map data in
+	 */
 	@Override 
 	public void save(String name) {
 		try {
@@ -252,11 +334,18 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		}
 	}
 
+	/**
+	 * Handles the exit event by closing the editor window.
+	 */
 	@Override
 	public void exit() {
 		renderer.close();
 	}
 
+	/**
+	 * Handles the undo event by loading back the most recent entry in the history.
+	 * @see com.ang.peEditor.history.PHistory
+	 */
 	@Override 
 	public void undo() {
 		PSectorWorld entry = history.pop();
@@ -269,6 +358,10 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the redo event by loading back the most recent entry in the redo history.
+	 * @see com.ang.peEditor.history.PHistory
+	 */
 	@Override 
 	public void redo() {
 		PSectorWorld entry = redoHistory.pop();
@@ -281,12 +374,23 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the new sector event by initializing parameters for a new sector.
+	 * @param cornerCount the amount of corners the new sector should have 
+	 * @param scale 	  the scale of the sector to insert
+	 */
 	@Override 
 	public void newSector(int cornerCount, double scale) {
 		newSectorCornerNum = cornerCount;
 		newSectorScale = scale;
 	}
 
+	/**
+	 * Handles the data panel (right side) change event by updating sector properties.
+	 * @param panelEntry the entry that changed in the data panel 
+	 * @param text  	 the new value of the panel entry
+	 * @see 			 com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 */
 	@Override
 	public void dataPanelChange(PDataPanelEntry panelEntry, String text) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -361,6 +465,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the delete sector event by deleting a specified sector.
+	 * @param sectorIndex index of the sector to delete
+	 * @see   com.ang.peLib.hittables.PSector
+	 */
 	@Override
 	public void delSector(int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -373,6 +482,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the delete corner event by deleting a specified corner.
+	 * @param cornerIndex index of the corner to delete
+	 * @param sectorIndex index of the sector containing the corner to delete
+	 * @see   com.ang.peLib.maths.PVec2
+	 */
 	@Override
 	public void delCorner(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -385,6 +500,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the insert corner event by inserting a corner before a given index.
+	 * @param cornerIndex index of the corner to insert a new corner before 
+	 * @param sectorIndex index of the sector to add the corner in
+	 */
 	@Override
 	public void insCornerLeft(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -397,6 +517,11 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		renderer.repaint();
 	}
 
+	/**
+	 * Handles the insert corner event by inserting a corner after a given index.
+	 * @param cornerIndex index of the corner to insert a new corner after
+	 * @param sectorIndex index of the sector to add the corner in
+	 */
 	@Override
 	public void insCornerRight(int cornerIndex, int sectorIndex) {
 		PPMapData editableData = mapHandler.getSaveData().editableMapData;
@@ -410,6 +535,12 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 	}
 
 
+	/**
+	 * Re-initializes the renderer.
+	 * This is used when reloading the editor, or opening a map file. It resets 
+	 * the view position, zoom level, selected indices, and any other dependent 
+	 * variables.
+	 */
 	private void reset() {
 		try {
 			params.init();
@@ -430,6 +561,17 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 		redoHistory.clear();
 	}
 
+	/**
+	 * Returns a list of data panel entries for updating corner data while it 
+	 * is being dragged.
+	 * @param  x the world space x coordinate of the corner
+	 * @param  y the world space y coordinate of the corner
+	 * @return   a list of data panel entries representing all the data about 
+	 * 			 the selected sector, updated live with the current position of 
+	 * 			 the moving corner.
+	 * @see com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 * @see com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry
+	 */
 	private List<PDataPanelEntry> getDataForDragged(double x, double y) {
 		List<PDataPanelEntry> out = new ArrayList<PDataPanelEntry>();
 		PSector sec = mapHandler.getSaveData().editableMapData
@@ -442,6 +584,13 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	}
 
+	/**
+	 * Returns a list of data panel entries for the selected sector and corner.
+	 * @return   a list of data panel entries representing all the data about 
+	 * 			 the selected sector
+	 * @see com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 * @see com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry
+	 */
 	private List<PDataPanelEntry> getDataForSelected() {
 		List<PDataPanelEntry> out = new ArrayList<PDataPanelEntry>();
 		PSector sec = mapHandler.getSaveData().editableMapData
@@ -455,6 +604,13 @@ public class PEditor implements PMouseInputInterface, PEditorInterface {
 
 	}
 
+	/**
+	 * Checks if a corner is present at given screen space coordinates.
+	 * @param  x screen space x coordinate to search for a corner at
+	 * @param  y screen space y coordinate to search for a corner at
+	 * @return   {@code true} if there is a corner at the given coordinates,
+	 * 			 else {@code false}
+	 */
 	private boolean findSelectedCorner(int x, int y) {
 		final PSector[] sectors = mapHandler.getSaveData().editableMapData
 				.world.getSectors();

@@ -14,6 +14,9 @@ import com.ang.peLib.resources.PResource;
 import com.ang.peLib.resources.PResourceManager;
 import com.ang.peLib.resources.PResourceType;
 
+/**
+ * Handles the config params for the editor.
+ */
 public class PEditorParams {
 	public final double ASPECT_RATIO 	= 16.0 / 9.0;
 	public final int 	CORNER_SIZE 	= 8;
@@ -35,6 +38,13 @@ public class PEditorParams {
 	public Color 		guiBgColourDark;
 	public Color		guiInputBgColour;
 
+	/**
+	 * Attempts to parse the json config file in the editor's resources.
+	 * Reads all required variables from the config. A user can set their own 
+	 * preferences. Otherwise, default parameters are loaded. If neither are dfound,
+	 * then the exception is thrown.
+	 * @throws PResourceException if there is a problem with parsing the config file
+	 */
 	public void init() throws PResourceException {
 		PResource res = PResourceManager.fetch(PResourceType.CONFIG, "config.json");
 		PResourceFileReader reader = new PResourceFileReader();

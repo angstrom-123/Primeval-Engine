@@ -19,6 +19,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+/**
+ * Class for displaying editable information about a corner in a sector.
+ */
 public class PDataPanel extends JPanel {
 	private final PEditorParams params;
 	private final int CONTAINER_HEIGHT = 25;
@@ -28,6 +31,14 @@ public class PDataPanel extends JPanel {
 	private List<PDataPanelEntry> botPanelEntries = new ArrayList<PDataPanelEntry>();
 	private PDataChangeListener listener;
 
+	/**
+	 * Constructs a new data panel with a list of editable entries.
+	 * @param params   editor params to use for colours 
+	 * @param entries  list of data panel entries to display
+	 * @param listener data change listener to send events to
+	 * @see 		   PDataPanelEntry
+	 * @see 		   PDataChangeListener
+	 */
 	public PDataPanel(PEditorParams params, List<PDataPanelEntry> entries, 
 			PDataChangeListener listener) {
 		super();
@@ -44,6 +55,9 @@ public class PDataPanel extends JPanel {
 		init();
 	}
 
+	/**
+	 * Initializes the appearance of the panel.
+	 */
 	private void init() {
 		JPanel topPanel = initPanel("CORNER", topPanelEntries);
 		JPanel botPanel = initPanel("SECTOR", botPanelEntries);
@@ -59,6 +73,13 @@ public class PDataPanel extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * Initializes a subpanel of the menu with a label and its entries.
+	 * @param label   the title of the subpanel
+	 * @param entries the list of data panel entries to display in that panel 
+	 * @return 		  the newly contructed jpanel with the specified title and entries
+	 * @see 		   PDataPanelEntry
+	 */
 	private JPanel initPanel(String label, List<PDataPanelEntry> entries) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 0));
@@ -78,6 +99,12 @@ public class PDataPanel extends JPanel {
 
 	}
 
+	/**
+	 * Returns a new subpanel with editable data panel entries.
+	 * @param entries the list of data panel entries to display in that panel 
+	 * @return 		  the newly contructed jpanel with the specified entries
+	 * @see 		  PDataPanelEntry
+	 */
 	private JPanel addEntriesToPanel(List<PDataPanelEntry> entries) {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(WIDTH, entries.size() * CONTAINER_HEIGHT));
@@ -112,6 +139,11 @@ public class PDataPanel extends JPanel {
 
 	}
 
+	/**
+	 * Returns a label for a datapanel entry that should not be edited.
+	 * @param  entry the data panel entry to display as readonly 
+	 * @return 		 a new label with the name from the entry
+	 */
 	private JLabel createReadOnlyLabel(PDataPanelEntry entry) {
 		JLabel out = new JLabel(" " + entry.data);
 		out.setBackground(null);
@@ -119,6 +151,11 @@ public class PDataPanel extends JPanel {
 
 	}
 
+	/**
+	 * Returns a combo box containing true and false for boolean datapanel entries.
+	 * @param  entry the data panel entry to display as boolean editable 
+	 * @return 		 a new combobox with the name and editable data from the entry
+	 */
 	private JComboBox<String> createBooleanOnlyLabel(PDataPanelEntry entry) {
 		JComboBox<String> out = new JComboBox<String>(new String[]{"true", "false"});
 		out.setBackground(params.guiInputBgColour);
@@ -134,6 +171,11 @@ public class PDataPanel extends JPanel {
 
 	}
 
+	/**
+	 * Returns a text field for editing datapanel entries.
+	 * @param  entry the data panel entry to display as editable 
+	 * @return 		 a new text field with the name and editable data from the entry
+	 */
 	private JTextField createEditableLabel(PDataPanelEntry entry) { // TODO: make this a spinner
 		JTextField out = new JTextField(entry.data, 5);
 		out.setBackground(params.guiInputBgColour);
@@ -159,6 +201,10 @@ public class PDataPanel extends JPanel {
 
 	}
 
+	/**
+	 * Overrides the get preferred size.
+	 * @return a dimension with the current width and height of the panel
+	 */
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(WIDTH, height);

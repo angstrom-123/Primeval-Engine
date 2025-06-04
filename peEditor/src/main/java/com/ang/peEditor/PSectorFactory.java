@@ -3,9 +3,21 @@ package com.ang.peEditor;
 import com.ang.peLib.hittables.PSector;
 import com.ang.peLib.maths.PVec2;
 
+/**
+ * Helps with constructing a new sector.
+ */
 public class PSectorFactory {
 	private final static int MINIMUM_CORNERS = 3;
 
+	/**
+	 * Returns a new sector with a given corner count, scale, and position.
+	 * Generated sectors are perfectly circular with radius = scale. The points 
+	 * are spread evenly around the circle
+	 * @param  cornerCount amount of corners for the new sector
+	 * @param  scale 	   scale of the new sector
+	 * @param  at		   world space position of the new sector
+	 * @return 			   the new sector
+	 */
 	public static PSector newSector(int cornerCount, double scale, PVec2 at) {
 		if (cornerCount < MINIMUM_CORNERS) {
 			return null;

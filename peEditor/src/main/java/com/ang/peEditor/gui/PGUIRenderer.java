@@ -19,20 +19,38 @@ import com.ang.peLib.inputs.PFullKeyboardInputListener;
 import com.ang.peLib.utils.PConversions;
 import com.ang.peLib.graphics.*;
 
+/**
+ * Provides additional functionality to the renderer for rendering editor components.
+ */
 public class PGUIRenderer extends PRenderer {
 	public final static int LOCATION_LEFT = 0;
 	public final static int LOCATION_RIGHT = 1;
 	public final static int LOCATION_CENTRE = 2;
-
 	private List<JPanel> subPanels = new ArrayList<JPanel>();
 	private JLayeredPane layerPane = new JLayeredPane();	
 
+	/**
+	 * Constructs a new gui renderer.
+	 * @param width  		width of the screen to render 
+	 * @param height 		height of the screen to render 
+	 * @param keyListener   listener for detecting keyboard inputs
+	 * @param mouseListener listener for detecting mouse motion
+	 * @see       			com.ang.peLib.inputs.PMouseInputListener
+	 * @see       			com.ang.peLib.inputs.PFullKeyboardInputListener
+	 */
 	public PGUIRenderer(int width, int height, PFullKeyboardInputListener keyListener, 
 			PMouseInputListener mouseListener) {
 		super(width, height, mouseListener);
 		this.initGui(keyListener, mouseListener);
 	}
 
+	/**
+	 * Initializes all components for the editor window.
+	 * @param kil keyboard listener for detecting keyboard shortcuts 
+	 * @param mil mouse listener for detecting mouse events
+	 * @see       com.ang.peLib.inputs.PMouseInputListener
+	 * @see       com.ang.peLib.inputs.PFullKeyboardInputListener
+	 */
 	private void initGui(PFullKeyboardInputListener kil, PMouseInputListener mil) {
 		frame.setResizable(false);
 		layerPane.setBounds(0, 0, width, height);
@@ -60,11 +78,19 @@ public class PGUIRenderer extends PRenderer {
 		});
 	}
 
+	/**
+	 * Returns the renderer's jframe.
+	 * @return the jframe that this renderer uses as a base
+	 */
 	public JFrame getFrame() {
 		return frame;
 
 	}
 
+	/**
+	 * Returns all subpanels in this renderer.
+	 * @return the subpanels that this renderer has (data panel, right click menu)
+	 */
 	public JPanel[] getSubPanels() {
 		JPanel[] out = new JPanel[subPanels.size()];
 		for (int i = 0; i < out.length; i++) {
@@ -74,10 +100,20 @@ public class PGUIRenderer extends PRenderer {
 
 	}
 
+	/**
+	 * Adds a new subpanel to the renderer window.
+	 * @param panel the new panel to add
+	 */
 	public void addSubPanel(JPanel panel) {
 		addSubPanel(panel, LOCATION_CENTRE);
 	}
 
+	/**
+	 * Adds a new subpanel to the renderer window at a specified location.
+	 * @param panel the new panel to add
+	 * @param x 	screen space x coordinate to insert subpanel
+	 * @param y 	screen space y coordinate to insert subpanel
+	 */
 	public void addSubPanel(JPanel panel, int x, int y) {
 		clearSubPanelsOfType(panel.getClass());
 		panel.setOpaque(true);
@@ -86,6 +122,11 @@ public class PGUIRenderer extends PRenderer {
 		layerPane.add(panel, Integer.valueOf(2));
 	}
 
+	/**
+	 * Adds a new subpanel to the renderer window at a specified location constant.
+	 * @param panel    the new panel to add
+	 * @param location location constant defined in this file
+	 */
 	public void addSubPanel(JPanel panel, int location) {
 		clearSubPanelsOfType(panel.getClass());
 		panel.setOpaque(true);
@@ -109,6 +150,10 @@ public class PGUIRenderer extends PRenderer {
 		layerPane.add(panel, Integer.valueOf(2));
 	}
 
+	/**
+	 * Removes all subpanels of a specified type.
+	 * @param type the datatype of the panels to remove.
+	 */
 	public void clearSubPanelsOfType(Class<?> type) {
 		for (int i = 0; ; i++) {
 			if (i >= subPanels.size()) return;
@@ -121,6 +166,9 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	/**
+	 * Removes all subpanels;
+	 */
 	public void clearSubPanels() {
 		for (JPanel panel: subPanels) {
 			layerPane.remove(panel);
@@ -128,6 +176,20 @@ public class PGUIRenderer extends PRenderer {
 		subPanels.clear();
 	}
 
+	/**
+	 * Renders a filled circle around a corner in a sector world.
+	 * @param mapData 	  map data containing the sector world with the required corner 
+	 * @param params 	  editor params for colours, scale, and screen dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 * @param colour 	  the colour of the circle 
+	 * @param sectorIndex index of the sector containing the corner to fill a circle around
+	 * @param cornerIndex index of the corner to fill a circle around
+	 * @param radius 	  radius in pixels for the circle to draw
+	 * @see 			  com.ang.peLib.hittables.PSector
+	 * @see 			  com.ang.peLib.hittables.PSectorWorld
+	 * @see 			  com.ang.peLib.maths.PVec2
+	 * @see 			  com.ang.peLib.graphics.PColour
+	 */
 	public void fillCircleAroundCorner(PPMapData mapData, PEditorParams params, PVec2 translation,
 			PColour colour, int sectorIndex, int cornerIndex, int radius) {
 		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
@@ -136,6 +198,14 @@ public class PGUIRenderer extends PRenderer {
 		fillCircleAround(colour, radius, coords[0], coords[1]);
 	}
 
+	/**
+	 * Renders a filled circle around a specified coordinate.
+	 * @param colour 	  the colour of the circle 
+	 * @param radius 	  radius in pixels for the circle to draw
+	 * @param x 		  screen space x coordinate to render the circle around
+	 * @param y 		  screen space y coordinate to render the circle around
+	 * @see 			  com.ang.peLib.graphics.PColour
+	 */
 	public void fillCircleAround(PColour colour, int radius, int x, int y) {
 		int circleColour = processToInt(colour);
 		for (int y0 = -radius; y0 <= radius; y0++) {
@@ -151,6 +221,14 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	/**
+	 * Renders an outline of a circle around a specified coordinate.
+	 * @param colour 	  the colour of the circle 
+	 * @param radius 	  radius in pixels for the circle to draw
+	 * @param x 		  screen space x coordinate to render the circle around
+	 * @param y 		  screen space y coordinate to render the circle around
+	 * @see 			  com.ang.peLib.graphics.PColour
+	 */
 	public void writeCircleAround(PColour colour, int radius, int x, int y) {
 		int circleColour = processToInt(colour);
 		int x0 = 0;
@@ -168,6 +246,14 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	/**
+	 * Helps with rendering a circle.
+	 * @param colour integer representation of the colour of the pixels 
+	 * @param x 	 starting x in pixels
+	 * @param y 	 starting y in pixels
+	 * @param x0 	 next x in pixels
+	 * @param y0 	 next y in pixels
+	 */
 	private void writeSymmetricPixels(int colour, int x, int y, int x0, int y0) {
 		if (inBounds(x + x0, y + y0)) img.setRGB(x + x0, y + y0, colour);
 		if (inBounds(x - x0, y + y0)) img.setRGB(x - x0, y + y0, colour);
@@ -179,6 +265,15 @@ public class PGUIRenderer extends PRenderer {
 		if (inBounds(x - y0, y - x0)) img.setRGB(x - y0, y - x0, colour);
 	}
 
+	/**
+	 * Renders an outline of a rectangle around a specified coordinate.
+	 * @param colour the colour of the circle 
+	 * @param width  width of the rectangle to render in pixels
+	 * @param height height of the rectangle to render in pixels
+	 * @param x 	 screen space x coordinate to render the circle around
+	 * @param y 	 screen space y coordinate to render the circle around
+	 * @see 		 com.ang.peLib.graphics.PColour
+	 */
 	public void writeTileAround(PColour colour, int width, int height, int x, int y) {
 		int x0 = x - width / 2;
 		int y0 = y - height / 2;
@@ -188,6 +283,15 @@ public class PGUIRenderer extends PRenderer {
 		writeLine(colour, x0 + width, y0 + height, x0 + width, y0, Integer.MAX_VALUE);
 	}
 
+	/**
+	 * Renders a filled rectangle around a specified coordinate.
+	 * @param colour the colour of the circle 
+	 * @param width  width of the rectangle to render in pixels
+	 * @param height height of the rectangle to render in pixels
+	 * @param x 	 screen space x coordinate to render the circle around
+	 * @param y 	 screen space y coordinate to render the circle around
+	 * @see 		 com.ang.peLib.graphics.PColour
+	 */
 	public void fillTileAround(PColour colour, int width, int height, int x, int y) {
 		int tileColour = processToInt(colour);
 		for (int j = y - (height / 2); j < y + (height / 2); j++) {
@@ -201,6 +305,19 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
+	/**
+	 * Renders a filled rectangle around a corner in a sector world.
+	 * @param mapData 	  map data containing the sector world with the required corner 
+	 * @param params 	  editor params for size, colours, scale, and screen dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 * @param colour 	  the colour of the circle 
+	 * @param sectorIndex index of the sector containing the corner to fill a circle around
+	 * @param cornerIndex index of the corner to fill a circle around
+	 * @see 			  com.ang.peLib.hittables.PSector
+	 * @see 			  com.ang.peLib.hittables.PSectorWorld
+	 * @see 			  com.ang.peLib.maths.PVec2
+	 * @see 			  com.ang.peLib.graphics.PColour
+	 */
 	public void fillTileAroundCorner(PPMapData mapData, PEditorParams params, PVec2 translation,
 			PColour colour, int sectorIndex, int cornerIndex) {
 		PVec2 corner = mapData.world.getSector(sectorIndex).getCorner(cornerIndex);
@@ -209,6 +326,11 @@ public class PGUIRenderer extends PRenderer {
 		fillTileAround(colour, params.CORNER_SIZE, params.CORNER_SIZE, coords[0], coords[1]);
 	}
 
+	/**
+	 * Writes the specified mouse coordinates in the top left.
+	 * @param x screen space x coordinate of the mouse to show
+	 * @param y screen space y coordinate of the mouse to show
+	 */
 	public void writeMouseCoords(int x, int y) {
 		String xString = String.valueOf(x);
 		String yString = String.valueOf(y);
@@ -216,6 +338,14 @@ public class PGUIRenderer extends PRenderer {
 		img.getGraphics().drawString("x:" + xString + " y:" + yString, 0, 10);
 	}
 
+	/**
+	 * Renders axis lines and a sector world.
+	 * Axis lines are only drawn if the scale is not too small, this reduces clutter.
+	 * Draws lines for every edge, and circles for every corner.
+	 * @param mapData 	  mapdata containing the sector world to render 
+	 * @param params 	  editor params for scale, sizes, colours, dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 */
 	public void writeMapData(PPMapData mapData, PEditorParams params, PVec2 translation) {
 		fillTile(params.backgroundColour, width, height, 0, 0);	
 		if (params.scale > 6.0) {
@@ -244,6 +374,12 @@ public class PGUIRenderer extends PRenderer {
 		fillCircleAround(PColour.GREEN, 5, coords[0], coords[1]);
 	}
 
+	/**
+	 * Renders the background axis grid for the editor.
+	 * @param colour 	  the colour for the lines of the grid 
+	 * @param params 	  editor params for scale, sizes, colours, dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 */
 	public void writeBackgroundGrid(PColour colour, PEditorParams params, PVec2 translation) {
 		double[] startCoords = PConversions.ss2v(-width / 4, 0, width, 
 				height, params.scale, translation);
@@ -264,98 +400,45 @@ public class PGUIRenderer extends PRenderer {
 		}
 	}
 
-	public void writeXYAxisLines(PColour colour, PEditorParams params, PVec2 origin) {
+	/**
+	 * Writes central x and y axis lines for the editor background.
+	 * @param colour 	  the colour for the lines 
+	 * @param params 	  editor params for scale, sizes, colours, dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 */
+	public void writeXYAxisLines(PColour colour, PEditorParams params, PVec2 translation) {
 		PVec2 zeroZero = new PVec2(0.0, 0.0);
-		int[] coords = PConversions.v2ss(zeroZero, width, height, params.scale, origin);
+		int[] coords = PConversions.v2ss(zeroZero, width, height, params.scale, translation);
 		writeLine(colour, coords[0], 0, coords[0], height, Integer.MAX_VALUE);
 		writeLine(colour, 0, coords[1], width, coords[1], Integer.MAX_VALUE);
 	}
 
+	/**
+	 * Writes lines to a corner from its surrounding corners inside a sector.
+	 * This is used when a corner is being dragged to visualize the change in 
+	 * the sector's shape.
+	 * @param colour 	  the colour of the lines to draw 
+	 * @param point 	  the point to draw the lines towards 
+	 * @param sectorIndex index of the sector containing corner that is the target
+	 * @param cornerIndex index of the corner that is the target
+	 * @param mapData 	  mapdata containing the sectorworld that is being shown
+	 * @param params 	  editor params for scale, sizes, colours, dimensions
+	 * @param translation translation of the map relative to the viewport 
+	 */
 	public void writeLinesToCorner(PColour colour, PVec2 point, int sectorIndex, int cornerIndex,
-			PPMapData mapData, PEditorParams params, PVec2 origin) {
+			PPMapData mapData, PEditorParams params, PVec2 translation) {
 		PVec2[] corners = mapData.world.getSector(sectorIndex).getCorners();
 		int prevIndex = (cornerIndex == 0) ? corners.length - 1 : cornerIndex - 1;
 		int nextIndex = (cornerIndex == corners.length - 1) ? 0 : cornerIndex + 1;
 		int[] prevCornerCoords = PConversions.v2ss(corners[prevIndex], params.width, 
-				params.height, params.scale, origin);
+				params.height, params.scale, translation);
 		int[] nextCornerCoords = PConversions.v2ss(corners[nextIndex], params.width, 
-				params.height, params.scale, origin);
+				params.height, params.scale, translation);
 		int[] currentCornerCoords = PConversions.v2ss(point, params.width, 
-				params.height, params.scale, origin);
+				params.height, params.scale, translation);
 		writeLine(colour, currentCornerCoords[0], currentCornerCoords[1], 
 				prevCornerCoords[0], prevCornerCoords[1], Integer.MAX_VALUE);
 		writeLine(colour, currentCornerCoords[0], currentCornerCoords[1], 
 				nextCornerCoords[0], nextCornerCoords[1], Integer.MAX_VALUE);
 	}
-
-	// public void writeLine(PColour colour, int x0, int y0, int x1, int y1, int dotRate) {
-	// 	int lineColour = processToInt(colour);
-	// 	if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-	// 		if (x0 > x1) {
-	// 			writeLineLow(lineColour, x1, y1, x0, y0, dotRate);
-	// 		} else {
-	// 			writeLineLow(lineColour, x0, y0, x1, y1, dotRate);
-	// 		}
-	// 	} else {
-	// 		if (y0 > y1) {
-	// 			writeLineHigh(lineColour, x1, y1, x0, y0, dotRate);
-	// 		} else {
-	// 			writeLineHigh(lineColour, x0, y0, x1, y1, dotRate);
-	// 		}
-	// 	}
-	// }
-	//
-	// private void writeLineLow(int colour, int x0, int y0, int x1, int y1, int dotRate) {
-	// 	int dx = x1 - x0;
-	// 	int dy = y1 - y0;
-	// 	int yIncrement = (dy < 0) ? -1 : 1;
-	// 	dy *= yIncrement;
-	// 	int error = (2 * dy) - dx;
-	// 	int y = y0;
-	// 	boolean doDraw = true;
-	// 	int counter = 0;
-	// 	for (int x = x0; x < x1; x++) {
-	// 		if (doDraw && inBounds(x, y)) {
-	// 			img.setRGB(x, y, colour);
-	// 		}
-	// 		if (error > 0) {
-	// 			y += yIncrement;
-	// 			error += 2 * (dy - dx);
-	// 		} else {
-	// 			error += 2 * dy;
-	// 		}
-	// 		if (counter >= dotRate) {
-	// 			doDraw = !doDraw;
-	// 			counter = 0;
-	// 		}
-	// 		counter++;
-	// 	}
-	// }
-	//
-	// private void writeLineHigh(int colour, int x0, int y0, int x1, int y1, int dotRate) {
-	// 	int dx = x1 - x0;
-	// 	int dy = y1 - y0;
-	// 	int xIncrement = (dx < 0) ? -1 : 1;
-	// 	dx *= xIncrement;
-	// 	int error = (2 * dx) - dy;
-	// 	int x = x0;
-	// 	boolean doDraw = true;
-	// 	int counter = 0;
-	// 	for (int y = y0; y < y1; y++) {
-	// 		if (doDraw && inBounds(x, y)) {
-	// 			img.setRGB(x, y, colour);
-	// 		}
-	// 		if (error > 0) {
-	// 			x += xIncrement;
-	// 			error += 2 * (dx - dy);
-	// 		} else {
-	// 			error += 2 * dx;
-	// 		}
-	// 		if (counter >= dotRate) {
-	// 			doDraw = !doDraw;
-	// 			counter = 0;
-	// 		}
-	// 		counter++;
-	// 	}
-	// }
 }

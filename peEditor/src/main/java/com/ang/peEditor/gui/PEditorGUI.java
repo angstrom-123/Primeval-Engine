@@ -10,6 +10,9 @@ import com.ang.peEditor.gui.menu.dataMenu.*;
 import com.ang.peEditor.gui.menu.rmbMenu.*;
 import com.ang.peEditor.gui.menu.selectorMenu.*;
 
+/**
+ * Handles rendering displaying and receiving input on the GUI.
+ */
 public class PEditorGUI implements ActionListener, ItemListener, PSelectorListener,
 		PDataChangeListener, PRMBPanelListener {
 	private final PEditorParams params;
@@ -18,6 +21,12 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 	private PEditorInterface ei;
 	private String savedFileName = null;
 
+	/**
+	 * Constructs a new gui handler.
+	 * @param params   the parameters to use for the gui 
+	 * @param renderer the renderer to display the gui with 
+	 * @param ei 	   the interface to send events to
+	 */
 	public PEditorGUI(PEditorParams params, PGUIRenderer renderer, PEditorInterface ei) {
 		this.params = params;
 		this.renderer = renderer;
@@ -25,6 +34,9 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		this.ei = ei;
 	}
 
+	/**
+	 * Initializes the gui by creating the menu bar.
+	 */
 	public void init() {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(createFileMenu());
@@ -37,22 +49,48 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		frame.repaint();
 	}
 
+	/**
+	 * Closes all sub panels that have type PDataPanel.
+	 * @see com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 */
 	public void closeDataPanels() {
 		renderer.clearSubPanelsOfType(PDataPanel.class);
 	}
 
+	/**
+	 * Closes all sub panels that have type PRMBPanel.
+	 * @see com.ang.peEditor.gui.menu.rmbMenu.PRMBPanel
+	 */
 	public void closeRMBPanels() {
 		renderer.clearSubPanelsOfType(PRMBPanel.class);
 	}
 
+	/**
+	 * Opens a new data panel containing the given entries.
+	 * @param entries list of data panel entries to display
+	 * @see 		  com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 * @see 		  com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry
+	 */
 	public void openDataPanel(List<PDataPanelEntry> entries) {
 		renderer.addSubPanel(new PDataPanel(params, entries, this), PGUIRenderer.LOCATION_RIGHT);
 	}
 
+	/**
+	 * Opens a new right click menu at the given coordinates, for the given corner.
+	 * @param x 		  screen space x coordinate to opent the menu at
+	 * @param y 		  screen space y coordinate to opent the menu at
+	 * @param sectorIndex index of the sector containing the corner that the menu is for
+	 * @param cornerIndex index of the corner that the menu is for
+	 * @see 		      com.ang.peEditor.gui.menu.rmbMenu.PRMBPanel
+	 */
 	public void openRightClickMenu(int x, int y, int sectorIndex, int cornerIndex) {
 		renderer.addSubPanel(new PRMBPanel(params, sectorIndex, cornerIndex, this), x, y);
 	}
 
+	/**
+	 * Handles the action performed event for the menu bar buttons.
+	 * @param e the action event that was triggered
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -183,9 +221,19 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		}
 	}
 
+	/**
+	 * Overrides the item state change event.
+	 * This currently does nothing.
+	 * @param e the item event that was triggered
+	 */
 	@Override
 	public void itemStateChanged(ItemEvent e) {}
 
+	/**
+	 * Handles the selection made event for the PSelector.
+	 * @param selector the selector that triggered the event
+	 * @see 		   com.ang.peEditor.gui.menu.selectorMenu.PSelector
+	 */
 	@Override
 	public void selectionMade(PSelector selector) {
 		PSelectorType type = selector.getType();
@@ -204,11 +252,24 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		}
 	}
 
+	/**
+	 * Handles the data change event triggered by a PDataPanel.
+	 * @param entry the entry that changed
+	 * @param text 	the new value of the entru
+	 * @see 		com.ang.peEditor.gui.menu.dataMenu.PDataPanel
+	 * @see 		com.ang.peEditor.gui.menu.dataMenu.PDataPanelEntry
+	 */
 	@Override
 	public void dataChange(PDataPanelEntry entry, String text) {
 		ei.dataPanelChange(entry, text);
 	}
 
+	/**
+	 * Handles the action performed event for the right click menu.
+	 * @param cornerIndex the index of the corner that was changed
+	 * @param sectorIndex the index of the sector containing the corner that changed
+	 * @param action 	  the action that was performed on the corner
+	 */
 	@Override
 	public void rmbActionPerformed(int cornerIndex, int sectorIndex, String action) {
 		if (action.equals(PRMBPanelActionType.DELETE_CORNER.getAction())) {
@@ -222,11 +283,18 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 		}
 	}
 
+	/**
+	 * Handles the right click menu mouse exit event by closing the menu.
+	 */
 	@Override
 	public void rmbMouseExit() {
 		renderer.clearSubPanelsOfType(PRMBPanel.class);
 	}
 
+	/**
+	 * Returns a new JMenu to use for the upper menu bar.
+	 * @return a new JMenu to use for the upper menu bar
+	 */
 	private JMenu createFileMenu() {
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem itemNew = new JMenuItem("New");
@@ -248,6 +316,10 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 
 	}
 
+	/**
+	 * Creates a new JMenu for the create options.
+	 * @return a new JMenu for the create submenu
+	 */
 	private JMenu createEditMenu() {
 		JMenu editMenu = new JMenu("Edit");
 		JMenu submenuPreferences = new JMenu("Preferences");
@@ -263,6 +335,10 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 
 	}
 
+	/**
+	 * Creates a new JMenu for the new options.
+	 * @return a new JMenu for the new submenu
+	 */
 	private JMenu createNewMenu() {
 		JMenu newMenu = new JMenu("New");
 		JMenuItem itemSector = new JMenuItem("Sector");
@@ -272,6 +348,10 @@ public class PEditorGUI implements ActionListener, ItemListener, PSelectorListen
 
 	}
 
+	/**
+	 * Creates a new JMenu for the configuration menu.
+	 * @return a new JMenu for the configuration submenu
+	 */
 	private JMenu createConfigMenu() {
 		JMenu newMenu = new JMenu("Config");
 		JMenuItem itemSpawnPos = new JMenuItem("Spawn Position");
