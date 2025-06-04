@@ -11,6 +11,9 @@ import com.ang.peLib.resources.PResource;
 import com.ang.peLib.resources.PResourceManager;
 import com.ang.peLib.resources.PResourceType;
 
+/**
+ * Handles the config params for the game.
+ */
 public class PGameParams {
 	public int frameRate = 60;
 	public int imageWidth = 320;
@@ -19,6 +22,13 @@ public class PGameParams {
 	public double fov;
 	public int imageHeight;
 
+	/**
+	 * Attempts to parse the json config file in the game's resources.
+	 * Reads all required variables from the config. A user can set their own 
+	 * preferences. Otherwise, default parameters are loaded. If neither are dfound,
+	 * then the exception is thrown.
+	 * @throws PResourceException if there is a problem with parsing the config file 
+	 */
 	public void init() throws PResourceException {
 		PResource res = PResourceManager.fetch(PResourceType.CONFIG, "config.json");
 		PResourceFileReader reader = new PResourceFileReader();

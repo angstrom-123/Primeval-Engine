@@ -9,6 +9,9 @@ import com.ang.peLib.hittables.*;
 import com.ang.peLib.inputs.*;
 import com.ang.peLib.files.pmap.*;
 
+/**
+ * Main class for the core game.
+ */
 public class PGame implements PThreadInterface, PMovementInputInterface, PFullKeyboardInputInterface {
 	private long debounceTimer = 0;
 	private boolean[] keyInputs = new boolean[256];
@@ -19,10 +22,19 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 	private PSectorWorld world;
 	private PGameParams params;
 
+	/**
+	 * Constructs a new game.
+	 * Initializes the game
+	 */
 	public PGame() {
 		init();
 	}
 
+	/**
+	 * Initializes the game.
+	 * Attempts to load params from the config file in resources, initializes 
+	 * camera and camera controller.
+	 */
 	private void init() {
 		params = new PGameParams();
 		try {
@@ -38,6 +50,10 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		controller = new PCameraMover(cam); 
 	}
 
+	/**
+	 * Runs the game.
+	 * @param test specifies if the game should be run in test mode
+	 */
 	public void start(boolean test) {
 		if (test) {
 			testGame();
@@ -46,13 +62,22 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		}
 	}
 
-	// TODO:
+	/**
+	 * Runs the game.
+	 * This is the regular entry point for the game.
+	 */
 	private void runGame() {
-		System.out.println("Regular game entry point goes here");
+		// TODO
+		System.out.println("Regular game entry point goes here, try running with "
+				+ "the -t flag for test mode");
 	}
 
+	/**
+	 * Tests the game.
+	 * This is the entry point for the game test.
+	 * Loads a map file from resources an starts up the update worker.
+	 */
 	private void testGame() {
-		// String testFile = "simpleTest.pmap";
 		String testFile = "test.pmap";
 		if (loadMapFile(testFile)) {
 			PUpdateWorker uw = new PUpdateWorker(frameMs);
@@ -64,6 +89,10 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		}
 	}
 
+	/**
+	 * Loads a map file from resources.
+	 * @param fileName name of the map file to load (including file extension)
+	 */
 	private boolean loadMapFile(String fileName) {
 		PPMapHandler handler = new PPMapHandler();
 		try {
@@ -83,6 +112,10 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 
 	}
 
+	/**
+	 * Update loop.
+	 * Called by the update worker
+	 */
 	@Override
 	public void update() {
 		final long debounceTime = 200;
@@ -97,11 +130,19 @@ public class PGame implements PThreadInterface, PMovementInputInterface, PFullKe
 		cam.getRenderer().writeToTitleBar("Frame ms: " + String.valueOf(renderMS));
 	}
 
+	/**
+	 * Key press event handler.
+	 * @param key keycode of the key that was pressed
+	 */
 	@Override
 	public void pressed(int key) {
 		keyInputs[key] = true;
 	}
 
+	/**
+	 * Key release event handler.
+	 * @param key keycode of the key that was released
+	 */
 	@Override
 	public void released(int key) {
 		keyInputs[key] = false;
