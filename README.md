@@ -78,7 +78,6 @@ java -jar peEditor/target/peEditor-1.0.0-alpha.jar --test
 ```
 
 ## Dev Log
-### Humble beginnings: 
 The first problem I decided to tackle is rendering walls. This naive version
 works in a world made of only axis-aligned cubes. The height of each vertical
 column of pixels is determined using the wall's distance from the camera. This
